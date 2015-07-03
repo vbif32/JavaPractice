@@ -1,0 +1,21 @@
+package gui;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Window_s window_s = new Window_s();
+        primaryStage.setTitle("Пока хз, что тут написать");
+        primaryStage.setResizable(false);
+        primaryStage.setScene(window_s.main);
+        primaryStage.show();
+    }
+
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
