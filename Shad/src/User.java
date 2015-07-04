@@ -4,10 +4,18 @@
  * разграничивает доступ к функциям на сервере
  * и доступ к формам в пользовательском интерфейсе
  */
-public class User {
+public class User implements QueryResult {
+
+    public User() {}
+
     public int id; // идентификатор доступа в системе
     public String surname;  // Фамилия
     public String name;     // Имя
     public String secondName;// Отчество
     public boolean isLecturer; // флаг является ли преподавателем!
+
+    @Override
+    public QueryResults getType() {
+        return QueryResults.USER;
+    }
 }
