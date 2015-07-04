@@ -2,125 +2,71 @@ package gui;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
-
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Jay on 02.07.2015.
- * ����� � ��������� ������� �� �������
+ * Класс с описанием реакций на события
  */
 public class MouseEvents implements EventHandler<MouseEvent> {
-    protected int scene;
-    public Window_s window; //��������� �����
-    public MouseEvents (int number, Window_s window)
-    {
-        this.scene=number;
-        this.window=window;
+
+    int scene;
+    Window_s window; //начальная сцена
+    User user;
+
+    public MouseEvents(Window_s window) {
+        this.scene = window.page;
+        this.window = window;
+        this.user = window.user;
     }
 
     @Override
     public void handle(MouseEvent event) {
-        System.out.println(event.getSceneY());
-        System.out.println(event.getSource().getClass().getSimpleName());
-        //���� �����
-        if ((event.getSceneX()>=376)&&(event.getSceneX()<=426) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==1)){
+        //System.out.println(event.getSceneX());
+        //System.out.println(event.getSceneY());
+        //System.out.println(event.getSource().getClass().getSimpleName());
+        //ОКНО ВХОДА
+        if ((event.getSceneX() >= 376) && (event.getSceneX() <= 426) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene == 1)) {
             System.out.println("Enter");
-            window.page=1;
-            //��������� ���������� � ����������
-            boolean check = true; //TRUE/FALSE �������� �� �������
-            if (!check) //��� ����������
+            //ПРОВЕРИТЬ СОЕДИНЕНИЕ С ИНТЕРНЕТОМ
+            boolean checkI = true;
+            if (!checkI) //нет соединения
             {
                 window.Window(2);
+            } else {
+                window.Window(3);
             }
-            else {
-                //��������� ������������ ������ � ������, �������, ������ TRUE/FALSE (check)
-                check = false; //TRUE/FALSE �������� �� �������
-                if (check) //���� ��� ������� �����
-                {
-                    window.page = 3;
-                    window.Window(0);
-                } else //���� ������� ������� ������������ ��� ������
-                {
-                    window.Window(1);
-                }
-            }
-        }
-        else if ((event.getSceneX()>=435)&&(event.getSceneX()<=532) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==1)) {
-            //������� � ���� �����������
+        } else if ((event.getSceneX() >= 435) && (event.getSceneX() <= 532) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene == 1)) {
+            //ПЕРЕХОД К ОКНУ РЕГИСТРАЦИИ
             System.out.println("Registration");
-            window.page=2;
-            window.Window(0);
-        }
-        else if ((event.getSceneX()>=385)&&(event.getSceneX()<=527)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==1)&&(event.getSceneY()>=240)&&(event.getSceneY()<=262)) {
-            System.out.println("Login");
-            //���� ������
-            //������� ������ ������
-        }
-        else if ((event.getSceneX()>=385)&&(event.getSceneX()<=527)&&(event.getSource().getClass().getSimpleName().equals("PasswordField"))&&(this.scene==1)&&(event.getSceneY()>=263)&&(event.getSceneY()<=283)) {
-            System.out.println("Password");
-            //���� ������
-            //������� ������ ������
+            //ПРОВЕРИТЬ СОЕДИНЕНИЕ С ИНТЕРНЕТОМ
+            boolean checkI = true; //ЗАМЕНА НА ФУНКЦИЮ
+            if (!checkI) //нет соединения
+            {
+                window.Window(2);
+            } else {
+                window.page = 2;
+                window.Window(0);
+            }
         }
 
-        //���� �����������
-        else if ((event.getSceneX()>=323)&&(event.getSceneX()<=462) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==2)) {
-            //����������������
+        //ОКНО РЕГИСТРАЦИИ
+        else if ((event.getSceneX() >= 323) && (event.getSceneX() <= 462) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene == 2)) {
+            //ЗАРЕГИСТРИРОВАТЬ
             System.out.println("Do registration");
-            //��������� ���������� � ����������
-            boolean check = true; //TRUE/FALSE �������� �� �������
-            if (check==false) //��� ����������
+            //ПРОВЕРИТЬ СОЕДИНЕНИЕ С ИНТЕРНЕТОМ
+            boolean checkI = true; //ЗАМЕНА НА ФУНКЦИЮ
+            if (!checkI) //нет соединения
             {
                 window.Window(2);
+            } else {
+                window.Window(3);
             }
-            else {
-                //��������� ������������ ����� ������
-                check = true; //TRUE/FALSE �������� �� �������
-                if (check) //���� ��� ��������� �������
-                {
-                    //������� ��������� ������ � ��
-                    window.Window(3); //����������, ��� ���������������
-                    System.out.println("Something");
-                    window.page=1;
-                    try {
-                        TimeUnit.SECONDS.sleep(3);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    window.Window(0); //������� � ���� �����
-                }
-                else //����������� ������� ������
-                {
-                    System.out.println(window.page);
-                    window.Window(1);
-                }
-            }
-        }
-        else if ((event.getSceneX()>=472)&&(event.getSceneX()<=784) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==2)) {
-            //��������� � ���� �����
+        } else if ((event.getSceneX() >= 472) && (event.getSceneX() <= 784) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene == 2)) {
+            //ВЕРНУТЬСЯ К ОКНУ ВХОДА
             System.out.println("Cancel");
-            window.page=1;
+            window.page = 1;
             window.Window(0);
-        }
-        else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=208)&&(event.getSceneY() <=228)) {
-            System.out.println("Name");
-            //������ �����
-            window.Window(4);
-        }
-        else if ((event.getSceneX()>=390)&&(event.getSceneX()<=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=229)&&(event.getSceneY()<=248)) {
-            System.out.println("Surame");
-            //������ �������
-        }
-        else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=252)&&(event.getSceneY() <=270)) {
-            System.out.println("Group");
-            //������ ������
-        }
-        else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=273)&&(event.getSceneY() <=293)) {
-            System.out.println("Create login");
-            //������ ������
-        }
-        else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("PasswordField"))&&(this.scene==2)&&(event.getSceneY()>=295)&&(event.getSceneY() <=315)) {
-            System.out.println("Create password");
-            //������ ������
         }
     }
 }
