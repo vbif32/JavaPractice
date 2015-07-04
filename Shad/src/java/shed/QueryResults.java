@@ -1,4 +1,4 @@
-
+package shed;
 
 //Перечисление типов ответа сервера на запрос
 public enum QueryResults {

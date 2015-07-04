@@ -1,4 +1,4 @@
-package protocol;
+package java.protocol;
 
 //Клиентская ошибка в данных, присланных сервером. Без репорта.
 public class ServerBadDataException extends Exception {

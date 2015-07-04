@@ -1,3 +1,4 @@
+package shed;
 
 //Интерфейс ответов на запрос
 public interface QueryResult {

@@ -1,4 +1,4 @@
-
+package shed;
 
 //Перечисление типов запросов от клиента
 public enum Queries {

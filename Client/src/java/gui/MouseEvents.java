@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Jay on 02.07.2015.
- * Êëàññ ñ îïèñàíèåì ğåàêöèé íà ñîáûòèÿ
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 public class MouseEvents implements EventHandler<MouseEvent> {
     protected int scene;
-    public Window_s window; //íà÷àëüíàÿ ñöåíà
+    public Window_s window; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     public MouseEvents (int number, Window_s window)
     {
         this.scene=number;
@@ -22,63 +22,63 @@ public class MouseEvents implements EventHandler<MouseEvent> {
     public void handle(MouseEvent event) {
         System.out.println(event.getSceneY());
         System.out.println(event.getSource().getClass().getSimpleName());
-        //ÎÊÍÎ ÂÕÎÄÀ
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
         if ((event.getSceneX()>=376)&&(event.getSceneX()<=426) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==1)){
             System.out.println("Enter");
             window.page=1;
-            //ÏĞÎÂÅĞÈÒÜ ÑÎÅÄÈÍÅÍÈÅ Ñ ÈÍÒÅĞÍÅÒÎÌ
-            boolean check = true; //TRUE/FALSE ÇÀÌÅÍßÅÌ ÍÀ ÔÓÍÊÖÈŞ
-            if (!check) //íåò ñîåäèíåíèÿ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            boolean check = true; //TRUE/FALSE ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            if (!check) //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             {
                 window.Window(2);
             }
             else {
-                //ÏĞÎÂÅĞÈÒÜ ÏĞÀÂÈËÜÍÎÑÒÜ ÏÀĞÎËß È ËÎÃÈÍÀ, ÏÎËÀÃÀŞ, ÂÅĞÍÅÒ TRUE/FALSE (check)
-                check = false; //TRUE/FALSE ÇÀÌÅÍßÅÌ ÍÀ ÔÓÍÊÖÈŞ
-                if (check) //åñëè âñå ââåäåíî âåğíî
+                //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TRUE/FALSE (check)
+                check = false; //TRUE/FALSE ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                if (check) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
                 {
                     window.page = 3;
                     window.Window(0);
-                } else //åñëè íåâåğíî ââåäåíû ïîëüçîâàòåëü èëè ïàğîëü
+                } else //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 {
                     window.Window(1);
                 }
             }
         }
         else if ((event.getSceneX()>=435)&&(event.getSceneX()<=532) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==1)) {
-            //ÏÅĞÅÕÎÄ Ê ÎÊÍÓ ĞÅÃÈÑÒĞÀÖÈÈ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             System.out.println("Registration");
             window.page=2;
             window.Window(0);
         }
         else if ((event.getSceneX()>=385)&&(event.getSceneX()<=527)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==1)&&(event.getSceneY()>=240)&&(event.getSceneY()<=262)) {
             System.out.println("Login");
-            //ÂÂÎÄ ËÎÃÈÍÀ
-            //ÔÓÍÊÖÈß ×ÒÅÍÈß ËÎÃÈÍÀ
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if ((event.getSceneX()>=385)&&(event.getSceneX()<=527)&&(event.getSource().getClass().getSimpleName().equals("PasswordField"))&&(this.scene==1)&&(event.getSceneY()>=263)&&(event.getSceneY()<=283)) {
             System.out.println("Password");
-            //ÂÂÎÄ ÏÀĞÎËß
-            //ÔÓÍÊÖÈß ×ÒÅÍÈß ÏÀĞÎËß
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
 
-        //ÎÊÍÎ ĞÅÃÈÑÒĞÀÖÈÈ
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         else if ((event.getSceneX()>=323)&&(event.getSceneX()<=462) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==2)) {
-            //ÇÀĞÅÃÈÑÒĞÈĞÎÂÀÒÜ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             System.out.println("Do registration");
-            //ÏĞÎÂÅĞÈÒÜ ÑÎÅÄÈÍÅÍÈÅ Ñ ÈÍÒÅĞÍÅÒÎÌ
-            boolean check = true; //TRUE/FALSE ÇÀÌÅÍßÅÌ ÍÀ ÔÓÍÊÖÈŞ
-            if (check==false) //íåò ñîåäèíåíèÿ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            boolean check = true; //TRUE/FALSE ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            if (check==false) //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             {
                 window.Window(2);
             }
             else {
-                //ÏĞÎÂÅĞÈÒÜ ÏĞÀÂÈËÜÍÎÑÒÜ ÂÂÎÄÀ ÄÀÍÍÛÕ
-                check = true; //TRUE/FALSE ÇÀÌÅÍßÅÌ ÍÀ ÔÓÍÊÖÈŞ
-                if (check) //åñëè âñå ïğàâèëüíî ââåäåíî
+                //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                check = true; //TRUE/FALSE ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                if (check) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 {
-                    //ÔÓÍÊÖÈß ÇÀÍÅÑÅÍÈß ÄÀÍÍÛÕ Â ÁÄ
-                    window.Window(3); //Ïîêàçûâàåò, ÷òî çàğåãèñòğèğîâàë
+                    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½
+                    window.Window(3); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     System.out.println("Something");
                     window.page=1;
                     try {
@@ -86,9 +86,9 @@ public class MouseEvents implements EventHandler<MouseEvent> {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    window.Window(0); //Ïåğåõîä ê îêíó âõîäà
+                    window.Window(0); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
-                else //íåïğàâèëüíî ââåäåíû äàííûå
+                else //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 {
                     System.out.println(window.page);
                     window.Window(1);
@@ -96,31 +96,31 @@ public class MouseEvents implements EventHandler<MouseEvent> {
             }
         }
         else if ((event.getSceneX()>=472)&&(event.getSceneX()<=784) && (event.getSource().getClass().getSimpleName().equals("Button")) && (this.scene==2)) {
-            //ÂÅĞÍÓÒÜÑß Ê ÎÊÍÓ ÂÕÎÄÀ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
             System.out.println("Cancel");
             window.page=1;
             window.Window(0);
         }
         else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=208)&&(event.getSceneY() <=228)) {
             System.out.println("Name");
-            //ÇÀÏÈÑÜ ÈÌÅÍÈ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
             window.Window(4);
         }
         else if ((event.getSceneX()>=390)&&(event.getSceneX()<=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=229)&&(event.getSceneY()<=248)) {
             System.out.println("Surame");
-            //ÇÀÏÈÑÜ ÔÀÌÈËÈÈ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=252)&&(event.getSceneY() <=270)) {
             System.out.println("Group");
-            //ÇÀÏÈÑÜ ÃĞÓÏÏÛ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("TextField"))&&(this.scene==2)&&(event.getSceneY()>=273)&&(event.getSceneY() <=293)) {
             System.out.println("Create login");
-            //ÇÀÏÈÑÜ ËÎÃÈÍÀ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if ((event.getSceneX()>=390)&&(event.getSceneX() <=531)&&(event.getSource().getClass().getSimpleName().equals("PasswordField"))&&(this.scene==2)&&(event.getSceneY()>=295)&&(event.getSceneY() <=315)) {
             System.out.println("Create password");
-            //ÇÀÏÈÑÜ ÏÀĞÎËß
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
     }
 }

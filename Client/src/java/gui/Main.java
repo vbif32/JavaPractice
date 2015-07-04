@@ -8,7 +8,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Window_s window_s = new Window_s();
-        primaryStage.setTitle("Пока хз, что тут написать");
+        primaryStage.setTitle("Автоматизированная система тестирования лабораторных работ");
         primaryStage.setResizable(false);
         primaryStage.setScene(window_s.main);
         primaryStage.show();

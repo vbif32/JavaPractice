@@ -1,4 +1,4 @@
-
+package shed;
 
 //Интерфейс запросов
 public interface Query {
