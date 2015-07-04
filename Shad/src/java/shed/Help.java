@@ -1,3 +1,5 @@
+package shed;
+
 /**
  * Created by Lognir on 04.07.2015.
  */
