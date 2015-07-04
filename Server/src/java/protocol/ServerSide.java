@@ -182,13 +182,15 @@ public class ServerSide {
                     case 1:
                         q = new LoginApply(); break;
                     case 2:
-                        q = new LoginApply(); break;
+                        q = new TestRequest(); break;
                     case 3:
-                        q = new LoginApply(); break;
+                        q = new TestResult(); break;
                     case 4:
-                        q = new LoginApply(); break;
+                        q = new StatsRequest(); break;
                     case 5:
                         q = new HelpRequest(); break;
+                    case 6:
+                        q = new ErrorReceived(); break;
                     default:
                         out.write(23); out.flush(); continue;
                 }

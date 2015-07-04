@@ -153,13 +153,13 @@ public class ClientSide {
                     case 0:
                         qr = new User(); break;
                     case 1:
-                        qr = new User(); break;
+                        qr = new QueryError(); break;
                     case 2:
-                        qr = new User(); break;
+                        qr = new Test(); break;
                     case 3:
-                        qr = new User(); break;
+                        qr = new LabResult(); break;
                     case 4:
-                        qr = new User(); break;
+                        qr = new Stats(); break;
                     case 5:
                         qr = new Help(); break;
                     default:
