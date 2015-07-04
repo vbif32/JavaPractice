@@ -1,4 +1,4 @@
-package java.protocol;
+package protocol;
 
 //Ошибка, связанная с чтением или записью в файл. Размер, доступ, кривой путь, косяк с потоком на него.
 public class FileReadingException extends Exception {

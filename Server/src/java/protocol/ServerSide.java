@@ -1,6 +1,6 @@
 package protocol;
 
-import protocol.temp.*;
+import shed.*;
 
 import java.io.*;
 import java.lang.reflect.Field;
