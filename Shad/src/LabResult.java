@@ -1,12 +1,12 @@
 /**
  * Created by Lognir on 04.07.2015.
  */
-public class LabResult implements Query {
+public class LabResult implements QueryResult {
 
     public LabResult() {}
 
     @Override
-    public Queries getType() {
-        return Queries.RESULT;
+    public QueryResults getType() {
+        return QueryResults.RESULT;
     }
 }
