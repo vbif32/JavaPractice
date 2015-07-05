@@ -28,10 +28,15 @@ public class ServerSide {
         try {
             for(Field f : fields) {
                 if(!f.getType().equals(File.class))
-                    msg.append(f.getType().getName()).append('-').append(f.getName()).append('=').append(f.get(queryResult).toString()).append(';');
+                    msg.append(f.getType().getName()).append('-').append(f.getName()).append('=').append(f.get(queryResult)).append(';');
                 else {
-                    msg.append(File.class.getName()).append('-').append(f.getName()).append('=').append(((File)f.get(queryResult)).getName()).append(';');
-                    files.add((File)f.get(queryResult));
+                    msg.append(File.class.getName()).append('-').append(f.getName()).append('=');
+                    if(f.get(queryResult) != null) {
+                        msg.append(((File)f.get(queryResult)).getName());
+                        files.add((File)f.get(queryResult));
+                    }
+                    else msg.append("null");
+                    msg.append(';');
                 }
             }
             byte[] byteArr = msg.toString().getBytes();
@@ -147,7 +152,7 @@ public class ServerSide {
                 answerType = in.read();
                 answer = in.read(answerLen, 0, 4);
                 ansLen = ByteBuffer.wrap(answerLen).getInt();
-                if(answer != 4 || ansLen <= 0) {
+                if(answer != 4 || ansLen < 0) {
                     out.write(23);
                     out.flush();
                     continue;
@@ -166,7 +171,7 @@ public class ServerSide {
                 }
 
                 String rawData = new String(answerData);
-                System.out.println(rawData);
+                //System.out.println(rawData);
 
                 switch (answerType) {
                     case 0:
@@ -193,12 +198,13 @@ public class ServerSide {
                 while (m.find()) {
                     matchesNum++;
                     try {
-                        if (m.group(1).compareTo(File.class.getName()) != 0)
+                        if (m.group(1).compareTo(File.class.getName()) != 0 && m.group(3).compareTo("null") != 0)
                             q.getClass().getField(m.group(2)).set(q, Class.forName(m.group(1)).getConstructor(String.class).newInstance(m.group(3)));
-                        else {
+                        else if(m.group(3).compareTo("null") != 0) {
                             q.getClass().getField(m.group(2)).set(q, File.class.getConstructor(File.class, String.class).newInstance(PATH, m.group(3)));
                             files.add((File) q.getClass().getField(m.group(2)).get(q));
                         }
+                        else q.getClass().getField(m.group(2)).set(q, null);
                     } catch(ReflectiveOperationException roe) {
                         out.write(23);
                         out.flush();
@@ -240,7 +246,7 @@ public class ServerSide {
                     answerType = in.read();
                     answer = in.read(answerLen, 0, 4);
                     ansLen = ByteBuffer.wrap(answerLen).getInt();
-                    if (answer != 4 || answerType != 31 || ansLen <= 0 || (answer = in.read(md5data, 0, 16)) != 16) {
+                    if (answer != 4 || answerType != 31 || ansLen < 0 || (answer = in.read(md5data, 0, 16)) != 16) {
                         out.write(23);
                         out.flush();
                         continue;
