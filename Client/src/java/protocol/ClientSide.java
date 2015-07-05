@@ -110,8 +110,6 @@ public class ClientSide {
             while(!correct) {
                 tryCount++;
                 if(tryCount > 3) {
-                    out.write(63);
-                    out.flush();
                     throw new ServerBadDataException("Bad data from server.");
                 }
                 errCount = 0;
@@ -119,8 +117,6 @@ public class ClientSide {
                     if (answer == 63) throw new WrongDataException("Server denied files.");
                     if (answer == -1) throw new IOException("Connection lost.");
                     else if (errCount > 1024) {
-                        out.write(63);
-                        out.flush();
                         throw new ServerBadDataException("Bad data from server.");
                     }
                     errCount++;
@@ -203,8 +199,6 @@ public class ClientSide {
                 while(!correct) {
                     tryCount++;
                     if(tryCount > 3 || i >= files.size()) {
-                        out.write(63);
-                        out.flush();
                         throw new ServerBadDataException("Bad data from server.");
                     }
                     if(answer != 1) {
@@ -212,9 +206,7 @@ public class ClientSide {
                         while ((answer = in.read()) != 1) {
                             if (answer == -1) throw new IOException("Connection lost.");
                             else if (errCount > 1024) {
-                                out.write(63);
-                                out.flush();
-                                throw new ServerBadDataException("Bad data from client.");
+                                throw new ServerBadDataException("Bad data from server.");
                             }
                             errCount++;
                         }
@@ -265,8 +257,6 @@ public class ClientSide {
                 i++;
             }
             if(i != files.size()) {
-                out.write(63);
-                out.flush();
                 correct = false;
                 throw new ServerBadDataException("Bad data from server.");
             }
@@ -299,18 +289,18 @@ public class ClientSide {
                 //Надо решить, что сообщать об ошибках.
             }
         }
-        catch(ServerBadDataException sde) {
-            return new QueryError();
+        catch(FileReadingException|ServerBadDataException fre) {
+            try {
+                out.write(63);
+                out.flush();
+                return new QueryError();
+            }
+            catch(Exception e) {
+                return new QueryError();
+            }
         }
-        catch(FileReadingException fre) {
-            return new QueryError();
-        }
-        catch(IllegalAccessException iae) {
+        catch(IllegalAccessException|NoSuchAlgorithmException iae) {
             iae.printStackTrace();
-            return new QueryError();
-        }
-        catch(NoSuchAlgorithmException nae) {
-            nae.printStackTrace();
             return new QueryError();
         }
         finally {

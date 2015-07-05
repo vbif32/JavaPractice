@@ -108,12 +108,8 @@ public class ServerSide {
         catch(WrongDataException wde) {
             return false;
         }
-        catch(IllegalAccessException iae) {
+        catch(IllegalAccessException|NoSuchAlgorithmException iae) {
             iae.printStackTrace();
-            return false;
-        }
-        catch(NoSuchAlgorithmException nae) {
-            nae.printStackTrace();
             return false;
         }
 
@@ -137,16 +133,12 @@ public class ServerSide {
             while(!correct) {
                 tryCount++;
                 if(tryCount > 3) {
-                    out.write(63);
-                    out.flush();
                     throw new WrongDataException("Bad data from client.");
                 }
                 errCount = 0;
                 while ((answer = in.read()) != 1) {
                     if (answer == -1) throw new IOException("Connection lost.");
                     else if (errCount > 1024) {
-                        out.write(63);
-                        out.flush();
                         throw new WrongDataException("Bad data from client.");
                     }
                     errCount++;
@@ -226,14 +218,13 @@ public class ServerSide {
             MessageDigest md = MessageDigest.getInstance("MD5");
             DigestOutputStream fos;
             while((answer = in.read()) != 33) {
-                if (answer == -1) throw new IOException("Connection lost.");
                 correct = false;
+                if (answer == -1) throw new IOException("Connection lost.");
+                if(answer == 63) throw new IOException("Transmission interrupted.");
                 tryCount = 0;
                 while(!correct) {
                     tryCount++;
                     if(tryCount > 3 || i >= files.size()) {
-                        out.write(63);
-                        out.flush();
                         throw new WrongDataException("Bad data from client.");
                     }
                     if(answer != 1) {
@@ -241,8 +232,6 @@ public class ServerSide {
                         while ((answer = in.read()) != 1) {
                             if (answer == -1) throw new IOException("Connection lost.");
                             else if (errCount > 1024) {
-                                out.write(63);
-                                out.flush();
                                 throw new WrongDataException("Bad data from client.");
                             }
                             errCount++;
@@ -293,8 +282,6 @@ public class ServerSide {
                 i++;
             }
             if(i != files.size()) {
-                out.write(63);
-                out.flush();
                 correct = false;
                 throw new WrongDataException("Bad data from client.");
             }
@@ -302,18 +289,7 @@ public class ServerSide {
         catch(IOException ioe) {
             return new ErrorReceived();
         }
-        catch(WrongDataException wde) {
-            try {
-                out.write(63);
-                out.flush();
-                transmit(new QueryError(), out, in);
-                return new ErrorReceived();
-            }
-            catch(IOException e) {
-                return new ErrorReceived();
-            }
-        }
-        catch(FileReadingException fre) {
+        catch(WrongDataException|FileReadingException wde) {
             try {
                 out.write(63);
                 out.flush();
