@@ -18,13 +18,13 @@ import java.util.regex.Pattern;
  * Created by Lognir on 04.07.2015.
  */
 public class ServerSide {
-    public static final File PATH = new File(""); //Тут нужен путь до папки, куда кидать присланные файлы.
+    public static final File PATH = new File("src/java/protocol"); //Тут нужен путь до папки, куда кидать присланные файлы.
 
     public static boolean transmit(QueryResult queryResult, OutputStream out, InputStream in) {
         QueryResults type = queryResult.getType();
         Field[] fields = queryResult.getClass().getFields();
         StringBuilder msg = new StringBuilder();
-        ArrayList<File> files = new ArrayList<File>();
+        ArrayList<File> files = new ArrayList<>();
         try {
             for(Field f : fields) {
                 if(!f.getType().equals(File.class))
@@ -125,7 +125,7 @@ public class ServerSide {
         Query q = null;
         int answer;
         int errCount, tryCount = 0;
-        ArrayList<File> files = new ArrayList<File>();
+        ArrayList<File> files = new ArrayList<>();
         boolean correct = false;
         int answerType, ansLen, bytesRead;
         byte[] answerLen = new byte[4];
@@ -295,6 +295,7 @@ public class ServerSide {
             if(i != files.size()) {
                 out.write(63);
                 out.flush();
+                correct = false;
                 throw new WrongDataException("Bad data from client.");
             }
         }
@@ -325,6 +326,11 @@ public class ServerSide {
         }
         catch(NoSuchAlgorithmException nae) {
             return new ErrorReceived();
+        }
+        finally {
+            if(!correct)
+                for(File f : files)
+                    f.delete();
         }
 
         return q;

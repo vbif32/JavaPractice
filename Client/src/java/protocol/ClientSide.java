@@ -19,14 +19,15 @@ import java.util.regex.Pattern;
  */
 public class ClientSide {
 
-    public static final File PATH = new File(""); //Тут нужен путь до папки, куда кидать присланные файлы.
+    public static final File PATH = new File("src/java/protocol"); //Тут нужен путь до папки, куда кидать присланные файлы.
 
     public static QueryResult transmit(Query query, OutputStream out, InputStream in) {
         QueryResult qr = null;
+        boolean correct = true;
         Queries type = query.getType();
         Field[] fields = query.getClass().getFields();
         StringBuilder msg = new StringBuilder();
-        ArrayList<File> files = new ArrayList<File>();
+        ArrayList<File> files = new ArrayList<>();
         try {
             for(Field f : fields) {
                 if(!f.getType().equals(File.class))
@@ -98,7 +99,7 @@ public class ClientSide {
             //*******
 
             int errCount, tryCount = 0;
-            boolean correct = false;
+            correct = false;
             int answerType, ansLen;
             byte[] answerLen = new byte[4];
             byte[] md5data = new byte[16];
@@ -266,6 +267,7 @@ public class ClientSide {
             if(i != files.size()) {
                 out.write(63);
                 out.flush();
+                correct = false;
                 throw new ServerBadDataException("Bad data from server.");
             }
         }
@@ -311,9 +313,12 @@ public class ClientSide {
             nae.printStackTrace();
             return new QueryError();
         }
+        finally {
+            if(!correct)
+                for(File f : files)
+                    f.delete();
+        }
 
         return qr;
     }
-
-
 }
