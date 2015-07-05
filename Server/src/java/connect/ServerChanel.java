@@ -27,25 +27,6 @@ public class ServerChanel implements Runnable {
 
             query = ServerSide.receive(clientSocket.getOutputStream(), clientSocket.getInputStream());
 
-            //Если этот вариант будет одобрен, то TODO после свитча отменяется
-           /*String functionName = query.getFunctionName();
-            Class serviceClass;
-
-            try {
-                 serviceClass = Class.forName(functionName.substring(0,functionName.indexOf('.')));
-                 result = (QueryResult) serviceClass.getMethod(functionName.substring(functionName.indexOf('.') + 1,functionName.length())).invoke(null,query);
-
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }  */
-
-
             switch (query.getType()) {
                 //TODO: Действия над объектами, полученными из запроса
             }
