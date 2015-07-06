@@ -9,7 +9,7 @@ import shed.QueryResults;
 public class RegisterResult implements QueryResult {
     public RegisterResult() {}
 
-    Boolean isRegistered;
+    public Boolean isRegistered;
 
     @Override
     public QueryResults getType() {

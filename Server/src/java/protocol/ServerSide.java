@@ -116,7 +116,7 @@ public class ServerSide {
             return false;
         }
         catch(IllegalAccessException|NoSuchAlgorithmException iae) {
-            iae.printStackTrace();
+            //iae.printStackTrace();
             return false;
         }
 
@@ -293,21 +293,21 @@ public class ServerSide {
             }
         }
         catch(IOException ioe) {
-            return new ErrorReceived();
+            return new ErrorReceived(ioe.getMessage());
         }
         catch(WrongDataException|FileReadingException wde) {
             try {
                 out.write(63);
                 out.flush();
                 transmit(new QueryError(), out, in);
-                return new ErrorReceived();
+                return new ErrorReceived(wde.getMessage());
             }
             catch(IOException e) {
-                return new ErrorReceived();
+                return new ErrorReceived(e.getMessage());
             }
         }
         catch(NoSuchAlgorithmException nae) {
-            return new ErrorReceived();
+            return new ErrorReceived(nae.getMessage());
         }
         finally {
             if(!correct)

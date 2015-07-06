@@ -163,6 +163,8 @@ public class ClientSide {
                         qr = new LabResult(); break;
                     case 4:
                         qr = new Stats(); break;
+                    case 5:
+                        qr = new RegisterResult(); break;
                     default:
                         out.write(23); out.flush(); continue;
                 }
@@ -268,7 +270,7 @@ public class ClientSide {
             }
         }
         catch(IOException ioe) {
-            return new QueryError();
+            return new QueryError(ioe.getMessage());
             //Надо решить, что сообщать об ошибках.
         }
         catch(WrongDataException wde) {
@@ -288,10 +290,10 @@ public class ClientSide {
                     }
                     return qr;
                 }
-                return new QueryError();
+                return new QueryError(wde.getMessage());
             }
             catch(Exception e) {
-                return new QueryError();
+                return new QueryError(e.getMessage());
                 //Надо решить, что сообщать об ошибках.
             }
         }
@@ -299,15 +301,15 @@ public class ClientSide {
             try {
                 out.write(63);
                 out.flush();
-                return new QueryError();
+                return new QueryError(fre.getMessage());
             }
             catch(Exception e) {
-                return new QueryError();
+                return new QueryError(e.getMessage());
             }
         }
         catch(IllegalAccessException|NoSuchAlgorithmException iae) {
-            iae.printStackTrace();
-            return new QueryError();
+            //iae.printStackTrace();
+            return new QueryError(iae.getMessage());
         }
         finally {
             if(!correct)
