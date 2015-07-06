@@ -25,8 +25,6 @@ public class ServerChanel implements Runnable {
         QueryResult result = null;
         if (clientSocket.isConnected()) {
 
-            query = ServerSide.receive(clientSocket.getOutputStream(), clientSocket.getInputStream());
-
             switch (query.getType()) {
                 //TODO: Действия над объектами, полученными из запроса
             }
