@@ -7,12 +7,20 @@ public class Tester {
     /*!!!*/
     private File labFile;
     private boolean isJava;
-    private String id;
     private File inputTestFile;
     private File outputTestFIle;
 
-    private Tester(String code, boolean isJava, String id){
-        this.id = id;
+    private Integer userId;
+    private String subject;
+    private Integer term;
+    private Integer labNumber;
+    private boolean isCorrected;
+
+    private Tester(String code, boolean isJava, Integer userId, String subject, Integer term, Integer labNumber){
+        this.userId = userId;
+        this.subject = subject;
+        this.term = term;
+        this.labNumber = labNumber;
         this.isJava = isJava;
         File tempLabFile;
         if (isJava) {
@@ -22,27 +30,35 @@ public class Tester {
         } else {
             this.labFile  = Compiler.compileCpp(code);
         }
-        this.getTests();
+        this.getTests(userId, subject, term, labNumber);
     }
 
-    private Tester(File labFile, boolean isJava, String id){
-        this.id = id;
+    private Tester(File labFile, boolean isJava, Integer userId, String subject, Integer term, Integer labNumber){
+        this.userId = userId;
+        this.subject = subject;
+        this.term = term;
+        this.labNumber = labNumber;
         this.isJava = isJava;
         this.labFile = labFile;
-        this.getTests();
+        this.getTests(userId, subject, term, labNumber);
     }
 
     /**
      * Запрос тестов
      */
-    private void getTests(){
+    private void getTests(Integer userId, String subject, Integer term, Integer labNumber){
+
+    }
+
+
+    private void sendResult(){
+
     }
 
     /**
      * Сравнение выходных данных программы с данными из теста
-     * @return true/false (недоработано)
      */
-    private boolean compareOutput(boolean willDel){
+    private void compareOutput(boolean willDel){
         String labOutput = "";
         String testOutput = readFile(this.outputTestFIle);
         if (this.isJava){
@@ -60,11 +76,12 @@ public class Tester {
         if (testOutput == null || labOutput == null){
             System.out.println("Something went wrong");
             System.out.println("------------");
-            return false;
+            this.isCorrected = false;
+            return;
         }
         System.out.println("------------");
-//        return labOutput.equals(testOutput);
-        return labOutput.contains(testOutput);
+        this.isCorrected = labOutput.equals(testOutput);
+//        this.isCorrected = labOutput.contains(testOutput);
     }
 
     protected static String readFile(File file){
@@ -91,30 +108,20 @@ public class Tester {
         return result;
     }
 
-    /*private boolean singleTestExecute(){
-        return true;
-    }*/
-
-    /**
-     * Запуск тестирования(в виде исходного кода)
-     * @param code - осходный код
-     * @param isJava - предмет
-     * @param id
-     * @return (недоработано)
-     */
-    public static boolean testsExecute(String code, boolean isJava, String id){
-        return new Tester(code, isJava, id).compareOutput(true);
-    }
-
-    /**
-     * Запуск тестирования (в виде исполняемого файла)
-     * @param labFile исполняемый файл
-     * @param isJava - предмет
-     * @param id
-     * @return (недоработано)
-     */
-    public static boolean testsExecute(File labFile, boolean isJava, String id){
-        return new Tester(labFile, isJava, id).compareOutput(false);
+    public static boolean labTestExecute(File labFile, String code, boolean isJava, Integer userId, String subject, Integer term,
+                                 Integer labNumber){
+        Tester tester;
+        if (code != null){
+            tester = new Tester(code, isJava, userId, subject, term, labNumber);
+            tester.compareOutput(true);
+        } else if (labFile != null) {
+            tester = new Tester(labFile, isJava, userId, subject, term, labNumber);
+            tester.compareOutput(false);
+        } else {
+            return false;
+        }
+        tester.sendResult();
+        return tester.isCorrected;
     }
 
 }

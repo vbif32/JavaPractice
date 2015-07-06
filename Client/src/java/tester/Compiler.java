@@ -17,7 +17,7 @@ public class Compiler {
             System.out.println("    There is no code.");
             return null;
         }
-        File tempLabFile = new File("labFile.cpp");
+        File tempLabFile = new File("labFile.cpp"); //указать путь
         String compileError = null;
         BufferedReader eis;
         String newFileAbsolutePath = (tempLabFile.getAbsolutePath()).replace(".cpp", ".out");
