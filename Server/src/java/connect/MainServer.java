@@ -1,6 +1,7 @@
 package connect;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -34,7 +35,7 @@ public class MainServer {
         System.out.println("Connected");
 
         //Открывает новый поток для клиента
-        Thread chanelThread = new Thread(new ServerChanel(clientSocket));
+        Thread chanelThread = new Thread(new ServerChannel(clientSocket));
         chanelThread.start();
 
         if (!isServerStopped)
@@ -46,11 +47,19 @@ public class MainServer {
         isServerStopped = true;
     }
 
+    public void createLogFile(String fullFileName) throws IOException {
+        File logFile = new File(fullFileName);
+        if(logFile.exists())
+            logFile = logFile.getAbsoluteFile();
+        else
+            logFile.createNewFile();
+    }
 
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args) throws IOException{
         MainServer server = new MainServer(444);
+        server.createLogFile("C:\\Users\\Пользователь\\Documents\\ServerLog.txt");
         server.startServer();
+
     }
 
 
