@@ -1,4 +1,7 @@
-package shed;
+package shed.queryResult;
+
+import shed.QueryResult;
+import shed.QueryResults;
 
 /**
  * Created by Dartaan on 01.07.2015.
@@ -10,11 +13,12 @@ public class User implements QueryResult {
 
     public User() {}
 
-    public int id; // идентификатор доступа в системе
+    public Integer id; // идентификатор доступа в системе
     public String surname;  // Фамилия
     public String name;     // Имя
     public String secondName;// Отчество
-    public boolean isLecturer; // флаг является ли преподавателем!
+    public String group; // Группа
+    public Boolean isLecturer; // флаг является ли преподавателем!
 
     @Override
     public QueryResults getType() {
