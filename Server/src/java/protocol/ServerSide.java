@@ -1,6 +1,8 @@
 package protocol;
 
 import shed.*;
+import shed.query.*;
+import shed.queryResult.QueryError;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -181,12 +183,10 @@ public class ServerSide {
                     case 2:
                         q = new TestRequest(); break;
                     case 3:
-                        q = new TestResult(); break;
+                        q = new TestSubmit(); break;
                     case 4:
                         q = new StatsRequest(); break;
                     case 5:
-                        q = new HelpRequest(); break;
-                    case 6:
                         q = new ErrorReceived(); break;
                     default:
                         out.write(23); out.flush(); continue;

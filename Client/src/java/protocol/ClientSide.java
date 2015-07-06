@@ -1,6 +1,7 @@
 package protocol;
 
 import shed.*;
+import shed.queryResult.*;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -162,8 +163,6 @@ public class ClientSide {
                         qr = new LabResult(); break;
                     case 4:
                         qr = new Stats(); break;
-                    case 5:
-                        qr = new Help(); break;
                     default:
                         out.write(23); out.flush(); continue;
                 }
