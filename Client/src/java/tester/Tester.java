@@ -67,7 +67,7 @@ public class Tester {
         return labOutput.contains(testOutput);
     }
 
-    private static String readFile(File file){
+    protected static String readFile(File file){
         String result = "";
         BufferedReader br = null;
         try {
