@@ -10,7 +10,7 @@ import java.sql.Date;
 //класс со всеми данными Студента(кроме log/pas) из БД (User + массив дат сдачи)
 public class StudentResult extends User implements QueryResult {
 
-    public ArrayList <Date> dates;
+    public ArrayList <Date> dates;//даты сдачи лабораторных (null = не сдана)
 
     public StudentResult(){
         dates=new ArrayList<Date>();

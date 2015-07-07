@@ -66,7 +66,7 @@ public class DatabaseManager {
         }
     }
     //функция проверки аккаунта
-    public static boolean verifyAccount(String login, String password){
+    public static User verifyAccount(String login, String password){
         return (new UserDataHandler(DatabaseConnection).VerifyAccount(login,password));
     }
 
