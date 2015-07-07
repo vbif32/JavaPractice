@@ -375,10 +375,10 @@ public class Window_s {
         //ВЫБОР ЗАГРУЗКИ
         final HBox choose = new HBox();
         choose.setSpacing(10);
-        final Button chooseCode = new Button("Загружать код");
-        final Button chooseFile = new Button("Загружать файл");
+        final Button chooseCode = new Button("Проверять код");
+        final Button chooseFile = new Button("Проверять файл");
         final int[] result = {0};
-        final Label label = new Label("Выберите вариант загрузки");
+        final Label label = new Label("Выберите вариант проверки");
         chooseCode.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -399,7 +399,7 @@ public class Window_s {
         chooseFile.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                chooseFile.setText("Проверять файл");
+                chooseFile.setText("Проверяется файл");
                 chooseFile.setStyle("-fx-text-decoration: underline; -fx-background-color: linear-gradient(rgba(0, 98, 184, 0.5), rgba(0, 98, 184, 0.9));" +
                         " radial-gradient(center 50% -30%, radius 200%, #0080f0 30%, #00498a 50%);");
                 result[0]=2;
@@ -487,7 +487,7 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (result[0]==0)
-                    mistakesInCode.setText("Выберите вариант загрузки");
+                    mistakesInCode.setText("Выберите вариант проверки");
                 else
                 {
                     if (forTest.subject == 666) //если не выбран предмет
