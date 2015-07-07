@@ -4,9 +4,14 @@ import com.sun.org.apache.xpath.internal.SourceTree;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import protocol.ClientSide;
 import shed.*;
+import shed.QueryResult;
+import shed.queryResult.User;
 import shed.queryResult.*;
 import shed.query.*;
 
+import gui.LocalUser;
+
+import javax.jws.soap.SOAPBinding;
 import java.lang.*;
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +31,27 @@ public class ConnectToServer {
 
     int serverPort;
     String address;
+    /*
+    public Integer id; // идентификатор доступа в системе
+    public String surname;  // Фамилия
+    public String name;     // Имя
+    public String secondName;// Отчество
+    public String group; // Группа
+    public Boolean isLecturer;
+    */
+    User SaveFromServer ;
+    QueryError Error;
 
-    QueryResult SaveFromServer;
+    /*
+    SaveFromServer.surname=" ";
 
+    User user=new User();
+    user.group=group;
+    user.name=name;
+    user.surname=surname;
+    user.secondName=secondName;
+    user.isLecturer=isLecturer;
+    */
     public boolean TryToConnect()
     {
         try
@@ -59,11 +82,12 @@ public class ConnectToServer {
         address = ip;
     }
 
-    public boolean  LoginIn(Query query)
+    public boolean  LoginIn(Query query) //Готово
     {
         if(query.getClass().equals(LoginApply.class))
         {
-
+            return true; //Для тестирования GUI
+            /*
             try
             {
                 System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
@@ -87,23 +111,23 @@ public class ConnectToServer {
             {
                 e.printStackTrace();
             }
+            */
 
         }
         else
         {
-            SaveFromServer = new QueryError("Not LoginApply class");
+            Error = new QueryError("Not LoginApply class");
 
             return false;
         }
-
-        SaveFromServer = new QueryError("Endless error...");
-        return false;
     }
 
-    public Boolean RegisterUser(Query query)
+    public Boolean RegisterUser(Query query) //Готово
     {
         if(query.getClass().equals(RegisterApply.class))
         {
+            return true; //Для тестирования GUI
+            /*
             try
             {
                 System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
@@ -128,27 +152,32 @@ public class ConnectToServer {
             {
                 e.printStackTrace();
             }
-
+            */
         }
         else
         {
-            SaveFromServer = new QueryError("Not RegisterApply class");
+            Error = new QueryError("Not RegisterApply class");
 
             return false;
         }
 
-        SaveFromServer = new QueryError("Endless error...");
-        return false;
     }
 
     public User UserRequest()
     {
-        return (User)SaveFromServer;
+        SaveFromServer = new User();
+
+        SaveFromServer.group="ИИБ-1-14";
+        SaveFromServer.name="Вася";
+        SaveFromServer.surname="Петин";
+        SaveFromServer.secondName="Петюнин";
+        SaveFromServer.isLecturer=true;
+        return SaveFromServer;
     }
 
     public String ErrorRequest()
     {
-        return ((QueryError)SaveFromServer).message;
+        return ((QueryError)Error).message;
     }
 
     public static void main(String[] args) {
