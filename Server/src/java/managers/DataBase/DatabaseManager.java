@@ -54,7 +54,7 @@ public class DatabaseManager {
     private  PreparedStatement stm;
     private ResultSet res;
 
-    DatabaseManager(){
+    public DatabaseManager(){
         ConnectToDB();
     }
 
