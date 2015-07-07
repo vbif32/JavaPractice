@@ -6,10 +6,11 @@ import java.io.File;
  * Created by Jay on 05.07.2015.
  */
 public class ForTest {
-    public File laba; // файл с лабой
-    public String code; // код
-    public int term=666; // номер семестра
-    public int number=666; // номер лабы
-    public int variant=666; //номер варианта
-    public int subject = 666; //0 - Программирование, 1 - АиСД
+    public File laba; // пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
+    public String code; // пїЅпїЅпїЅ
+    public int term=666; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    public int number=666; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+    public int variant=666; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    public int subject = 666; //0 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, 1 - пїЅпїЅпїЅпїЅ
+    public int userId = 666;
 }
