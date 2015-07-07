@@ -1,5 +1,7 @@
 package gui;
 
+import connect.ConnectToServer;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -8,11 +10,13 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
+import shed.query.LoginApply;
+import shed.query.RegisterApply;
+import shed.queryResult.User;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Jay on 02.07.2015.
@@ -24,9 +28,9 @@ public class Window_s {
     protected VBox visibleField;
     boolean check=false;
     int page=1; //номер окна. 1-вход, 2-регистрация,3-для студентов,4-для перподавателей
-    LocalUser user = new LocalUser();
+    User newUser = new User();
     ForTest forTest = new ForTest();
-    //shed.User user = new shed.User();
+    ConnectToServer connect = new ConnectToServer();
 
     public Window_s() {
         VBoxBuilder vboxBld = VBoxBuilder.create();
@@ -36,22 +40,22 @@ public class Window_s {
         scnBld.stylesheets(Main.class.getResource("window.css").toExternalForm());
         scnBld.height(550);
         scnBld.width(850);
-        Window(0);
+        Window();
         scnBld.root(visibleField);
         visibleField.layout();
         main = scnBld.build();
     }
 
-    public void Window (int code) //смена окон
+    public void Window () //смена окон
     {
         System.out.println(page + " page");
         if (page==1)
         {
-            first(code);
+            first();
         }
         else if (page==2)
         {
-            registration(code);
+            registration();
         }
         else if (page==3)
         {
@@ -62,8 +66,7 @@ public class Window_s {
         }
     }
 
-    public void first(int code) //Окно входа, code - код для ошибки. 0-нет, 1 - неверное введены данные,
-    // 2 - нет соединения с интернетом
+    public void first() //Окно входа
     {
         visibleField.getChildren().clear();
         //Логин
@@ -84,33 +87,42 @@ public class Window_s {
         forPassword.getChildren().addAll(password, textForPassword);
         forPassword.setSpacing(6);
         forPassword.setAlignment(Pos.CENTER);
+        //Комментарии
+        HBox comments = new HBox();
+        final Label label = new Label();
+
         // Кнопки
         HBox forButtons = new HBox();
         Button enter = new Button("Вход");
-        enter.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>(){
+        enter.setOnAction(new EventHandler<ActionEvent>(){
                               @Override
                               public void handle(javafx.event.ActionEvent actionEvent) {
-                                  boolean checkI = true; //СОЕДИНЕНИЕ С ИНТЕРНЕТОМ
-                                  if (!checkI) //нет соединения
-                                  {
-                                      Window(2);
-                                  } else {
-
                                       if ((textForLogin.getText().isEmpty())||(textForPassword.getText().isEmpty())) {
                                           check = false;
+                                          label.setText("Введите данные");
+                                          label.setStyle("-fx-font-style:italic;");
                                       }
                                       else if((!textForLogin.getText().matches("\\w{3,}"))||(!textForPassword.getText().matches("\\w{6,}")))
                                       {
                                           check=false;
+                                          label.setText("Неверно введены данные");
+                                          label.setStyle("-fx-font-style:italic;");
                                       }
                                       else {
-                                          user.login = textForLogin.getText();
-                                          user.password = textForPassword.getText();
-                                          //ПРОВЕРКА, ЕСТЬ ЛИ ТАКИЕ В БД, ЕСЛИ ЕСТЬ - TRUE
-                                          check = true; //false
+                                          LoginApply loginApply = new LoginApply();
+                                          loginApply.login = textForLogin.getText();
+                                          loginApply.password = textForPassword.getText();
+                                          check = connect.LoginIn(loginApply);
+                                          if (check) {
+                                              newUser = connect.UserRequest();
+                                              label.setText("");
+                                              page = 3;
+                                              Window();
+                                          } else {
+                                              label.setText(connect.ErrorRequest());
+                                              label.setStyle("-fx-font-style:italic;");
+                                          }
                                       }
-                                      Window(3);
-                                  }
                               }
                           }
         );
@@ -119,50 +131,22 @@ public class Window_s {
         registration.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                boolean checkI = true; //ЗАМЕНА НА ФУНКЦИЮ
-                if (!checkI) //нет соединения
-                {
-                    Window(2);
-                } else {
-                    page = 2;
-                    Window(0);
-                }
+                page = 2;
+                Window();
             }
         });
+
+        comments.getChildren().addAll(label);
         forButtons.getChildren().addAll(enter, registration);
         forButtons.setSpacing(10);
         forButtons.setTranslateX(373);
 
-        //Комментарии
-        HBox comments = new HBox();
-        if ((check)&&(code!=0))
-        {
-            page=3;
-            Window(0);
-        }
-        else {
-            if (code == 2) {
-                Label label = new Label("Нет соединения с Интернетом");
-                label.setStyle("-fx-font-style:italic;");
-                comments.getChildren().add(label);
-            }
-            else
-            if ((!check)&&(code!=0)) {
-                Label l = new Label("Пользователь не существует или неверно введены логин/пароль");
-                l.setAlignment(Pos.CENTER_RIGHT);
-                l.setStyle("-fx-font-style:italic;");
-                comments.getChildren().add(l);
-            }
-            else comments.getChildren().add(new Label());
             comments.setAlignment(Pos.CENTER);
-
             visibleField.getChildren().addAll(forLogin, forPassword, comments, forButtons);
             visibleField.setAlignment(Pos.CENTER);
         }
-    }
 
-    public void registration (int code) //Окно регистрации, code - код для ошибки. 0-нет
-    // 2 - нет соединения с интернетом, 3 - успешно
+    public void registration () //Окно регистрации
     {
         visibleField.getChildren().clear();
         //Имя
@@ -191,7 +175,7 @@ public class Window_s {
         textForPatronymic.setPromptText("Иванович");
         textForPatronymic.setEditable(true);
         forPatronymic.getChildren().addAll(patronymic, textForPatronymic);
-        forPatronymic.setSpacing(6);
+        forPatronymic.setSpacing(14);
         forPatronymic.setAlignment(Pos.CENTER);
         //Группа
         HBox forGroup = hBoxBuilder.build();
@@ -220,43 +204,59 @@ public class Window_s {
         forPassword.getChildren().addAll(password, textForPassword);
         forPassword.setSpacing(24);
         forPassword.setAlignment(Pos.CENTER);
+
+        visibleField.getChildren().addAll(forName, forSurname, forPatronymic, forGroup, forLogin, forPassword);
+
+        final Label label = new Label();
+
         // Кнопки
         HBox forButtons = hBoxBuilder.build();
         Button registration = new Button("Зарегистрироваться");
-        registration.setOnAction(new javafx.event.EventHandler<javafx.event.ActionEvent>() {
+        registration.setOnAction(new EventHandler<ActionEvent>() {
                                      @Override
                                      public void handle(javafx.event.ActionEvent actionEvent) {
-                                         boolean checkI = true; //ЗАМЕНА НА ФУНКЦИЮ
-                                         if (!checkI) //нет соединения
-                                         {
-                                             Window(2);
-                                         } else {
 
                                              if ((textForLogin.getText().isEmpty()) || (textForName.getText().isEmpty()) || (textForSurname.getText().isEmpty()) ||
                                                      (textForGroup.getText().isEmpty()) || (textForPassword.getText().isEmpty()) || (textForPatronymic.getText().isEmpty())) {
                                                  check = false;
+                                                 label.setText("Неверно введены данные");
+                                                 label.setStyle("-fx-font-style:italic;");
+
                                              } else if ((!textForName.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) || (!textForSurname.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) ||
                                                      (!textForPatronymic.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) || (!textForGroup.getText().matches("([А-Я]|Ё){3}\\-\\d+\\-[1-9]{2}"))
                                                      || (!textForLogin.getText().matches("\\w{3,}")) || (!textForPassword.getText().matches("\\w{6,}"))) {
                                                  check = false;
+                                                 label.setText("Неверно введены данные");
+                                                 label.setStyle("-fx-font-style:italic;");
                                              } else {
-                                                 user.name = textForName.getText();
-                                                 user.surname = textForSurname.getText();
-                                                 user.secondName = textForPatronymic.getText();
-                                                 user.group = textForGroup.getText();
-                                                 user.login = textForLogin.getText();
-                                                 user.password = textForPassword.getText();
-                                                 user.isLecturer = false;
-                                                 //!!!СРАВНИТЬ С БД!!! ЕСЛИ НЕТ ВСЕ ОКБ ИНАЧЕ CHECK=FALSE
-                                                 check = true;
-                                                 System.out.println(user.name);
-                                                 System.out.println(user.surname);
-                                                 System.out.println(user.group);
-                                                 System.out.println(user.login);
-                                                 System.out.println(user.password);
+                                                 System.out.println("все ок");
+                                                 RegisterApply registerApply = new RegisterApply();
+                                                 registerApply.isLecturer=false;
+                                                 registerApply.name=textForName.getText();
+                                                 registerApply.surname=textForSurname.getText();
+                                                 registerApply.secondName=textForPatronymic.getText();
+                                                 registerApply.group=textForGroup.getText();
+                                                 registerApply.login=textForLogin.getText();
+                                                 registerApply.password=textForPassword.getText();
+                                                 check = connect.RegisterUser(registerApply);
+                                                 if (check) {
+                                                     label.setText("Регистрация прошла успешно");
+                                                     label.setStyle("-fx-font-style:italic;");
+                                                     page=1;
+                                                     System.out.println("true");
+                                                     Window();
+                                                     /*try {
+                                                         TimeUnit.SECONDS.sleep(3);
+                                                     } catch (InterruptedException e) {
+                                                         e.printStackTrace();
+                                                     }*/
+                                                 }
+                                                 else
+                                                 {
+                                                     label.setText(connect.ErrorRequest());
+                                                     label.setStyle("-fx-font-style:italic;");
+                                                 }
                                              }
-                                             Window(3);
-                                         }
                                      }
                                  }
         );
@@ -265,58 +265,28 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 page = 1;
-                Window(0);
+                Window();
             }
         });
         forButtons.getChildren().addAll(registration, cancel);
         forButtons.setAlignment(Pos.CENTER);
         forButtons.setSpacing(10);
-        visibleField.getChildren().addAll(forName, forSurname, forPatronymic, forGroup, forLogin, forPassword);
-        if ((code==3)&&(check))
-        {
-            Label l =new Label("Регистрация прошла успешно");
-            l.setStyle("-fx-font-style:italic;");
-            visibleField.getChildren().add(l);
-            page=1;
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Window(0);
-        }
-        else {
-            if (code == 2) {
-                Label l =new Label("Нет соединения с Интернетом");
-                l.setStyle("-fx-font-style:italic;");
-                visibleField.getChildren().add(l);
-            }
 
-            else if ((!check)&&(code!=0)) {
-                Label l =new Label("Неверно введены данные или пользователь уже существует");
-                l.setStyle("-fx-font-style:italic;");
-                visibleField.getChildren().add(l);
-            }
-            else
-            {
-                visibleField.getChildren().add(new Label());
-            }
-            visibleField.getChildren().add(forButtons);
-            visibleField.setAlignment(Pos.CENTER);
-        }
+        visibleField.getChildren().add(label);
+        visibleField.getChildren().add(forButtons);
+        visibleField.setAlignment(Pos.CENTER);
     }
 
     public void forStudents ()
     {
-        System.out.println("Students");
         visibleField.getChildren().clear();
         VBoxBuilder vboxBld = VBoxBuilder.create();
         VBox leftVBox = vboxBld.build();
         VBox rightVBox = vboxBld.build();
 
-        rightVBox.setMinWidth(200);
-        leftVBox.getChildren().addAll(new Label(user.surname + " " + user.name + " " + user.secondName, new Label("\n")));
-        leftVBox.getChildren().addAll(new Label(user.group));
+        rightVBox.setMinWidth(230);
+        leftVBox.getChildren().addAll(new Label(newUser.surname + " " + newUser.name + " " + newUser.secondName, new Label("\n")));
+        leftVBox.getChildren().addAll(new Label(" " + newUser.group));
         rightVBox.getChildren().addAll(new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"));
 
         final GridPane pane = new GridPane();
@@ -330,45 +300,75 @@ public class Window_s {
 
         final TextArea textArea = new TextArea();
         textArea.setMinSize(500,300);
-        textArea.setMaxSize(500, 300);
+        textArea.setMaxSize(500,300);
         textArea.setEditable(true);
         leftVBox.getChildren().add(textArea);
 
-        final Label testResult = new Label(""); //НЕ ЗАБЫТЬ ИЗМЕНЯТЬ ТЕКСТ
-        testResult.setMinSize(200, 10);
+        final Label testResult = new Label("");
+        testResult.setMinSize(230, 10);
         testResult.setStyle("-fx-background-color: rgba(255, 255, 255, 0.9); -fx-border-color: black; -fx-border: 3px;");
         testResult.setAlignment(Pos.CENTER);
         rightVBox.getChildren().addAll(testResult, new Label("\n"));
-        HBox sub = new HBox(12); // предмет
-        sub.setMaxSize(180,15);
-        HBox sem = new HBox(47); // семестр
-        sem.setMaxSize(180,15);
-        HBox task = new HBox(10); // лаба
-        task.setMaxSize(180,15);
-        HBox variant = new HBox(46); // вариант
-        variant.setMaxSize(180,15);
+        HBox sub = new HBox(10); // предмет
+        VBox one = new VBox();
+        one.setMaxWidth(56);
+        one.setMinWidth(56);
+        one.setAlignment(Pos.CENTER);
+        VBox two = new VBox();
+        HBox sem = new HBox(75); // семестр
+        VBox one_1 = new VBox();
+        one_1.setMaxWidth(70);
+        one_1.setMinWidth(70);
+        one_1.setAlignment(Pos.CENTER);
+        VBox two_1 = new VBox();
+        HBox task = new HBox(39); // лаба
+        VBox one_2 = new VBox();
+        one_2.setMaxWidth(106);
+        one_2.setMinWidth(106);
+        one_2.setAlignment(Pos.CENTER);
+        VBox two_2 = new VBox();
+        HBox variant = new HBox(75); // вариант
+        VBox one_3 = new VBox();
+        one_3.setMaxWidth(70);
+        one_3.setMinWidth(70);
+        one_3.setAlignment(Pos.CENTER);
+        VBox two_3 = new VBox();
 
         Label subject = new Label("Предмет ");
         Label term = new Label("Семестр № ");
         Label lab = new Label("Лабораторная № ");
         Label var = new Label("Вариант № ");
-        ComboBox forSubject = new ComboBox();
+        final ComboBox forSubject = new ComboBox();
         final ComboBox forTerm = new ComboBox();
         ComboBox forLab = new ComboBox();
         ComboBox forVariant = new ComboBox();
-        forSubject.setMaxSize(100, 18);
-        forTerm.setMaxSize(50, 18);
-        forLab.setMaxSize(50, 18);
-        forVariant.setMaxSize(50, 18);
-        forSubject.setMinSize(100, 18);
-        forTerm.setMinSize(50, 18);
-        forLab.setMinSize(50, 18);
-        forVariant.setMinSize(50, 18);
+
+        forSubject.setMaxSize(140, 25);
+        forTerm.setMaxSize(60, 25);
+        forLab.setMaxSize(60, 25);
+        forVariant.setMaxSize(60, 25);
+        forSubject.setMinSize(140, 25);
+        forTerm.setMinSize(60, 25);
+        forLab.setMinSize(60, 25);
+        forVariant.setMinSize(60, 25);
+
+        one.getChildren().add(subject);
+        two.getChildren().add(forSubject);
+        one_1.getChildren().add(term);
+        two_1.getChildren().add(forTerm);
+        one_2.getChildren().add(lab);
+        two_2.getChildren().add(forLab);
+        one_3.getChildren().add(var);
+        two_3.getChildren().add(forVariant);
+
+        forSubject.getItems().addAll("Программирование", "АиСД");
+
+
         //!!!ЗАПОЛНИТЬ!!!
-        sub.getChildren().addAll(subject, forSubject);
-        sem.getChildren().addAll(term, forTerm);
-        task.getChildren().addAll(lab, forLab);
-        variant.getChildren().addAll(var, forVariant);
+        sub.getChildren().addAll(one, two);
+        sem.getChildren().addAll(one_1,two_1);
+        task.getChildren().addAll(one_2, two_2);
+        variant.getChildren().addAll(one_3, two_3);
         rightVBox.getChildren().addAll(sub, new Label("\n"), sem, new Label("\n"), task, new Label("\n"), variant);
         leftVBox.getChildren().add(new Label("\n"));
 
@@ -383,14 +383,14 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 chooseCode.setText("Проверяется код");
-                chooseCode.setStyle("-fx-text-decoration: underline; -fx-background-color: linear-gradient(rgba(0, 98, 184, 0.5), rgba(0, 98, 184, 0.9));" +
+                chooseCode.setStyle("-fx-background-color: linear-gradient(rgba(0, 98, 184, 0.5), rgba(0, 98, 184, 0.9));" +
                         "radial-gradient(center 50% -30%, radius 200%, #0080f0 30%, #00498a 50%);");
                 result[0]=1;
                 label.setText("");
                 if (chooseFile.getText().equals("Проверяется файл"))
                 {
                     chooseFile.setText("Проверять файл");
-                    chooseFile.setStyle("-fx-text-decoration: none; -fx-background-color: linear-gradient(rgba(36, 153, 255, 0.5), rgba(36, 153, 255, 0.9));" +
+                    chooseFile.setStyle("-fx-background-color: linear-gradient(rgba(36, 153, 255, 0.5), rgba(36, 153, 255, 0.9));" +
                             "radial-gradient(center 50% -30%, radius 200%, #57b0ff 30%, #0080f0 50%);");
                 }
             }
@@ -400,14 +400,14 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 chooseFile.setText("Проверяется файл");
-                chooseFile.setStyle("-fx-text-decoration: underline; -fx-background-color: linear-gradient(rgba(0, 98, 184, 0.5), rgba(0, 98, 184, 0.9));" +
+                chooseFile.setStyle("-fx-background-color: linear-gradient(rgba(0, 98, 184, 0.5), rgba(0, 98, 184, 0.9));" +
                         " radial-gradient(center 50% -30%, radius 200%, #0080f0 30%, #00498a 50%);");
                 result[0]=2;
                 label.setText("");
                 if (chooseCode.getText().equals("Проверяется код"))
                 {
                     chooseCode.setText("Проверять код");
-                    chooseCode.setStyle("-fx-text-decoration: none; -fx-background-color: linear-gradient(rgba(36, 153, 255, 0.5), rgba(36, 153, 255, 0.9));" +
+                    chooseCode.setStyle("-fx-background-color: linear-gradient(rgba(36, 153, 255, 0.5), rgba(36, 153, 255, 0.9));" +
                             "radial-gradient(center 50% -30%, radius 200%, #57b0ff 30%, #0080f0 50%);");
                 }
             }
@@ -426,10 +426,10 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 JFileChooser laba = new JFileChooser();
-                if (forTest.subject != 666) { //что-то выбрано
+                if (forTest.subject!=null) { //что-то выбрано
                     int rezult = laba.showDialog(null, "Открыть файл");
                     if (rezult == JFileChooser.APPROVE_OPTION) {
-                        if (forTest.subject == 0)
+                        if (forTest.subject.equals("Программирование"))
                             laba.addChoosableFileFilter(new FileFilter() {
                                 @Override
                                 public boolean accept(File f) {
@@ -443,7 +443,7 @@ public class Window_s {
                                     return ".jar";
                                 }
                             });
-                        else if (forTest.subject == 1)
+                        else if (forTest.subject.equals("АиСД"))
                             laba.addChoosableFileFilter(new FileFilter() {
                                 @Override
                                 public boolean accept(File f) {
@@ -473,9 +473,10 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 page = 1;
-                Window(0);
+                Window();
             }
         });
+
         //ЗАГРУЗИТЬ ТЕСТ
         Button toLoadTest = new Button("Запустить тест");
         final Label mistakesInCode = new Label();
@@ -490,15 +491,15 @@ public class Window_s {
                     mistakesInCode.setText("Выберите вариант проверки");
                 else
                 {
-                    if (forTest.subject == 666) //если не выбран предмет
+                    if (forTest.subject==null) //если не выбран предмет
                         mistakesInCom.setText("Выберите предмет");
-                    if (forTest.term == 666) // не выбран семестр
+                    if (forTest.term == -1) // не выбран семестр
                         mistakesInTerm.setText("Выберите семестр");
                     else mistakesInTerm.setText("");
-                    if (forTest.number == 666) // не выбран номер лабы
+                    if (forTest.number == -1) // не выбран номер лабы
                         mistakesInLab.setText("Выберите номер лабораторной");
                     else mistakesInLab.setText("");
-                    if (forTest.variant == 666) // не выбран вариант
+                    if (forTest.variant == -1) // не выбран вариант
                         mistakesInVar.setText("Выберите вариант");
                     else mistakesInVar.setText("");
                     if ((file[0] != null) || (!textArea.getText().isEmpty())) // если есть лаба
@@ -524,8 +525,6 @@ public class Window_s {
             }
         });
 
-
-
         rightVBox.getChildren().addAll(new Label("\n"), toLoadTest);
         rightVBox.getChildren().addAll(new Label("\n"), mistakesInCode, mistakesInCom, mistakesInTerm, mistakesInLab, mistakesInVar, new Label("\n"));
         rightVBox.getChildren().addAll(new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"),new Label("\n"));
@@ -535,6 +534,7 @@ public class Window_s {
         hBox.getChildren().add(exit);
         rightVBox.getChildren().add(hBox);
 
+        //pane.setGridLinesVisible(true);
         pane.setHgap(50);
         pane.addColumn(0, leftVBox);
         pane.addColumn(1, rightVBox);
@@ -544,6 +544,7 @@ public class Window_s {
     }
 
     public void forTeachers() {
+        visibleField.getChildren().clear();
         VBox main = new VBox();
         //ТАБЛИЧКА
         TableView firstTable = new TableView();
@@ -562,6 +563,7 @@ public class Window_s {
 
         Tab java = new Tab("Программирование");
         java.setClosable(false);
+        java.isDisabled();
 
         Tab cpp = new Tab("АиСД");
         cpp.setClosable(false);
@@ -594,6 +596,13 @@ public class Window_s {
             newTable.getColumns().add(laba);
         }
         t.setContent(newTable);
+
+        int numberOfStudents=3;
+        /*for (int i=0; i< numberOfStudents; numberOfStudents++)
+        {
+            TableRow student = new TableRow();
+
+        }*/
         //}
         //КОНЕЦ ТАБЛИЦЫ
 
