@@ -28,6 +28,24 @@ public class ConnectToServer {
 
     QueryResult SaveFromServer;
 
+    public boolean TryToConnect()
+    {
+        try
+        {
+            System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
+            s = new Socket(address, serverPort);
+
+            return true;
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
     public ConnectToServer() {
 
         serverPort = 6666;
