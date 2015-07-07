@@ -70,15 +70,7 @@ public class UserService {
         matcher=pattern.matcher(password);
         boolean pas_val=matcher.matches();
         if(pas_val && log_val==false){
-            if(DatabaseManager.verifyAccount(login,password)==true){
-                /*тут что-то должно быть*/
-                return new User();
-            }
-            else{
-                QueryError error=new QueryError();
-                error.message="Авторизация не удалась";
-                return error;
-            }
+            return DatabaseManager.verifyAccount(login,password);
         }
         else{
             QueryError error=new QueryError();
