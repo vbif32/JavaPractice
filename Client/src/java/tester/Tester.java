@@ -1,46 +1,36 @@
 package tester;
 
+import gui.ForTest;
+
 import java.io.*;
 
 public class Tester {
 
     /*!!!*/
+    ForTest labInf;
     private File labFile;
-    private boolean isJava;
     private File inputTestFile;
     private File outputTestFIle;
-
-    private Integer userId;
-    private String subject;
-    private Integer term;
-    private Integer labNumber;
     private boolean isCorrected;
 
-    private Tester(String code, boolean isJava, Integer userId, String subject, Integer term, Integer labNumber){
-        this.userId = userId;
-        this.subject = subject;
-        this.term = term;
-        this.labNumber = labNumber;
-        this.isJava = isJava;
+    private Tester(String code, ForTest labInf){
+        this.labInf = labInf;
+        String labId = labInf.subject + labInf.term + labInf.number + labInf.variant;
         File tempLabFile;
-        if (isJava) {
+        if (labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
             /*tempLabFile = new File("Client/src/tester/temp/labFile.jar");
             this.labFile = Compiler.compileJar(code, tempLabFile);
             tempLabFile.deleteOnExit();*/
-        } else {
-            this.labFile  = Compiler.compileCpp(code);
+        } else if (labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
+            this.labFile  = Compiler.compileCpp(code, labId);
         }
-        this.getTests(userId, subject, term, labNumber);
+        this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
     }
 
-    private Tester(File labFile, boolean isJava, Integer userId, String subject, Integer term, Integer labNumber){
-        this.userId = userId;
-        this.subject = subject;
-        this.term = term;
-        this.labNumber = labNumber;
-        this.isJava = isJava;
-        this.labFile = labFile;
-        this.getTests(userId, subject, term, labNumber);
+    private Tester(File labFile, ForTest labInf){
+        this.labInf = labInf;
+        this.labFile = labInf.laba;
+        this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
     }
 
     /**
@@ -50,7 +40,6 @@ public class Tester {
 
     }
 
-
     private void sendResult(){
 
     }
@@ -58,14 +47,21 @@ public class Tester {
     /**
      * Сравнение выходных данных программы с данными из теста
      */
-    private void compareOutput(boolean willDel){
+    private void compareOutput(){
         String labOutput = "";
-        String testOutput = readFile(this.outputTestFIle);
-        if (this.isJava){
-            labOutput = Launcher.getJavaOutput(this.labFile.getAbsolutePath(), this.inputTestFile, willDel);
+        if (this.labFile != null) {
+            if (this.labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
+                labOutput = Launcher.getJavaOutput(this.labFile.getAbsolutePath(), this.inputTestFile);
+            } else if (this.labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
+                labOutput = Launcher.getCppOutput(this.labFile.getAbsolutePath(), this.inputTestFile);
+            }
         } else {
-            labOutput = Launcher.getCppOutput(this.labFile.getAbsolutePath(), this.inputTestFile, willDel);
+            this.isCorrected = false;
+            System.out.println("File with lab not found.");
+            return;
         }
+        System.out.println("Reading test file (out): ");
+        String testOutput = readFile(this.outputTestFIle);
         System.out.println("-");
         System.out.println("Lab output:");
         System.out.println(labOutput);
@@ -85,13 +81,17 @@ public class Tester {
     }
 
     protected static String readFile(File file){
+        if (file == null){
+            System.out.println("File not found");
+            return null;
+        }
         String result = "";
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(file));
         } catch (FileNotFoundException e) {
 //            e.printStackTrace();
-            System.out.println("Test file not found");
+            System.out.println("File not found");
             System.out.println("------------");
             return null;
         }
@@ -108,15 +108,14 @@ public class Tester {
         return result;
     }
 
-    public static boolean labTestExecute(File labFile, String code, boolean isJava, Integer userId, String subject, Integer term,
-                                 Integer labNumber){
+    public static boolean labTestExecute(ForTest labInf){
         Tester tester;
-        if (code != null){
-            tester = new Tester(code, isJava, userId, subject, term, labNumber);
-            tester.compareOutput(true);
-        } else if (labFile != null) {
-            tester = new Tester(labFile, isJava, userId, subject, term, labNumber);
-            tester.compareOutput(false);
+        if (!labInf.code.equals("") && labInf.code != null){
+            tester = new Tester(labInf.code, labInf);
+            tester.compareOutput();
+        } else if (labInf.laba != null) {
+            tester = new Tester(labInf.laba, labInf);
+            tester.compareOutput();
         } else {
             return false;
         }

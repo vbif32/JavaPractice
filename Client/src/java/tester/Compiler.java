@@ -10,14 +10,14 @@ public class Compiler {
      * @param code исходный код
      * @return
      */
-    public static File compileCpp(String code){
+    public static File compileCpp(String code, String id){
         System.out.println("------------");
         System.out.println("Compiling cpp file");
         if (code == null){
             System.out.println("    There is no code.");
             return null;
         }
-        File tempLabFile = new File("labFile.cpp"); //указать путь
+        File tempLabFile = new File("Client/src/java/tester/temp/labFile" + id + ".cpp"); //!!!указать путь
         String compileError = null;
         BufferedReader eis;
         String newFileAbsolutePath = (tempLabFile.getAbsolutePath()).replace(".cpp", ".out");

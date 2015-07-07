@@ -24,7 +24,7 @@ public class Window_s {
     protected VBox visibleField;
     boolean check=false;
     int page=1; //номер окна. 1-вход, 2-регистрация,3-для студентов,4-для перподавателей
-    User user = new User();
+    LocalUser user = new LocalUser();
     ForTest forTest = new ForTest();
     //shed.User user = new shed.User();
 
