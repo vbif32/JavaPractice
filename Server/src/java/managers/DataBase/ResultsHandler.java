@@ -55,7 +55,7 @@ class ResultsHandler {
                     res2 = stm.executeQuery();
                     res2.next();
                     try{res2.getInt("subject_id");
-                        for(int i=3;i<=DefinedLabs;i++){
+                        for(int i=3;i<=DefinedLabs+2;i++){
                             try{
                                 result.dates.add(res2.getDate(i));
                             }catch(Exception e){

@@ -12,7 +12,7 @@ public class StudentResult extends User implements QueryResult {
 
     public ArrayList <Date> dates;
 
-    StudentResult(){
+    public StudentResult(){
         dates=new ArrayList<Date>();
     }
 
