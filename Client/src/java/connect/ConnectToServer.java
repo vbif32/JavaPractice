@@ -19,6 +19,7 @@ import java.util.Date;
 /**
  * Created by Andrey on 06.07.2015.
  *
+ * Сори все кто ждал
  */
 public class ConnectToServer {
     Socket s;
