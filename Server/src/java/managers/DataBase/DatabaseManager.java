@@ -66,12 +66,12 @@ public class DatabaseManager {
         }
     }
     //функция проверки аккаунта
-    public boolean verifyAccount(String login,String password){
+    public static boolean verifyAccount(String login, String password){
         return (new UserDataHandler(DatabaseConnection).VerifyAccount(login,password));
     }
 
     //функция вноса данных пользователя в БД
-    public boolean addUser(User user,String login,String password){
+    public static boolean addUser(User user, String login, String password){
         return(new UserDataHandler(DatabaseConnection).AddUser(user,login,password));
     }
 
