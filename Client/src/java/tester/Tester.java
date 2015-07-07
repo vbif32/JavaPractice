@@ -12,17 +12,18 @@ public class Tester {
     private File inputTestFile;
     private File outputTestFIle;
     private boolean isCorrected;
+    String labId;
 
     private Tester(String code, ForTest labInf){
         this.labInf = labInf;
-        String labId = labInf.subject + labInf.term + labInf.number + labInf.variant;
+        this.labId = "_" + labInf.term + "_" +  labInf.number + "_" + labInf.variant;
         File tempLabFile;
         if (labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
             /*tempLabFile = new File("Client/src/tester/temp/labFile.jar");
             this.labFile = Compiler.compileJar(code, tempLabFile);
             tempLabFile.deleteOnExit();*/
         } else if (labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
-            this.labFile  = Compiler.compileCpp(code, labId);
+            this.labFile  = Compiler.compileCpp(code, this.labId);
         }
         this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
     }
@@ -108,6 +109,22 @@ public class Tester {
         return result;
     }
 
+    private static void deleteDirectory(File theDir){
+        if( theDir.exists()) {
+            File[] files = theDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        deleteDirectory(file);
+                    } else {
+                        file.delete();
+                    }
+                }
+            }
+            theDir.delete();
+        }
+    }
+
     public static boolean labTestExecute(ForTest labInf){
         Tester tester;
         if (!labInf.code.equals("") && labInf.code != null){
@@ -120,6 +137,12 @@ public class Tester {
             return false;
         }
         tester.sendResult();
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+//            e.printStackTrace();
+        }
+        deleteDirectory(new File("temp"));
         return tester.isCorrected;
     }
 

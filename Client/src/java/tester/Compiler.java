@@ -5,6 +5,25 @@ import java.util.List;
 
 public class Compiler {
 
+    private static void createFolder(){
+        File theDir = new File("temp");
+        if (!theDir.exists()) {
+            System.out.println("creating temp directory");
+            boolean result = false;
+
+            try{
+                theDir.mkdir();
+                result = true;
+            }
+            catch(SecurityException se){
+                //
+            }
+            if(result) {
+                System.out.println("DIR created");
+            }
+        }
+    }
+
     /**
      * Компиляция cpp файла при помощи g++
      * @param code исходный код
@@ -17,7 +36,8 @@ public class Compiler {
             System.out.println("    There is no code.");
             return null;
         }
-        File tempLabFile = new File("Client/src/java/tester/temp/labFile" + id + ".cpp"); //!!!указать путь
+        createFolder();
+        File tempLabFile = new File("temp/labFile" + id + ".cpp"); //!!!указать путь
         String compileError = null;
         BufferedReader eis;
         String newFileAbsolutePath = (tempLabFile.getAbsolutePath()).replace(".cpp", ".out");
