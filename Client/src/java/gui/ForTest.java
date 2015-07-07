@@ -11,6 +11,6 @@ public class ForTest {
     public int term=666; // ����� ��������
     public int number=666; // ����� ����
     public int variant=666; //����� ��������
-    public int subject = 666; //0 - ����������������, 1 - ����
+    public String subject; //Программирование, АиСД
     public int userId = 666;
 }

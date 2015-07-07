@@ -15,13 +15,13 @@ public class Tester {
 
     private Tester(String code, ForTest labInf){
         this.labInf = labInf;
-        String labId = String.valueOf(labInf.term + labInf.subject + labInf.number);
+        String labId = labInf.subject + labInf.term + labInf.number + labInf.variant;
         File tempLabFile;
-        if (labInf.subject == 0) { //исправить идентификаторы предметов
+        if (labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
             /*tempLabFile = new File("Client/src/tester/temp/labFile.jar");
             this.labFile = Compiler.compileJar(code, tempLabFile);
             tempLabFile.deleteOnExit();*/
-        } else if (labInf.subject == 1) { //исправить идентификаторы предметов
+        } else if (labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
             this.labFile  = Compiler.compileCpp(code, labId);
         }
         this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
@@ -36,7 +36,7 @@ public class Tester {
     /**
      * Запрос тестов
      */
-    private void getTests(Integer userId, Integer subject, Integer term, Integer labNumber){
+    private void getTests(Integer userId, String subject, Integer term, Integer labNumber){
 
     }
 
@@ -50,9 +50,9 @@ public class Tester {
     private void compareOutput(){
         String labOutput = "";
         if (this.labFile != null) {
-            if (this.labInf.subject == 0) { //исправить идентификаторы предметов
+            if (this.labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
                 labOutput = Launcher.getJavaOutput(this.labFile.getAbsolutePath(), this.inputTestFile);
-            } else if (this.labInf.subject == 1) { //исправить идентификаторы предметов
+            } else if (this.labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
                 labOutput = Launcher.getCppOutput(this.labFile.getAbsolutePath(), this.inputTestFile);
             }
         } else {
