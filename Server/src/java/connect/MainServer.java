@@ -60,6 +60,8 @@ public class MainServer {
         server.createLogFile("C:\\Users\\Пользователь\\Documents\\ServerLog.txt");
         server.startServer();
 
+
+
     }
 
 
