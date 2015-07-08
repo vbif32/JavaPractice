@@ -10,9 +10,10 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
-import shed.query.LoginApply;
-import shed.query.RegisterApply;
-import shed.queryResult.User;
+
+import reply.User;
+import query.LoginRequest;
+import query.RegisterRequest;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -109,7 +110,7 @@ public class Window_s {
                                           label.setStyle("-fx-font-style:italic;");
                                       }
                                       else {
-                                          LoginApply loginApply = new LoginApply();
+                                          LoginRequest loginApply = new LoginRequest();
                                           loginApply.login = textForLogin.getText();
                                           loginApply.password = textForPassword.getText();
                                           check = connect.LoginIn(loginApply);
@@ -230,7 +231,7 @@ public class Window_s {
                                                  label.setStyle("-fx-font-style:italic;");
                                              } else {
                                                  System.out.println("все ок");
-                                                 RegisterApply registerApply = new RegisterApply();
+                                                 RegisterRequest registerApply = new RegisterRequest();
                                                  registerApply.isLecturer=false;
                                                  registerApply.name=textForName.getText();
                                                  registerApply.surname=textForSurname.getText();

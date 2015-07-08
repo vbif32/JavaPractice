@@ -3,11 +3,10 @@ package connect;
 import com.sun.org.apache.xpath.internal.SourceTree;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import protocol.ClientSide;
-import shed.*;
-import shed.QueryResult;
-import shed.queryResult.User;
-import shed.queryResult.*;
-import shed.query.*;
+
+import query.*;
+import reply.*;
+import transfer.*;
 
 import gui.LocalUser;
 
@@ -84,7 +83,7 @@ public class ConnectToServer {
 
     public boolean  LoginIn(Query query) //Готово
     {
-        if(query.getClass().equals(LoginApply.class))
+        if(query.getClass().equals(LoginRequest.class))
         {
             return true; //Для тестирования GUI
             /*
@@ -124,7 +123,7 @@ public class ConnectToServer {
 
     public Boolean RegisterUser(Query query) //Готово
     {
-        if(query.getClass().equals(RegisterApply.class))
+        if(query.getClass().equals(RegisterRequest.class))
         {
             return true; //Для тестирования GUI
             /*
