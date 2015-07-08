@@ -65,6 +65,16 @@ public class FileSystemManager {
         return true;
     }
 
+    /*создать пустую директорию
+    * pathDir - путь к ней.
+    * т е если хочешь создать D:\\Users\\IIB-1-14
+    * надо писать createEmptyDir("D:\\Users\\IIB-1-14")
+    * если этот путь занят, то ретернится false*/
+    static boolean createEmptyDir(String pathDir){
+        File newFold = new File(pathDir);
+            return newFold.mkdirs();}
+
+
     /*поиск файла
     * первый параметр - искомое имя ("input.txt", "NewFolder")
     * второй параметр - папка, в которой ведется поиск ("С:\\", "D:\\Programming\\Java")
@@ -95,6 +105,17 @@ public class FileSystemManager {
             }
         }
         return f.getName().equals(requiredName) ? f : null;
+    }
+
+    /*проверка на существование файла/папки в нужной директории
+    * isFileHere("input.txt", "D:\\Users\\IIB-1-14") проверяется, есть ли input.txt в папке группы*/
+    static boolean isFileHere(String requiredName, String initialPath) {
+        File f = new File(initialPath);
+        String[] list = f.list();
+        for (String currentName : list)
+            if (currentName.equals(requiredName))
+                return true;
+        return false;
     }
 
     /*копирование файлов, если на руках объекты
@@ -130,9 +151,15 @@ public class FileSystemManager {
     * если на руках путь того, откуда копируют и путь, куда это копируют.
     * если это разные вещи, то ретернится false
     * пока не пробовала копировать папки*/
-    static boolean copyFiles(String oldFilePath, String newFilePath){
+    static boolean copyFiles(String oldFilePath, String newFilePath) {
         File f1 = new File(oldFilePath);
         File f2 = new File(newFilePath);
         return f2.isFile() != f1.isFile() ? false : copyFiles(f1, f2);
     }
+
+/*
+    public static void main(String[] args) {
+    System.out.println(createEmptyDir("D:\\NewFolder"));
+    }
+*/
 }
