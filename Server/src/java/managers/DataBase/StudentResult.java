@@ -20,7 +20,7 @@ public class StudentResult extends User implements QueryResult {
         dates=new ArrayList<Date>(size);
     }
 
-
+    //TODO: Кирилл, замени этот класс на шэдовский. И он не должен расширять юзера.
     @Override
     public QueryResults getType() {
         return QueryResults.RESULT;
