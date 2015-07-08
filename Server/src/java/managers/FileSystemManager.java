@@ -59,8 +59,9 @@ public class FileSystemManager {
     * путь к которому path*/
     static boolean createEmptyFile(String path) {
         try (FileOutputStream newFileOrDir = new FileOutputStream(path)) {
-            }
-        catch (IOException ex) {return false;}
+        } catch (IOException ex) {
+            return false;
+        }
         return true;
     }
 
@@ -104,8 +105,7 @@ public class FileSystemManager {
         else {
             try (FileInputStream is = new FileInputStream(oldFile)) {
                 try {
-                    FileOutputStream os = new FileOutputStream(newFile);
-                    try {
+                    try (FileOutputStream os = new FileOutputStream(newFile)) {
                         byte[] buffer = new byte[4096];
                         int length;
                         while ((length = is.read(buffer)) > 0) {
@@ -113,8 +113,6 @@ public class FileSystemManager {
                         }
                     } catch (IOException ex) {
                         return false;
-                    } finally {
-                        os.close();
                     }
                 } finally {
                     is.close();
