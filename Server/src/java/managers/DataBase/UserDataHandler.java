@@ -15,28 +15,34 @@ class UserDataHandler {
         connection = connect;
     }
 
-    //проверяет если данный пользователь существует
+    //проверяет если данный пользователь существует,если да возвращает его данные
 
-    boolean VerifyAccount(String login,String password){
+    User VerifyAccount(String login,String password){
+        User user = new User();
         try{
             stm = connection.prepareStatement("SELECT password FROM user_data WHERE login = ?");
             stm.setString(1,login);
             res = stm.executeQuery();
             try{
                 String Pass = " ";
-                while(res.next()){
-                    Pass = res.getString("password");
-                }
+                res.next();
+                Pass = res.getString("password");
                 if(!Pass.equals(password)){
-                    return false;
+                    return null;
                 }
+                user.id=res.getInt("system_id");
+                user.isLecturer = res.getBoolean("is_lecturer");
+                user.group = res.getString("group_name");
+                user.surname = res.getString("surname");
+                user.name = res.getString("name");
+                user.secondName = res.getString("second_name");
             }catch(NullPointerException e){
-                return false;
+                return null;
             }
         }catch(SQLException e){
-            return false;
+            return null;
         }
-        return true;
+        return user;
     }
 
     //добавляет аккаунт в БД

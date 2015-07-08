@@ -7,8 +7,5 @@ public class LocalUser {
     public String surname;  // Фамилия
     public String name;     // Имя
     public String secondName;// Отчество
-    public String password; // Пароль
     public String group; // Группа
-    public String login; // Логин
-    public boolean isLecturer; // флаг является ли преподавателем!
 }

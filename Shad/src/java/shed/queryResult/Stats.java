@@ -2,6 +2,9 @@ package shed.queryResult;
 
 import shed.QueryResult;
 import shed.QueryResults;
+import shed.StudentResult;
+
+import java.util.ArrayList;
 
 /**
  * Created by Lognir on 04.07.2015.
@@ -9,8 +12,11 @@ import shed.QueryResults;
 public class Stats implements QueryResult {
 
     public Stats() {}
+    public Stats(ArrayList<StudentResult> al) {
+        list = al;
+    }
 
-    // TODO: smth with anything (c) Somebody
+    public ArrayList<StudentResult> list;
 
     @Override
     public QueryResults getType() {

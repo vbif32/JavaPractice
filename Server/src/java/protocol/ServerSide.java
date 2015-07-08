@@ -3,9 +3,12 @@ package protocol;
 import shed.*;
 import shed.query.*;
 import shed.queryResult.QueryError;
+import javax.json.*;
+import javax.json.stream.JsonParser;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
 import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
@@ -13,8 +16,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * Created by Lognir on 04.07.2015.
@@ -22,26 +25,105 @@ import java.util.regex.Pattern;
 public class ServerSide {
     public static final File PATH = new File("src/java/protocol"); //Тут нужен путь до папки, куда кидать присланные файлы.
 
+    public static int parseJsonString(Object obj, String string, ArrayList<File> files) throws ReflectiveOperationException {
+        JsonParser jp = Json.createParser(new StringReader(string));
+        Field currentField = null;
+        Class currentType = null;
+        List currentArray = null;
+        Object currentObject = obj;
+        Stack<Object> objectStack = new Stack<>();
+        Stack<Class> typeStack = new Stack<>();
+        Stack<List> arrayStack = new Stack<>();
+        int fieldsNum = 0;
+        if(jp.hasNext()) jp.next(); //убираем первый start_obj
+
+        while (jp.hasNext()) {
+            JsonParser.Event event = jp.next();
+            switch (event) {
+                case KEY_NAME:
+                    currentField = currentObject.getClass().getField(jp.getString());
+                    if(currentObject.equals(obj)) fieldsNum++; break;
+                case VALUE_STRING:
+                    if(!currentField.getType().equals(File.class))
+                        currentField.set(currentObject, currentField.getType().getConstructor(String.class).newInstance(jp.getString()));
+                    else {
+                        currentField.set(currentObject, File.class.getConstructor(File.class, String.class).newInstance(PATH, jp.getString()));
+                        files.add((File) currentField.get(currentObject));
+                    } break;
+                case VALUE_NULL:
+                    currentField.set(currentObject, null); break;
+                case START_ARRAY:
+                    if(currentArray != null) {
+                        arrayStack.push(currentArray);
+                        typeStack.push(currentType);
+                    }
+                    currentArray = (List)currentField.getType().getConstructor().newInstance();
+                    currentField.set(currentObject, currentArray);
+                    currentType = (Class)((ParameterizedType)currentField.getGenericType()).getActualTypeArguments()[0]; break;
+                case START_OBJECT:
+                    objectStack.push(currentObject);
+                    if(currentArray != null) {
+                        currentObject = currentType.getConstructor().newInstance();
+                        currentArray.add(currentObject);
+                    } else {
+                        Object tmp = currentField.getType().getConstructor().newInstance();
+                        currentField.set(currentObject, tmp);
+                        currentObject = tmp;
+                    } break;
+                case END_ARRAY:
+                    if(typeStack.size() > 0) currentType = typeStack.pop();
+                    if(arrayStack.size() > 0) currentArray = arrayStack.pop(); break;
+                case END_OBJECT:
+                    if(objectStack.size() > 0) currentObject = objectStack.pop(); break;
+            }
+        }
+        jp.close();
+        return fieldsNum;
+    }
+
+    public static JsonObjectBuilder getJasonObj(Object obj, ArrayList<File> files) throws IllegalAccessException {
+        JsonObjectBuilder job = Json.createObjectBuilder();
+        Field[] fields = obj.getClass().getFields();
+        for(Field f : fields) {
+            if(f.get(obj) == null)
+                job.add(f.getName(), JsonValue.NULL);
+            else if(f.getType().equals(File.class)) {
+                File file = (File)f.get(obj);
+                job.add(f.getName(), file.getName());
+                files.add(file);
+            }
+            else if(List.class.isAssignableFrom(f.getType())) {
+                job.add(f.getName(), getJasonArr(obj, f, files));
+            }
+            else {
+                job.add(f.getName(), (f.get(obj)).toString());
+            }
+        }
+        return job;
+    }
+    public static JsonArrayBuilder getJasonArr(Object obj, Field field, ArrayList<File> files) throws IllegalAccessException {
+        JsonArrayBuilder jab = Json.createArrayBuilder();
+        if(field.getType().isArray()) {
+            Object[] arr = (Object[])field.get(obj);
+            for (Object o : arr) {
+                jab.add(getJasonObj(o, files));
+            }
+        }
+        else if(List.class.isAssignableFrom(field.getType())) {
+            List list = (List)field.get(obj);
+            for(Object o : list) {
+                jab.add(getJasonObj(o, files));
+            }
+        }
+        return jab;
+    }
+
     public static boolean transmit(QueryResult queryResult, OutputStream out, InputStream in) {
         QueryResults type = queryResult.getType();
-        Field[] fields = queryResult.getClass().getFields();
-        StringBuilder msg = new StringBuilder();
         ArrayList<File> files = new ArrayList<>();
         try {
-            for(Field f : fields) {
-                if(!f.getType().equals(File.class))
-                    msg.append(f.getType().getName()).append('-').append(f.getName()).append('=').append(f.get(queryResult)).append(';');
-                else {
-                    msg.append(File.class.getName()).append('-').append(f.getName()).append('=');
-                    if(f.get(queryResult) != null) {
-                        msg.append(((File)f.get(queryResult)).getName());
-                        files.add((File)f.get(queryResult));
-                    }
-                    else msg.append("null");
-                    msg.append(';');
-                }
-            }
-            byte[] byteArr = msg.toString().getBytes();
+            JsonObject jmsg = getJasonObj(queryResult, files).build();
+            byte[] byteArr = jmsg.toString().getBytes();
             byte[] len = ByteBuffer.allocate(4).putInt(byteArr.length).array();
             byte[] resMsg = new byte[byteArr.length+6];
             System.arraycopy(len, 0, resMsg, 2, 4);
@@ -136,7 +218,6 @@ public class ServerSide {
         byte[] answerData;
 
         try {
-            label1:
             while(!correct) {
                 tryCount++;
                 if(tryCount > 3) {
@@ -192,26 +273,15 @@ public class ServerSide {
                         out.write(23); out.flush(); continue;
                 }
 
-                Pattern p = Pattern.compile("([^-=;]+)-([^-=;]+)=([^=;]+);");
-                Matcher m = p.matcher(rawData);
-                int matchesNum = 0;
-                while (m.find()) {
-                    matchesNum++;
-                    try {
-                        if (m.group(1).compareTo(File.class.getName()) != 0 && m.group(3).compareTo("null") != 0)
-                            q.getClass().getField(m.group(2)).set(q, Class.forName(m.group(1)).getConstructor(String.class).newInstance(m.group(3)));
-                        else if(m.group(3).compareTo("null") != 0) {
-                            q.getClass().getField(m.group(2)).set(q, File.class.getConstructor(File.class, String.class).newInstance(PATH, m.group(3)));
-                            files.add((File) q.getClass().getField(m.group(2)).get(q));
-                        }
-                        else q.getClass().getField(m.group(2)).set(q, null);
-                    } catch(ReflectiveOperationException roe) {
-                        out.write(23);
-                        out.flush();
-                        continue label1;
-                    }
+                int fieldsNum;
+                try {
+                    fieldsNum = parseJsonString(q, rawData, files);
+                } catch(ReflectiveOperationException roe) {
+                    out.write(23);
+                    out.flush();
+                    continue;
                 }
-                if(matchesNum != q.getClass().getFields().length) {
+                if(fieldsNum != q.getClass().getFields().length) {
                     out.write(23);
                     out.flush();
                 }
