@@ -34,6 +34,7 @@ public class ClientSide {
         Stack<Object> objectStack = new Stack<>();
         Stack<Class> typeStack = new Stack<>();
         Stack<List> arrayStack = new Stack<>();
+        boolean arrayValue = false;
         int fieldsNum = 0;
         if(jp.hasNext()) jp.next(); //убираем первый start_obj
 
@@ -44,14 +45,18 @@ public class ClientSide {
                     currentField = currentObject.getClass().getField(jp.getString());
                     if(currentObject.equals(obj)) fieldsNum++; break;
                 case VALUE_STRING:
-                    if(!currentField.getType().equals(File.class))
+                    if(arrayValue) {
+                        currentArray.add(currentType.getConstructor(String.class).newInstance(jp.getString()));
+                    }
+                    else if(!currentField.getType().equals(File.class))
                         currentField.set(currentObject, currentField.getType().getConstructor(String.class).newInstance(jp.getString()));
                     else {
                         currentField.set(currentObject, File.class.getConstructor(File.class, String.class).newInstance(PATH, jp.getString()));
                         files.add((File) currentField.get(currentObject));
                     } break;
                 case VALUE_NULL:
-                    currentField.set(currentObject, null); break;
+                    if(arrayValue) currentArray.add(null);
+                    else currentField.set(currentObject, null); break;
                 case START_ARRAY:
                     if(currentArray != null) {
                         arrayStack.push(currentArray);
@@ -59,10 +64,12 @@ public class ClientSide {
                     }
                     currentArray = (List)currentField.getType().getConstructor().newInstance();
                     currentField.set(currentObject, currentArray);
-                    currentType = (Class)((ParameterizedType)currentField.getGenericType()).getActualTypeArguments()[0]; break;
+                    currentType = (Class)((ParameterizedType)currentField.getGenericType()).getActualTypeArguments()[0];
+                    arrayValue = true; break;
                 case START_OBJECT:
                     objectStack.push(currentObject);
                     if(currentArray != null) {
+                        arrayValue = false;
                         currentObject = currentType.getConstructor().newInstance();
                         currentArray.add(currentObject);
                     } else {
@@ -72,9 +79,11 @@ public class ClientSide {
                     } break;
                 case END_ARRAY:
                     if(typeStack.size() > 0) currentType = typeStack.pop();
-                    if(arrayStack.size() > 0) currentArray = arrayStack.pop(); break;
+                    if(arrayStack.size() > 0) currentArray = arrayStack.pop();
+                    arrayValue = false; break;
                 case END_OBJECT:
-                    if(objectStack.size() > 0) currentObject = objectStack.pop(); break;
+                    if(objectStack.size() > 0) currentObject = objectStack.pop();
+                    if(currentArray != null) arrayValue = true; break;
             }
         }
         jp.close();
@@ -83,6 +92,7 @@ public class ClientSide {
 
     public static JsonObjectBuilder getJasonObj(Object obj, ArrayList<File> files) throws IllegalAccessException {
         JsonObjectBuilder job = Json.createObjectBuilder();
+        if(obj == null) return job;
         Field[] fields = obj.getClass().getFields();
         for(Field f : fields) {
             if(f.get(obj) == null)
@@ -103,17 +113,14 @@ public class ClientSide {
     }
     public static JsonArrayBuilder getJasonArr(Object obj, Field field, ArrayList<File> files) throws IllegalAccessException {
         JsonArrayBuilder jab = Json.createArrayBuilder();
-        if(field.getType().isArray()) {
-            Object[] arr = (Object[])field.get(obj);
-            for (Object o : arr) {
-                jab.add(getJasonObj(o, files));
-            }
-        }
-        else if(List.class.isAssignableFrom(field.getType())) {
-            List list = (List)field.get(obj);
-            for(Object o : list) {
-                jab.add(getJasonObj(o, files));
-            }
+        boolean objFlag = true;
+        List list = (List)field.get(obj);
+        Class type = (Class)((ParameterizedType)field.getGenericType()).getActualTypeArguments()[0];
+        if(type.equals(String.class) || type.equals(Integer.class) || type.equals(Boolean.class)) objFlag = false;
+        for(Object o : list) {
+            if(o == null) jab.add(JsonValue.NULL);
+            else if(objFlag) jab.add(getJasonObj(o, files));
+            else jab.add(o.toString());
         }
         return jab;
     }
