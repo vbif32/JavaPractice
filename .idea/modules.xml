@@ -5,7 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Client/Client.iml" filepath="$PROJECT_DIR$/Client/Client.iml" />
       <module fileurl="file://$PROJECT_DIR$/JavaPractice.iml" filepath="$PROJECT_DIR$/JavaPractice.iml" />
       <module fileurl="file://$PROJECT_DIR$/Server/Server.iml" filepath="$PROJECT_DIR$/Server/Server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Shad/Shad.iml" filepath="$PROJECT_DIR$/Shad/Shad.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Shed/Shed.iml" filepath="$PROJECT_DIR$/Shed/Shed.iml" />
     </modules>
   </component>
 </project>

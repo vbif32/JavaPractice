@@ -1,11 +1,9 @@
-package shed;
+package transfer;
 
 /**
- * Created by Lognir on 08.07.2015.
+ * Класс для хранения даты сдачи лаб при передаче
  */
 public class LabSubmitDate {
-
-    //Класс для хранения даты сдачи лаб
 
     public LabSubmitDate() {}
 

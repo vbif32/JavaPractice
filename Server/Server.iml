@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Shad" />
+    <orderEntry type="module" module-name="Shed" />
     <orderEntry type="library" name="Shed" level="project" />
     <orderEntry type="library" name="javax.json" level="project" />
   </component>

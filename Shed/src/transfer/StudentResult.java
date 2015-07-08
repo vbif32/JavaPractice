@@ -1,9 +1,9 @@
-package shed;
+package transfer;
 
 import java.util.ArrayList;
 
 /**
- * Created by Lognir on 08.07.2015.
+ * Класс для хранения успеваемости студента
  */
 public class StudentResult {
 
