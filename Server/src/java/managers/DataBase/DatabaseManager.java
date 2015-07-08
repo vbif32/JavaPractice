@@ -1,6 +1,7 @@
 package managers.DataBase;
 
 import shed.queryResult.User;
+import shed.StudentResult;
 
 import java.sql.*;
 import java.util.*;

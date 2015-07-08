@@ -4,6 +4,8 @@ package managers.DataBase;
 
 import java.sql.*;
 import java.util.*;
+import shed.LabSubmitDate;
+import shed.StudentResult;
 
 //класс для вывода всей информации о студенте
 
@@ -50,14 +52,13 @@ class ResultsHandler {
             try{
                 while (res.next()){
                     result=new StudentResult(DefinedLabs);
-                    result.id = res.getInt("system_id");
-                    stm.setInt(1,result.id);
+                    stm.setInt(1,res.getInt("system_id"));
                     res2 = stm.executeQuery();
                     res2.next();
                     try{res2.getInt("subject_id");
                         for(int i=3;i<=DefinedLabs+2;i++){
                             try{
-                                result.dates.add(res2.getDate(i));
+                                result.dates.add(new LabSubmitDate(res2.getDate(i).toString()));
                             }catch(Exception e){
                                 result.dates.add(null);//заполняет пустыми элементами если не может достать корректные данные
                             }
@@ -66,7 +67,6 @@ class ResultsHandler {
                         result.name = res.getString("name");
                         result.surname = res.getString("surname");
                         result.secondName = res.getString("second_name");
-                        result.isLecturer = res.getBoolean("is_lecturer");
                         studentData.add(result);
                     }catch (Exception e){
                         //если нет соедининия студент - предмет res2 будет пустой, выдаст ошибку
