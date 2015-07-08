@@ -1,6 +1,5 @@
 package shed;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
 /**
@@ -8,9 +7,7 @@ import java.util.ArrayList;
  */
 public class StudentResult {
 
-    public StudentResult() {
-        dates = new ArrayList<>();
-    }
+    public StudentResult() {}
     public StudentResult(int size) {
         dates = new ArrayList<>(size);
     }
@@ -19,7 +16,6 @@ public class StudentResult {
     public String name;     // Имя
     public String secondName;// Отчество
     public String group; // Группа
-    public ArrayList<Date> dates; //Даты сдачи лабораторных работ.
-    //TODO: пилите свою дату
+    public ArrayList<LabSubmitDate> dates; //Даты сдачи лабораторных работ.
 
 }

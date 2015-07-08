@@ -11,9 +11,7 @@ import java.util.ArrayList;
  */
 public class Stats implements QueryResult {
 
-    public Stats() {
-        list = new ArrayList<>();
-    }
+    public Stats() {}
     public Stats(ArrayList<StudentResult> al) {
         list = al;
     }

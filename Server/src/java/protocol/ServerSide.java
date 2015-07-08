@@ -45,17 +45,11 @@ public class ServerSide {
                     if(currentObject.equals(obj)) fieldsNum++; break;
                 case VALUE_STRING:
                     if(!currentField.getType().equals(File.class))
-                        currentField.set(currentObject, jp.getString());
+                        currentField.set(currentObject, currentField.getType().getConstructor(String.class).newInstance(jp.getString()));
                     else {
                         currentField.set(currentObject, File.class.getConstructor(File.class, String.class).newInstance(PATH, jp.getString()));
                         files.add((File) currentField.get(currentObject));
                     } break;
-                case VALUE_NUMBER:
-                    currentField.set(currentObject, jp.getInt()); break;
-                case VALUE_TRUE:
-                    currentField.set(currentObject, true); break;
-                case VALUE_FALSE:
-                    currentField.set(currentObject, false); break;
                 case VALUE_NULL:
                     currentField.set(currentObject, null); break;
                 case START_ARRAY:
