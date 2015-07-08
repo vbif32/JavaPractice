@@ -1,5 +1,6 @@
 package services;
 
+import managers.DataBase.DatabaseManager;
 import shed.QueryResult;
 import shed.query.StatsRequest;
 import shed.queryResult.Stats;
@@ -9,6 +10,12 @@ import shed.queryResult.Stats;
  */
 public class StatsService {
 
-    //TODO:Написать тело функции получения статов.
-    public static QueryResult getStats(StatsRequest statsRequest) {return  new Stats();}
+    /**
+     * Запрос к менеджеру БД за данными о студентах с входящими параметрами: предмет и учебная группа
+     * Возврат ArrayList студентов
+     */
+    public static QueryResult getStats(StatsRequest statsRequest) {
+        DatabaseManager manager = new DatabaseManager();
+        return new Stats(manager.GetStudentInfo(statsRequest.group, statsRequest.subject));
+    }
 }
