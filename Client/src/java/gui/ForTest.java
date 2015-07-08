@@ -8,9 +8,9 @@ import java.io.File;
 public class ForTest {
     public File laba; // ���� � �����
     public String code; // ���
-    public int term=666; // ����� ��������
-    public int number=666; // ����� ����
-    public int variant=666; //����� ��������
+    public int term=-1; // ����� ��������
+    public int number=-1; // ����� ����
+    public int variant=-1; //����� ��������
     public String subject; //Программирование, АиСД
-    public int userId = 666;
+    public int userId = -1;
 }
