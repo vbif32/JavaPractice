@@ -7,16 +7,15 @@ import shed.queryResult.LabResult;
 import shed.queryResult.Test;
 
 /**
- * Created by Пользователь on 06.07.2015.
  */
 public class TestService {
 
-    //TODO: Написать тела для функций.
+    //TODO: РќР°РїРёСЃР°С‚СЊ С‚РµР»Р° С„СѓРЅРєС†РёР№.
 
 
-    //Возвращает тесты по запросу
+    //Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµСЃС‚С‹ РґР»СЏ Р»Р°Р±
     public static QueryResult getTest(TestRequest testRequest) {return  new Test();}
 
-    //Принимает результаты тестов на сервере и возвращает результаты о лабе
+    //Р’РѕРІР·СЂР°С‰Р°РµС‚ СЂРµР·СѓР»СЊС‚Р°С‚С‹ СЃС‚СѓРґРµРЅС‚Р° РїРѕ С‚РµСЃС‚Р°Рј
     public static QueryResult submitTest(TestSubmit testSubmit) {return  new LabResult();}
 }
