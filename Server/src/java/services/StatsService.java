@@ -6,13 +6,13 @@ import shed.query.StatsRequest;
 import shed.queryResult.Stats;
 
 /**
- * Created by Пользователь on 06.07.2015.
+ * Created by РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ on 06.07.2015.
  */
 public class StatsService {
 
     /**
-     * Запрос к менеджеру БД за данными о студентах с входящими параметрами: предмет и учебная группа
-     * Возврат ArrayList студентов
+     * Р—Р°РїСЂРѕСЃ Рє РјРµРЅРµРґР¶РµСЂСѓ Р‘Р” Р·Р° РґР°РЅРЅС‹РјРё Рѕ СЃС‚СѓРґРµРЅС‚Р°С… СЃ РІС…РѕРґСЏС‰РёРјРё РїР°СЂР°РјРµС‚СЂР°РјРё: РїСЂРµРґРјРµС‚ Рё СѓС‡РµР±РЅР°СЏ РіСЂСѓРїРїР°
+     * Р’РѕР·РІСЂР°С‚ ArrayList СЃС‚СѓРґРµРЅС‚РѕРІ
      */
     public static QueryResult getStats(StatsRequest statsRequest) {
         DatabaseManager manager = new DatabaseManager();
