@@ -98,8 +98,8 @@ public class FileSystemManager {
 
     /*копирование файлов, если на руках объекты
     * пока не пробовала копировать папки*/
-    static boolean copyFiles(File oldFile, File newFile)  {
-        if (oldFile.isFile()!=newFile.isFile())
+    static boolean copyFiles(File oldFile, File newFile) {
+        if (oldFile.isFile() != newFile.isFile())
             return false;
         else {
             try (FileInputStream is = new FileInputStream(oldFile)) {
