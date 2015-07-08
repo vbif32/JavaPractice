@@ -1,7 +1,7 @@
 package protocol;
 
-import shed.*;
-import shed.queryResult.*;
+import query.*;
+import reply.*;
 import javax.json.*;
 import javax.json.stream.JsonParser;
 
@@ -36,7 +36,7 @@ public class ClientSide {
         Stack<List> arrayStack = new Stack<>();
         boolean arrayValue = false;
         int fieldsNum = 0;
-        if(jp.hasNext()) jp.next(); //убираем первый start_obj
+        if(jp.hasNext()) jp.next();
 
         while (jp.hasNext()) {
             JsonParser.Event event = jp.next();
@@ -125,8 +125,8 @@ public class ClientSide {
         return jab;
     }
 
-    public static QueryResult transmit(Query query, OutputStream out, InputStream in) {
-        QueryResult qr = null;
+    public static Reply transmit(Query query, OutputStream out, InputStream in) {
+        Reply qr = null;
         boolean correct = true;
         Queries type = query.getType();
         ArrayList<File> files = new ArrayList<>();
@@ -238,7 +238,6 @@ public class ClientSide {
                 }
 
                 String rawData = new String(answerData);
-                //System.out.println(rawData);
 
                 switch(answerType) {
                     case 0:
@@ -248,11 +247,13 @@ public class ClientSide {
                     case 2:
                         qr = new Test(); break;
                     case 3:
-                        qr = new LabResult(); break;
+                        qr = new TestResult(); break;
                     case 4:
-                        qr = new Stats(); break;
+                        qr = new TestUploading(); break;
                     case 5:
-                        qr = new RegisterResult(); break;
+                        qr = new Stats(); break;
+                    case 6:
+                        qr = new Registration(); break;
                     default:
                         out.write(23); out.flush(); continue;
                 }
@@ -347,7 +348,6 @@ public class ClientSide {
         }
         catch(IOException ioe) {
             return new QueryError(ioe.getMessage());
-            //Надо решить, что сообщать об ошибках.
         }
         catch(WrongDataException wde) {
             try {
@@ -366,7 +366,6 @@ public class ClientSide {
             }
             catch(Exception e) {
                 return new QueryError(e.getMessage());
-                //Надо решить, что сообщать об ошибках.
             }
         }
         catch(FileReadingException|ServerBadDataException fre) {
@@ -380,7 +379,6 @@ public class ClientSide {
             }
         }
         catch(IllegalAccessException|NoSuchAlgorithmException iae) {
-            //iae.printStackTrace();
             return new QueryError(iae.getMessage());
         }
         finally {

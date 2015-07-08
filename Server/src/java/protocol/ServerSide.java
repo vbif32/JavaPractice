@@ -1,8 +1,7 @@
 package protocol;
 
-import shed.*;
-import shed.query.*;
-import shed.queryResult.QueryError;
+import query.*;
+import reply.*;
 import javax.json.*;
 import javax.json.stream.JsonParser;
 
@@ -36,7 +35,7 @@ public class ServerSide {
         Stack<List> arrayStack = new Stack<>();
         boolean arrayValue = false;
         int fieldsNum = 0;
-        if(jp.hasNext()) jp.next(); //убираем первый start_obj
+        if(jp.hasNext()) jp.next();
 
         while (jp.hasNext()) {
             JsonParser.Event event = jp.next();
@@ -125,8 +124,8 @@ public class ServerSide {
         return jab;
     }
 
-    public static boolean transmit(QueryResult queryResult, OutputStream out, InputStream in) {
-        QueryResults type = queryResult.getType();
+    public static boolean transmit(Reply queryResult, OutputStream out, InputStream in) {
+        Replies type = queryResult.getType();
         ArrayList<File> files = new ArrayList<>();
         try {
             JsonObject jmsg = getJasonObj(queryResult, files).build();
@@ -194,7 +193,7 @@ public class ServerSide {
             try {
                 out.write(63);
                 out.flush();
-                transmit(new QueryError(), out, in);
+                transmit(new QueryError("Server couldn't send the file."), out, in);
                 return false;
             }
             catch(IOException e) {
@@ -205,7 +204,6 @@ public class ServerSide {
             return false;
         }
         catch(IllegalAccessException|NoSuchAlgorithmException iae) {
-            //iae.printStackTrace();
             return false;
         }
 
@@ -261,20 +259,21 @@ public class ServerSide {
                 }
 
                 String rawData = new String(answerData);
-                //System.out.println(rawData);
 
                 switch (answerType) {
                     case 0:
-                        q = new RegisterApply(); break;
+                        q = new RegisterRequest(); break;
                     case 1:
-                        q = new LoginApply(); break;
+                        q = new LoginRequest(); break;
                     case 2:
-                        q = new TestRequest(); break;
+                        q = new TestUploadRequest(); break;
                     case 3:
-                        q = new TestSubmit(); break;
+                        q = new TestRequest(); break;
                     case 4:
-                        q = new StatsRequest(); break;
+                        q = new TestResultRequest(); break;
                     case 5:
+                        q = new StatsRequest(); break;
+                    case 6:
                         q = new ErrorReceived(); break;
                     default:
                         out.write(23); out.flush(); continue;
