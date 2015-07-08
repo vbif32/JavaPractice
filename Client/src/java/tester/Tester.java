@@ -17,11 +17,8 @@ public class Tester {
     private Tester(String code, ForTest labInf){
         this.labInf = labInf;
         this.labId = "_" + labInf.term + "_" +  labInf.number + "_" + labInf.variant;
-        File tempLabFile;
         if (labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
-            /*tempLabFile = new File("Client/src/tester/temp/labFile.jar");
-            this.labFile = Compiler.compileJar(code, tempLabFile);
-            tempLabFile.deleteOnExit();*/
+            this.labFile = Compiler.compileJar(code, this.labId);
         } else if (labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
             this.labFile  = Compiler.compileCpp(code, this.labId);
         }
@@ -127,7 +124,7 @@ public class Tester {
 
     public static boolean labTestExecute(ForTest labInf){
         Tester tester;
-        if (!labInf.code.equals("") && labInf.code != null){
+        if (labInf.code != null && !labInf.code.equals("")){
             tester = new Tester(labInf.code, labInf);
             tester.compareOutput();
         } else if (labInf.laba != null) {
