@@ -20,5 +20,6 @@ public class StudentResult {
     public String secondName;// Отчество
     public String group; // Группа
     public ArrayList<Date> dates; //Даты сдачи лабораторных работ.
+    //TODO: пилите свою дату
 
 }
