@@ -22,12 +22,14 @@ import javafx.scene.paint.Paint;
 import query.LoginRequest;
 import query.RegisterRequest;
 import reply.User;
+import transfer.LabsPossible;
 import transfer.StudentResult;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -390,13 +392,26 @@ public class Window_s {
         one_3.getChildren().add(var);
         two_3.getChildren().add(forVariant);
 
-        forTerm.getItems().addAll("1");
+        //forTerm.getItems().addAll("1");
+        //Добавлено добрыми феями
+        HashSet<String> subjects = new HashSet<>();
+        for(LabsPossible lp : newUser.labInfo)
+            subjects.add(lp.subject);
+        forSubject.getItems().addAll(subject);
         forTerm.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 forTest.term = Integer.valueOf(t1);
                 System.out.println(forTest.term);
-                forSubject.getItems().addAll("Программирование", "АиСД");
+                //forSubject.getItems().addAll("Программирование", "АиСД");
+                //Добавлено добрыми феями
+                int number = 0;
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.subject.equals(forSubject.getValue()) && lp.term.equals(t1)) {
+                        number = lp.variants.size();
+                        break;
+                    }
+                while(number > 0) forLab.getItems().add(number--);
             }
         });
 
@@ -405,7 +420,11 @@ public class Window_s {
                 public void changed(ObservableValue ov, String t, String t1) {
                     forTest.subject = t1;
                     System.out.println(forTest.subject);
-                    forLab.getItems().addAll("1");
+                    //forLab.getItems().addAll("1");
+                    //Добавлено добрыми феями
+                    forTerm.getItems().clear();
+                    for(LabsPossible lp : newUser.labInfo)
+                        if(lp.subject.equals(t1)) forTerm.getItems().add(lp.term);
                 }
             });
 
@@ -415,7 +434,15 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 forTest.number=Integer.valueOf(t1);
                 System.out.println(forTest.number);
-                forVariant.getItems().addAll("1");
+                //forVariant.getItems().addAll("1");
+                //Добавлено добрыми феями
+                int variant = 0;
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.subject.equals(forSubject.getValue()) && lp.term.equals(forTerm.getValue())) {
+                        variant = lp.variants.get(Integer.parseInt(t1)-1);
+                        break;
+                    }
+                while(variant > 0) forVariant.getItems().add(variant--);
             }
         });
 
