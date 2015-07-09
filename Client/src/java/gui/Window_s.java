@@ -103,24 +103,46 @@ public class Window_s {
         HBox comments = new HBox();
         final Label label = new Label();
 
+        HBox errorL = new HBox();
+        HBox errorP = new HBox();
+        errorL.setAlignment(Pos.CENTER);
+        errorP.setAlignment(Pos.CENTER);
+        final Label errorLogin = new Label();
+        final Label errorPass = new Label();
+        errorLogin.setAlignment(Pos.CENTER);
+        errorPass.setAlignment(Pos.CENTER);
+
         // Кнопки
         HBox forButtons = new HBox();
         Button enter = new Button("Вход");
         enter.setOnAction(new EventHandler<ActionEvent>(){
                               @Override
                               public void handle(javafx.event.ActionEvent actionEvent) {
-                                      if ((textForLogin.getText().isEmpty())||(textForPassword.getText().isEmpty())) {
+                                  if ((textForLogin.getText().isEmpty())||(textForPassword.getText().isEmpty())||(!textForLogin.getText().matches("\\w{3,}"))||(!textForPassword.getText().matches("\\w{6,}"))) {
+                                      if (!textForLogin.getText().matches("\\w{3,}")) {
                                           check = false;
-                                          label.setText("Введите данные");
-                                          label.setStyle("-fx-font-style:italic;");
+                                          errorLogin.setText("Invalid input. Login must contain more than 3 English letters or digits");
+                                          errorLogin.setStyle("-fx-font-style:italic;");
                                       }
-                                      else if((!textForLogin.getText().matches("\\w{3,}"))||(!textForPassword.getText().matches("\\w{6,}")))
-                                      {
-                                          check=false;
-                                          label.setText("Неверно введены данные");
-                                          label.setStyle("-fx-font-style:italic;");
+                                      if (!textForPassword.getText().matches("\\w{6,}")) {
+                                          errorPass.setText("Invalid input. Password must contain more than 6 English letters or digits");
+                                          errorPass.setStyle("-fx-font-style:italic;");
+                                          check = false;
                                       }
+                                      if (textForLogin.getText().isEmpty()) {
+                                          check = false;
+                                          errorLogin.setText("Enter your login");
+                                          errorLogin.setStyle("-fx-font-style:italic;");
+                                      }
+                                      if (textForPassword.getText().isEmpty()) {
+                                          check = false;
+                                          errorPass.setText("Enter your password");
+                                          errorPass.setStyle("-fx-font-style:italic;");
+                                      }
+                                  }
                                       else {
+                                          errorLogin.setText("");
+                                          errorPass.setText("");
                                           LoginRequest loginApply = new LoginRequest();
                                           loginApply.login = textForLogin.getText();
                                           loginApply.password = textForPassword.getText();
@@ -171,10 +193,15 @@ public class Window_s {
         forButtons.setSpacing(10);
         forButtons.setTranslateX(390);
 
-            comments.setAlignment(Pos.CENTER);
-        fH.getChildren().addAll(vxod, new Label("\n"), new Label("\n"), forLogin, forPassword, comments, forButtons);
-            visibleField.getChildren().addAll(fH);
-            visibleField.setAlignment(Pos.CENTER);
+
+        errorL.getChildren().add(errorLogin);
+        errorP.getChildren().add(errorPass);
+        errorL.setTranslateX(1);
+        errorP.setTranslateX(12);
+        comments.setAlignment(Pos.CENTER);
+        fH.getChildren().addAll(vxod, new Label("\n"), new Label("\n"), forLogin, errorL, forPassword, errorP, new Label("\n"),comments, forButtons);
+        visibleField.getChildren().addAll(fH);
+        visibleField.setAlignment(Pos.CENTER);
         }
 
     public void registration () //Окно регистрации
@@ -620,15 +647,15 @@ public class Window_s {
                         testResult.setText("Тест прошел успешно");
                     else testResult.setText("Тест не пройден");
                 }
-                if (!mistakesInCode.equals(""))
+                if (!mistakesInCode.getText().equals(""))
                     newVbox.getChildren().add(mistakesInCode);
-                if (!mistakesInTerm.equals(""))
+                if (!mistakesInTerm.getText().equals(""))
                     newVbox.getChildren().add(mistakesInTerm);
-                if (!mistakesInCom.equals(""))
+                if (!mistakesInCom.getText().equals(""))
                     newVbox.getChildren().add(mistakesInCom);
-                if (!mistakesInLab.equals(""))
+                if (!mistakesInLab.getText().equals(""))
                     newVbox.getChildren().add(mistakesInLab);
-                if (!mistakesInVar.equals(""))
+                if (!mistakesInVar.getText().equals(""))
                     newVbox.getChildren().add(mistakesInVar);
             }
         });
@@ -809,8 +836,7 @@ public class Window_s {
 
     public class Student {
 
-        Student()
-        {
+        Student() {
             fio = new SimpleStringProperty();
             date = new SimpleStringProperty();
         }
