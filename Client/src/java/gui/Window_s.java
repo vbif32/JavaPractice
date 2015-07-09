@@ -22,13 +22,13 @@ import javafx.scene.paint.Paint;
 import query.LoginRequest;
 import query.RegisterRequest;
 import reply.User;
+import transfer.LabsPossible;
 import transfer.StudentResult;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Jay on 02.07.2015.
@@ -101,24 +101,46 @@ public class Window_s {
         HBox comments = new HBox();
         final Label label = new Label();
 
+        HBox errorL = new HBox();
+        HBox errorP = new HBox();
+        errorL.setAlignment(Pos.CENTER);
+        errorP.setAlignment(Pos.CENTER);
+        final Label errorLogin = new Label();
+        final Label errorPass = new Label();
+        errorLogin.setAlignment(Pos.CENTER);
+        errorPass.setAlignment(Pos.CENTER);
+
         // Кнопки
         HBox forButtons = new HBox();
         Button enter = new Button("Вход");
         enter.setOnAction(new EventHandler<ActionEvent>(){
                               @Override
                               public void handle(javafx.event.ActionEvent actionEvent) {
-                                      if ((textForLogin.getText().isEmpty())||(textForPassword.getText().isEmpty())) {
+                                  if ((textForLogin.getText().isEmpty())||(textForPassword.getText().isEmpty())||(!textForLogin.getText().matches("\\w{3,}"))||(!textForPassword.getText().matches("\\w{6,}"))) {
+                                      if (!textForLogin.getText().matches("\\w{3,}")) {
                                           check = false;
-                                          label.setText("Введите данные");
-                                          label.setStyle("-fx-font-style:italic;");
+                                          errorLogin.setText("Invalid input. Login must contain more than 3 English letters or digits");
+                                          errorLogin.setStyle("-fx-font-style:italic;");
                                       }
-                                      else if((!textForLogin.getText().matches("\\w{3,}"))||(!textForPassword.getText().matches("\\w{6,}")))
-                                      {
-                                          check=false;
-                                          label.setText("Неверно введены данные");
-                                          label.setStyle("-fx-font-style:italic;");
+                                      if (!textForPassword.getText().matches("\\w{6,}")) {
+                                          errorPass.setText("Invalid input. Password must contain more than 6 English letters or digits");
+                                          errorPass.setStyle("-fx-font-style:italic;");
+                                          check = false;
                                       }
+                                      if (textForLogin.getText().isEmpty()) {
+                                          check = false;
+                                          errorLogin.setText("Enter your login");
+                                          errorLogin.setStyle("-fx-font-style:italic;");
+                                      }
+                                      if (textForPassword.getText().isEmpty()) {
+                                          check = false;
+                                          errorPass.setText("Enter your password");
+                                          errorPass.setStyle("-fx-font-style:italic;");
+                                      }
+                                  }
                                       else {
+                                          errorLogin.setText("");
+                                          errorPass.setText("");
                                           LoginRequest loginApply = new LoginRequest();
                                           loginApply.login = textForLogin.getText();
                                           loginApply.password = textForPassword.getText();
@@ -169,10 +191,15 @@ public class Window_s {
         forButtons.setSpacing(10);
         forButtons.setTranslateX(390);
 
-            comments.setAlignment(Pos.CENTER);
-        fH.getChildren().addAll(vxod, new Label("\n"), new Label("\n"), forLogin, forPassword, comments, forButtons);
-            visibleField.getChildren().addAll(fH);
-            visibleField.setAlignment(Pos.CENTER);
+
+        errorL.getChildren().add(errorLogin);
+        errorP.getChildren().add(errorPass);
+        errorL.setTranslateX(1);
+        errorP.setTranslateX(12);
+        comments.setAlignment(Pos.CENTER);
+        fH.getChildren().addAll(vxod, new Label("\n"), new Label("\n"), forLogin, errorL, forPassword, errorP, new Label("\n"),comments, forButtons);
+        visibleField.getChildren().addAll(fH);
+        visibleField.setAlignment(Pos.CENTER);
         }
 
     public void registration () //Окно регистрации
@@ -390,13 +417,28 @@ public class Window_s {
         one_3.getChildren().add(var);
         two_3.getChildren().add(forVariant);
 
-        forTerm.getItems().addAll("1");
+        //forTerm.getItems().addAll("1");
+        //Добавлено добрыми феями
+        TreeSet<Integer> subjects = new TreeSet<>();
+        if(newUser.labInfo != null) {
+            for (LabsPossible lp : newUser.labInfo)
+                subjects.add(lp.term);
+            forSubject.getItems().addAll(subjects);
+        }
         forTerm.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 forTest.term = Integer.valueOf(t1);
                 System.out.println(forTest.term);
-                forSubject.getItems().addAll("Программирование", "АиСД");
+                //forSubject.getItems().addAll("Программирование", "АиСД");
+                //Добавлено добрыми феями
+                forSubject.getItems().clear();
+                forLab.getItems().clear();
+                forVariant.getItems().clear();
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.term.toString().equals(t1)) {
+                        forSubject.getItems().add(lp.subject);
+                    }
             }
         });
 
@@ -405,7 +447,17 @@ public class Window_s {
                 public void changed(ObservableValue ov, String t, String t1) {
                     forTest.subject = t1;
                     System.out.println(forTest.subject);
-                    forLab.getItems().addAll("1");
+                    //forLab.getItems().addAll("1");
+                    //Добавлено добрыми феями
+                    forLab.getItems().clear();
+                    forVariant.getItems().clear();
+                    int number = 0;
+                    for(LabsPossible lp : newUser.labInfo)
+                        if(lp.subject.equals(t1) && lp.term.equals(forTerm.getValue())) {
+                            number = lp.variants.size();
+                            break;
+                        }
+                    for(int i = 1; i <= number; i++) forLab.getItems().add(i);
                 }
             });
 
@@ -415,7 +467,16 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 forTest.number=Integer.valueOf(t1);
                 System.out.println(forTest.number);
-                forVariant.getItems().addAll("1");
+                //forVariant.getItems().addAll("1");
+                //Добавлено добрыми феями
+                forVariant.getItems().clear();
+                int variant = 0;
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.subject.equals(forSubject.getValue()) && lp.term.equals(forTerm.getValue())) {
+                        variant = lp.variants.get(Integer.parseInt(t1)-1);
+                        break;
+                    }
+                for(int i = 1; i <= variant; i++) forLab.getItems().add(i);
             }
         });
 
@@ -588,15 +649,15 @@ public class Window_s {
                         testResult.setText("Тест прошел успешно");
                     else testResult.setText("Тест не пройден");
                 }
-                if (!mistakesInCode.equals(""))
+                if (!mistakesInCode.getText().equals(""))
                     newVbox.getChildren().add(mistakesInCode);
-                if (!mistakesInTerm.equals(""))
+                if (!mistakesInTerm.getText().equals(""))
                     newVbox.getChildren().add(mistakesInTerm);
-                if (!mistakesInCom.equals(""))
+                if (!mistakesInCom.getText().equals(""))
                     newVbox.getChildren().add(mistakesInCom);
-                if (!mistakesInLab.equals(""))
+                if (!mistakesInLab.getText().equals(""))
                     newVbox.getChildren().add(mistakesInLab);
-                if (!mistakesInVar.equals(""))
+                if (!mistakesInVar.getText().equals(""))
                     newVbox.getChildren().add(mistakesInVar);
             }
         });
@@ -777,8 +838,7 @@ public class Window_s {
 
     public class Student {
 
-        Student()
-        {
+        Student() {
             fio = new SimpleStringProperty();
             date = new SimpleStringProperty();
         }
