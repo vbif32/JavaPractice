@@ -8,8 +8,6 @@ import query.*;
 import reply.*;
 import transfer.*;
 
-import gui.LocalUser;
-
 import javax.jws.soap.SOAPBinding;
 import java.lang.*;
 import java.io.File;

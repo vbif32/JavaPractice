@@ -1,5 +1,9 @@
 package reply;
 
+import transfer.LabsPossible;
+
+import java.util.ArrayList;
+
 /**
  * Класс для описания пользователя в системе и ответа на запрос авторизации
  * разграничивает доступ к функциям на сервере
@@ -15,6 +19,7 @@ public class User implements Reply {
     public String secondName;   // Отчество
     public String group;        // Группа
     public Boolean isLecturer;  // флаг является ли преподавателем!
+    public ArrayList<LabsPossible> labInfo;     //Информация о лабораторных работах, сдаваемых студентом
 
     @Override
     public Replies getType() {
