@@ -28,9 +28,7 @@ import transfer.StudentResult;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Jay on 02.07.2015.
@@ -421,10 +419,12 @@ public class Window_s {
 
         //forTerm.getItems().addAll("1");
         //Добавлено добрыми феями
-        HashSet<String> subjects = new HashSet<>();
-        for(LabsPossible lp : newUser.labInfo)
-            subjects.add(lp.subject);
-        forSubject.getItems().addAll(subjects);
+        TreeSet<Integer> subjects = new TreeSet<>();
+        if(newUser.labInfo != null) {
+            for (LabsPossible lp : newUser.labInfo)
+                subjects.add(lp.term);
+            forSubject.getItems().addAll(subjects);
+        }
         forTerm.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
@@ -432,15 +432,13 @@ public class Window_s {
                 System.out.println(forTest.term);
                 //forSubject.getItems().addAll("Программирование", "АиСД");
                 //Добавлено добрыми феями
+                forSubject.getItems().clear();
                 forLab.getItems().clear();
                 forVariant.getItems().clear();
-                int number = 0;
                 for(LabsPossible lp : newUser.labInfo)
-                    if(lp.subject.equals(forSubject.getValue()) && lp.term.equals(t1)) {
-                        number = lp.variants.size();
-                        break;
+                    if(lp.term.toString().equals(t1)) {
+                        forSubject.getItems().add(lp.subject);
                     }
-                while(number > 0) forLab.getItems().add(number--);
             }
         });
 
@@ -451,11 +449,15 @@ public class Window_s {
                     System.out.println(forTest.subject);
                     //forLab.getItems().addAll("1");
                     //Добавлено добрыми феями
-                    forTerm.getItems().clear();
                     forLab.getItems().clear();
                     forVariant.getItems().clear();
+                    int number = 0;
                     for(LabsPossible lp : newUser.labInfo)
-                        if(lp.subject.equals(t1)) forTerm.getItems().add(lp.term);
+                        if(lp.subject.equals(t1) && lp.term.equals(forTerm.getValue())) {
+                            number = lp.variants.size();
+                            break;
+                        }
+                    for(int i = 1; i <= number; i++) forLab.getItems().add(i);
                 }
             });
 
@@ -474,7 +476,7 @@ public class Window_s {
                         variant = lp.variants.get(Integer.parseInt(t1)-1);
                         break;
                     }
-                while(variant > 0) forVariant.getItems().add(variant--);
+                for(int i = 1; i <= variant; i++) forLab.getItems().add(i);
             }
         });
 
