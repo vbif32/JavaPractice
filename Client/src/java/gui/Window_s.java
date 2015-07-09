@@ -68,9 +68,9 @@ public class Window_s {
         else if (page==3)
         {
             //if (!newUser.isLecturer)
-                forStudents();
+                //forStudents();
                 //else
-                //forTeachers();
+                forTeachers();
         }
         else if (page==4)
             downloadTests();
@@ -209,16 +209,22 @@ public class Window_s {
         HBoxBuilder hBoxBuilder = HBoxBuilder.create();
         HBox forName = hBoxBuilder.build();
         final Label name = new Label("Имя:");
+        Tooltip tipName = new Tooltip();
+        tipName.setText("Только русские буквы");
         final TextField textForName = new TextField();
         textForName.setPromptText("Иван");
         textForName.setEditable(true);
+        textForName.setTooltip(tipName);
         forName.getChildren().addAll(name, textForName);
         forName.setSpacing(44);
         forName.setAlignment(Pos.CENTER);
         //Фамилия
         HBox forSurname = hBoxBuilder.build();
         Label surname = new Label("Фамилия:");
+        Tooltip tipSur = new Tooltip();
+        tipSur.setText("Только русские буквы");
         final TextField textForSurname = new TextField();
+        textForSurname.setTooltip(tipSur);
         textForSurname.setPromptText("Иванов");
         textForSurname.setEditable(true);
         forSurname.getChildren().addAll(surname, textForSurname);
@@ -227,8 +233,11 @@ public class Window_s {
         // Отчество
         HBox forPatronymic = hBoxBuilder.build();
         final Label patronymic = new Label("Отчество:");
+        Tooltip tipSec = new Tooltip();
+        tipSec.setText("Только русские буквы");
         final TextField textForPatronymic = new TextField();
         textForPatronymic.setPromptText("Иванович");
+        textForPatronymic.setTooltip(tipSec);
         textForPatronymic.setEditable(true);
         forPatronymic.getChildren().addAll(patronymic, textForPatronymic);
         forPatronymic.setSpacing(15);
@@ -245,7 +254,10 @@ public class Window_s {
         //Логин
         HBox forLogin = hBoxBuilder.build();
         Label login = new Label("Логин:");
+        Tooltip tipLogin = new Tooltip();
+        tipLogin.setText("Английские буквы или цифры");
         final TextField textForLogin = new TextField();
+        textForLogin.setTooltip(tipLogin);
         textForLogin.setPromptText("не менее 3 символов");
         textForLogin.setEditable(true);
         forLogin.getChildren().addAll(login, textForLogin);
@@ -254,7 +266,10 @@ public class Window_s {
         // Пароль
         HBox forPassword = hBoxBuilder.build();
         final Label password = new Label("Пароль:");
+        Tooltip tipPass = new Tooltip();
+        tipPass.setText("Английские буквы или цифры");
         final PasswordField textForPassword = new PasswordField();
+        textForPassword.setTooltip(tipPass);
         textForPassword.setPromptText("не менее 6 символов");
         textForPassword.setEditable(true);
         forPassword.getChildren().addAll(password, textForPassword);
@@ -264,6 +279,7 @@ public class Window_s {
         visibleField.getChildren().addAll(forSurname,forName, forPatronymic, forGroup, forLogin, forPassword);
 
         final Label label = new Label();
+
 
         // Кнопки
         HBox forButtons = hBoxBuilder.build();
@@ -883,24 +899,77 @@ public class Window_s {
         visibleField.getChildren().clear();
         VBox vBox = new VBox();
 
-        HBox term = new HBox(10);
-        HBox subject = new HBox(10);
-        HBox number = new HBox(10);
-        HBox variant = new HBox(10);
+        vBox.setAlignment(Pos.CENTER);
+        HBox term = new HBox(58);
+        term.setTranslateX(-16);
+        HBox subject = new HBox(55);
+        subject.setTranslateX(49);
+        HBox number = new HBox(12);
+        number.setTranslateX(-17);
+        HBox variant = new HBox(40);
+        variant.setTranslateX(-16);
 
         TextField isTerm = new TextField();
+        isTerm.setMinWidth(15);
+        isTerm.setMaxWidth(15);
         TextField isSubject = new TextField();
         TextField isNumber = new TextField();
+        isNumber.setMinWidth(15);
+        isNumber.setMaxWidth(15);
         TextField isVariant = new TextField();
+        isVariant.setMinWidth(15);
+        isVariant.setMaxWidth(15);
 
-        
+        //ФАЙЛ
+        Button file = new Button("Загрузить файл");
+        file.setTranslateX(-18);
+        file.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                JFileChooser laba = new JFileChooser();
+                int rezult = laba.showDialog(null, "Открыть файл");
+                if (rezult == JFileChooser.APPROVE_OPTION) {
+                    laba.addChoosableFileFilter(new FileFilter() {
+                        @Override
+                        public boolean accept(File f) {
+                            if (f.isFile() || f.getName().contains(".txt"))
+                                return true;
+                            else
+                                return false;
+                        }
+                        @Override
+                        public String getDescription() {
+                            return ".txt";
+                        }
+                    });
+                }
+            }
+        });
 
-        term.getChildren().addAll();
-        subject.getChildren().addAll();
-        number.getChildren().addAll();
-        variant.getChildren().addAll();
-        vBox.getChildren().addAll(term, subject, number, variant);
-        vBox.setAlignment(Pos.CENTER);
+        HBox hBox = new HBox(45);
+        Button back = new Button("Назад");
+        back.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                page = 3;
+                Window();
+            }
+        });
+        hBox.getChildren().addAll(back, new Label("      "));
+
+        term.getChildren().addAll(new Label("Семестр"), isTerm);
+        term.setAlignment(Pos.CENTER);
+        subject.getChildren().addAll(new Label("Предмет"), isSubject);
+        subject.setAlignment(Pos.CENTER);
+        number.getChildren().addAll(new Label("Лабраторная №"), isNumber);
+        number.setAlignment(Pos.CENTER);
+        variant.getChildren().addAll(new Label("Вариант №"), isVariant);
+        variant.setAlignment(Pos.CENTER);
+        file.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(term, subject, number, variant, new Label("\n"), file);
+        hBox.setAlignment(Pos.BOTTOM_RIGHT);
+        vBox.getChildren().addAll(new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"), hBox);
+
         visibleField.getChildren().add(vBox);
     }
 }
