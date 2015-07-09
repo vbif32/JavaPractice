@@ -397,7 +397,7 @@ public class Window_s {
         HashSet<String> subjects = new HashSet<>();
         for(LabsPossible lp : newUser.labInfo)
             subjects.add(lp.subject);
-        forSubject.getItems().addAll(subject);
+        forSubject.getItems().addAll(subjects);
         forTerm.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
