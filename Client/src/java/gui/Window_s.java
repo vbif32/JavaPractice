@@ -770,31 +770,43 @@ public class Window_s {
         group.getChildren().addAll(new Label("Группа"), forGroup);
         choose.setSpacing(20);
 
-        forSem.getItems().addAll("1");
+        //Дела добрых фей
+        TreeSet<Integer> subjects = new TreeSet<>();
+        if(newUser.labInfo != null) {
+            for (LabsPossible lp : newUser.labInfo)
+                subjects.add(lp.term);
+            for(Integer i : subjects)
+                forSem.getItems().add(i.toString());
+        }
+
         forSem.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                chooseSem[0] = Integer.valueOf(t1);
-                System.out.println(chooseSem[0]);
-                forSub.getItems().addAll("Программирование", "АиСД");
+                forSub.getItems().clear();
+                forGroup.getItems().clear();
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.term.toString().equals(t1)) {
+                        forSub.getItems().add(lp.subject);
+                    }
             }
         });
 
         forSub.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                chooseSub[0] = t1;
-                System.out.println(chooseSub[0]);
-                forGroup.getItems().addAll("ИИИ-1-11");
+                forGroup.getItems().clear();
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.subject.equals(t1) && lp.term.toString().equals(forSem.getValue())) {
+                        forGroup.getItems().addAll(lp.groups);
+                        break;
+                    }
             }
         });
 
         forGroup.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                chooseGroup[0] = t1;
-                System.out.println(chooseGroup[0]);
-                firstTable.setVisible(true);
+
             }
         });
 
