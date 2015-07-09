@@ -13,7 +13,7 @@ public class FileSystemManager {
     * если он есть
     * то если это файл - удалить
     * если директория - удалить*/
-    static boolean deleteFile(File file) {
+    public static boolean deleteFile(File file) {
         if (file != null)
             return file.delete() ? true : deleteDir(file);
         else return false;
@@ -25,7 +25,7 @@ public class FileSystemManager {
     * то для каждого имени:
     * постараться его удалить
     * и удалить папку, содержимое которой мы удаляли*/
-    static boolean deleteDir(String path) {
+    public static boolean deleteDir(String path) {
         File f = new File(path);
         String[] names = f.list();
         if ((names != null) && (names.length > 0))
@@ -35,7 +35,7 @@ public class FileSystemManager {
     }
 
     /*удаление директории*/
-    static boolean deleteDir(File file) {
+    public static boolean deleteDir(File file) {
         String path = file.getAbsolutePath();
         return deleteDir(path);
     }
@@ -46,7 +46,7 @@ public class FileSystemManager {
     * то если это файл - удалить файл
     * иначе это директория - удалить директорию.
     * иначе этого не существует или что-то пошло не так. */
-    static boolean deleteFile(String path) {
+    public static boolean deleteFile(String path) {
         File f1 = new File(path);
         if (f1.exists()) {
             if (f1.isFile())
@@ -57,7 +57,7 @@ public class FileSystemManager {
 
     /*создать новый пустой файл
     * путь к которому path*/
-    static boolean createEmptyFile(String path) {
+    public static boolean createEmptyFile(String path) {
         try (FileOutputStream newFileOrDir = new FileOutputStream(path)) {
         } catch (IOException ex) {
             return false;
@@ -70,7 +70,7 @@ public class FileSystemManager {
     * т е если хочешь создать D:\\Users\\IIB-1-14
     * надо писать createEmptyDir("D:\\Users\\IIB-1-14")
     * если этот путь занят, то ретернится false*/
-    static boolean createEmptyDir(String pathDir){
+    public static boolean createEmptyDir(String pathDir){
         File newFold = new File(pathDir);
             return newFold.mkdirs();}
 
@@ -84,7 +84,7 @@ public class FileSystemManager {
     * если текущее имя совпадает с искомым,
     * то возвращаем найденный файл,
     * иначе идем дальше - если это папка, то спускаемся по ней. если ничего не нашли, то идем дальше, если нашли, то ретерним*/
-    static File searchFile(String requiredName, String initialPath) {
+    public static File searchFile(String requiredName, String initialPath) {
         File f = new File(initialPath);
         String[] list = f.list();
 
@@ -109,7 +109,7 @@ public class FileSystemManager {
 
     /*проверка на существование файла/папки в нужной директории
     * isFileHere("input.txt", "D:\\Users\\IIB-1-14") проверяется, есть ли input.txt в папке группы*/
-    static boolean isFileHere(String requiredName, String initialPath) {
+    public static boolean isFileHere(String requiredName, String initialPath) {
         File f = new File(initialPath);
         String[] list = f.list();
         for (String currentName : list)
@@ -120,7 +120,7 @@ public class FileSystemManager {
 
     /*копирование файлов, если на руках объекты
     * пока не пробовала копировать папки*/
-    static boolean copyFiles(File oldFile, File newFile) {
+    public static boolean copyFiles(File oldFile, File newFile) {
         if (oldFile.isFile() != newFile.isFile())
             return false;
         else {
@@ -151,7 +151,7 @@ public class FileSystemManager {
     * если на руках путь того, откуда копируют и путь, куда это копируют.
     * если это разные вещи, то ретернится false
     * пока не пробовала копировать папки*/
-    static boolean copyFiles(String oldFilePath, String newFilePath) {
+    public static boolean copyFiles(String oldFilePath, String newFilePath) {
         File f1 = new File(oldFilePath);
         File f2 = new File(newFilePath);
         return f2.isFile() != f1.isFile() ? false : copyFiles(f1, f2);
