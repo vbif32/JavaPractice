@@ -405,6 +405,8 @@ public class Window_s {
                 System.out.println(forTest.term);
                 //forSubject.getItems().addAll("Программирование", "АиСД");
                 //Добавлено добрыми феями
+                forLab.getItems().clear();
+                forVariant.getItems().clear();
                 int number = 0;
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.subject.equals(forSubject.getValue()) && lp.term.equals(t1)) {
@@ -423,6 +425,8 @@ public class Window_s {
                     //forLab.getItems().addAll("1");
                     //Добавлено добрыми феями
                     forTerm.getItems().clear();
+                    forLab.getItems().clear();
+                    forVariant.getItems().clear();
                     for(LabsPossible lp : newUser.labInfo)
                         if(lp.subject.equals(t1)) forTerm.getItems().add(lp.term);
                 }
@@ -436,6 +440,7 @@ public class Window_s {
                 System.out.println(forTest.number);
                 //forVariant.getItems().addAll("1");
                 //Добавлено добрыми феями
+                forVariant.getItems().clear();
                 int variant = 0;
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.subject.equals(forSubject.getValue()) && lp.term.equals(forTerm.getValue())) {
