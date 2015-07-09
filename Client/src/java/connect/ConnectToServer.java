@@ -21,34 +21,18 @@ import java.util.Date;
 /**
  * Created by Andrey on 06.07.2015.
  *
- * Сори все кто ждал
  */
 public class ConnectToServer {
     Socket s;
 
     int serverPort;
     String address;
-    /*
-    public Integer id; // идентификатор доступа в системе
-    public String surname;  // Фамилия
-    public String name;     // Имя
-    public String secondName;// Отчество
-    public String group; // Группа
-    public Boolean isLecturer;
-    */
+
     User SaveFromServer ;
     QueryError Error;
 
-    /*
-    SaveFromServer.surname=" ";
+    Reply tmpqueryResult;
 
-    User user=new User();
-    user.group=group;
-    user.name=name;
-    user.surname=surname;
-    user.secondName=secondName;
-    user.isLecturer=isLecturer;
-    */
     public boolean TryToConnect()
     {
         try
@@ -83,8 +67,8 @@ public class ConnectToServer {
     {
         if(query.getClass().equals(LoginRequest.class))
         {
-            return true; //Для тестирования GUI
-            /*
+            //return true; //Для тестирования GUI
+
             try
             {
                 System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
@@ -93,13 +77,15 @@ public class ConnectToServer {
                 InputStream request = s.getInputStream();
                 OutputStream response = s.getOutputStream();
 
-                SaveFromServer = ClientSide.transmit( query ,response ,request );
+                tmpqueryResult = ClientSide.transmit( query ,response ,request );
 
-                if(SaveFromServer.getClass().equals(User.class))
+                if(tmpqueryResult.getClass().equals(User.class))
                 {
+                    SaveFromServer = (User)tmpqueryResult;
                     return true;
                 }else
                 {
+                    Error = (QueryError)tmpqueryResult;
                     return false;
                 }
 
@@ -108,7 +94,7 @@ public class ConnectToServer {
             {
                 e.printStackTrace();
             }
-            */
+
 
         }
         else
@@ -117,14 +103,15 @@ public class ConnectToServer {
 
             return false;
         }
+        return false;
     }
 
     public Boolean RegisterUser(Query query) //Готово
     {
         if(query.getClass().equals(RegisterRequest.class))
         {
-            return true; //Для тестирования GUI
-            /*
+            //return true; //Для тестирования GUI
+
             try
             {
                 System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
@@ -133,11 +120,11 @@ public class ConnectToServer {
                 InputStream request = s.getInputStream();
                 OutputStream response = s.getOutputStream();
 
-                SaveFromServer = ClientSide.transmit( query ,response ,request );
+                tmpqueryResult = ClientSide.transmit( query ,response ,request );
 
-                if(SaveFromServer.getClass().equals(RegisterResult.class))
+                if(tmpqueryResult.getClass().equals(Registration.class))
                 {
-                    return ((RegisterResult)SaveFromServer).isRegistered ;
+                    return ((Registration)tmpqueryResult).isSuccess ;
 
                 }else
                 {
@@ -149,7 +136,7 @@ public class ConnectToServer {
             {
                 e.printStackTrace();
             }
-            */
+
         }
         else
         {
@@ -157,18 +144,19 @@ public class ConnectToServer {
 
             return false;
         }
+        return false;
 
     }
 
     public User UserRequest()
-    {
+    {/*
         SaveFromServer = new User();
 
         SaveFromServer.group="ИИБ-1-14";
         SaveFromServer.name="Вася";
         SaveFromServer.surname="Петин";
         SaveFromServer.secondName="Петюнин";
-        SaveFromServer.isLecturer=true;
+        SaveFromServer.isLecturer=true;*/
         return SaveFromServer;
     }
 
