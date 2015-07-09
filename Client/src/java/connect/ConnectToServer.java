@@ -29,7 +29,7 @@ public class ConnectToServer {
     String address;
 
     User SaveFromServer ;
-    QueryError Error;
+    String Error;
 
     Reply tmpqueryResult;
 
@@ -37,135 +37,223 @@ public class ConnectToServer {
     {
         try
         {
-            System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
             s = new Socket(address, serverPort);
-
             return true;
-
         }
         catch (IOException e)
         {
             e.printStackTrace();
-
+            Error = "Не удалось подключится к серверу";
             return false;
         }
     }
 
-    public ConnectToServer() {
-
+    public ConnectToServer()
+    {
         serverPort = 6666;
         address = "127.0.0.1";
+        Error = "";
     }
 
-    public ConnectToServer(int Port,String ip) {
-
+    public ConnectToServer(int Port,String ip)
+    {
         serverPort = Port;
         address = ip;
     }
 
-    public boolean  LoginIn(Query query) //Готово
+    public boolean  LoginIn(LoginRequest loginRequest) //Готово
     {
-        if(query.getClass().equals(LoginRequest.class))
+        try
         {
-            //return true; //Для тестирования GUI
+            s = new Socket(address, serverPort);
+            InputStream request = s.getInputStream();
+            OutputStream response = s.getOutputStream();
+            tmpqueryResult = ClientSide.transmit( loginRequest ,response ,request );
 
-            try
+            if(tmpqueryResult.getClass().equals(User.class))
             {
-                System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
-                s = new Socket(address, serverPort);
-
-                InputStream request = s.getInputStream();
-                OutputStream response = s.getOutputStream();
-
-                tmpqueryResult = ClientSide.transmit( query ,response ,request );
-
-                if(tmpqueryResult.getClass().equals(User.class))
+                SaveFromServer = (User)tmpqueryResult;
+                return true;
+            }else
+            {
+                if(tmpqueryResult.getClass().equals(QueryError.class))
                 {
-                    SaveFromServer = (User)tmpqueryResult;
-                    return true;
-                }else
-                {
-                    Error = (QueryError)tmpqueryResult;
+                    Error = ((QueryError)tmpqueryResult).message;
                     return false;
                 }
-
+                else
+                {
+                    Error = "Незапланированный ответ сервера";
+                    return false;
+                }
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-
-
         }
-        else
+        catch (IOException e)
         {
-            Error = new QueryError("Not LoginApply class");
-
+            e.printStackTrace();
+            Error = "IOException";
             return false;
         }
-        return false;
     }
 
-    public Boolean RegisterUser(Query query) //Готово
+    public Boolean RegisterUser(RegisterRequest registerRequest) //Готово
     {
-        if(query.getClass().equals(RegisterRequest.class))
+        try
         {
-            //return true; //Для тестирования GUI
+            s = new Socket(address, serverPort);
+            InputStream request = s.getInputStream();
+            OutputStream response = s.getOutputStream();
+            tmpqueryResult = ClientSide.transmit( registerRequest ,response ,request );
 
-            try
+            if(tmpqueryResult.getClass().equals(Registration.class))
             {
-                System.out.println("Try socket with IP address " + address + " and port " + serverPort + " ");
-                s = new Socket(address, serverPort);
-
-                InputStream request = s.getInputStream();
-                OutputStream response = s.getOutputStream();
-
-                tmpqueryResult = ClientSide.transmit( query ,response ,request );
-
-                if(tmpqueryResult.getClass().equals(Registration.class))
+                return ((Registration)tmpqueryResult).isSuccess ;
+            }
+            else
+            {
+                if(tmpqueryResult.getClass().equals(QueryError.class))
                 {
-                    return ((Registration)tmpqueryResult).isSuccess ;
-
-                }else
-                {
+                    Error = ((QueryError)tmpqueryResult).message;
                     return false;
                 }
-
+                else
+                {
+                    Error = "Незапланированный ответ сервера";
+                    return false;
+                }
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-
         }
-        else
+        catch (IOException e)
         {
-            Error = new QueryError("Not RegisterApply class");
-
+            e.printStackTrace();
+            Error = "IOException";
             return false;
         }
-        return false;
-
     }
 
     public User UserRequest()
-    {/*
-        SaveFromServer = new User();
-
-        SaveFromServer.group="ИИБ-1-14";
-        SaveFromServer.name="Вася";
-        SaveFromServer.surname="Петин";
-        SaveFromServer.secondName="Петюнин";
-        SaveFromServer.isLecturer=true;*/
+    {
         return SaveFromServer;
     }
 
     public String ErrorRequest()
     {
-        return ((QueryError)Error).message;
+        return Error;
     }
 
-    public static void main(String[] args) {
-        new ConnectToServer();
+    public Test TestInOut(TestRequest testRequest)
+    {
+        try
+        {
+            s = new Socket(address, serverPort);
+            InputStream request = s.getInputStream();
+            OutputStream response = s.getOutputStream();
+            Reply answer = ClientSide.transmit(testRequest, response, request);
+
+            if(answer.getClass().equals(Test.class))
+            {
+                return (Test)answer;
+            }else
+            {
+                if(answer.getClass().equals(QueryError.class))
+                {
+                    Error = ((QueryError)answer).message;
+                    return null;
+                }
+                else
+                {
+                    Error = "Незапланированный ответ сервера";
+                    return null;
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Error = "IOException";
+            return null;
+        }
     }
+
+    public boolean TestUpload(TestUploadRequest testUploadRequest)
+    {
+        try
+        {
+            s = new Socket(address, serverPort);
+            InputStream request = s.getInputStream();
+            OutputStream response = s.getOutputStream();
+            Reply answer = ClientSide.transmit(testUploadRequest, response, request );
+
+            if(answer.getClass().equals(TestUploading.class))
+            {
+                return ((TestUploading)answer).isSuccess;
+            }else
+            {
+                if(answer.getClass().equals(QueryError.class))
+                {
+                    Error = ((QueryError)answer).message;
+                    return false;
+                }
+                else
+                {
+                    Error = "Незапланированный ответ сервера";
+                    return false;
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Error = "IOException";
+            return false;
+        }
+    }
+
+    public boolean UploadTestResult(TestResultRequest testResultRequest)
+    {
+        try
+        {
+            s = new Socket(address, serverPort);
+            InputStream request = s.getInputStream();
+            OutputStream response = s.getOutputStream();
+            Reply answer = ClientSide.transmit(testResultRequest, response, request );
+
+            if(answer.getClass().equals(TestUploading.class))
+            {
+                return ((TestUploading)answer).isSuccess;
+            }else
+            {
+                if(answer.getClass().equals(QueryError.class))
+                {
+                    Error = ((QueryError)answer).message;
+                    return false;
+                }
+                else
+                {
+                    Error = "Незапланированный ответ сервера";
+                    return false;
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Error = "IOException";
+            return false;
+        }
+    }
+
+
+    /*
+    1.Зарегать юзера +
+    2.Залогинить его +
+    3.Запросить и получить тесты +
+    4.Отослать файлы с тестами +
+    5.Отослать файлы с результатами тестов +
+    6.Получить результаты лабы
+    7.Получить для каждого предмета список семестров
+    8.Получить для каждого семестра список групп
+    9.Получить для каждой группы список студентов с датами сдачи
+    10.Возвращать ошибки
+    */
 }
