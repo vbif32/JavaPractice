@@ -433,20 +433,18 @@ public class Window_s {
         one_3.getChildren().add(var);
         two_3.getChildren().add(forVariant);
 
-        //forTerm.getItems().addAll("1");
+
         //Добавлено добрыми феями
         TreeSet<Integer> subjects = new TreeSet<>();
         if(newUser.labInfo != null) {
             for (LabsPossible lp : newUser.labInfo)
                 subjects.add(lp.term);
-            forSubject.getItems().addAll(subjects);
+            for(Integer i : subjects)
+                forTerm.getItems().add(i.toString());
         }
         forTerm.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                forTest.term = Integer.valueOf(t1);
-                System.out.println(forTest.term);
-                //forSubject.getItems().addAll("Программирование", "АиСД");
                 //Добавлено добрыми феями
                 forSubject.getItems().clear();
                 forLab.getItems().clear();
@@ -461,19 +459,16 @@ public class Window_s {
             forSubject.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue ov, String t, String t1) {
-                    forTest.subject = t1;
-                    System.out.println(forTest.subject);
-                    //forLab.getItems().addAll("1");
                     //Добавлено добрыми феями
                     forLab.getItems().clear();
                     forVariant.getItems().clear();
                     int number = 0;
                     for(LabsPossible lp : newUser.labInfo)
-                        if(lp.subject.equals(t1) && lp.term.equals(forTerm.getValue())) {
+                        if(lp.subject.equals(t1) && lp.term.toString().equals(forTerm.getValue())) {
                             number = lp.variants.size();
                             break;
                         }
-                    for(int i = 1; i <= number; i++) forLab.getItems().add(i);
+                    for(int i = 1; i <= number; i++) forLab.getItems().add(Integer.toString(i));
                 }
             });
 
@@ -481,26 +476,22 @@ public class Window_s {
         forLab.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                forTest.number=Integer.valueOf(t1);
-                System.out.println(forTest.number);
-                //forVariant.getItems().addAll("1");
                 //Добавлено добрыми феями
                 forVariant.getItems().clear();
                 int variant = 0;
                 for(LabsPossible lp : newUser.labInfo)
-                    if(lp.subject.equals(forSubject.getValue()) && lp.term.equals(forTerm.getValue())) {
+                    if(lp.subject.equals(forSubject.getValue()) && lp.term.toString().equals(forTerm.getValue())) {
                         variant = lp.variants.get(Integer.parseInt(t1)-1);
                         break;
                     }
-                for(int i = 1; i <= variant; i++) forLab.getItems().add(i);
+                for(int i = 1; i <= variant; i++) forVariant.getItems().add(Integer.toString(i));
             }
         });
 
         forVariant.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                forTest.variant=Integer.valueOf(t1);
-                System.out.println(forTest.variant);
+
             }
         });
 
