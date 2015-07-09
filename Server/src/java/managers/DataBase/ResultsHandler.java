@@ -4,8 +4,8 @@ package managers.DataBase;
 
 import java.sql.*;
 import java.util.*;
-import shed.LabSubmitDate;
-import shed.StudentResult;
+import transfer.LabSubmitDate;
+import transfer.StudentResult;
 
 //класс для вывода всей информации о студенте
 

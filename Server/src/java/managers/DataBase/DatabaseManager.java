@@ -1,7 +1,7 @@
 package managers.DataBase;
 
-import shed.queryResult.User;
-import shed.StudentResult;
+import reply.User;
+import transfer.StudentResult;
 
 import java.sql.*;
 import java.util.*;
@@ -25,11 +25,12 @@ import java.util.*;
     subject_name - VARCHAR(128) not null
     number_of_labs - INT not null
 
-таблица student_subject_relation предметы изучаемые студентом
-    столбцы:
-    system_id - INT primary key unique not_null
-    subject_id - INT[] not null
-
+таблица lab_variants для хранения вариантов для студентов
+    столбцы;
+     system_id - INT primary key not NULL
+     subject_id - INT primary key not NULL
+     term - INT primary key not NULL
+     lab_1 ....... аналогично student results
 таблица student_results даты сдачи студентом лабораторных по предмету
     столбцы:
     system_id - INT primary key not null
@@ -68,7 +69,9 @@ public class DatabaseManager {
     }
     //функция проверки аккаунта
     public static User verifyAccount(String login, String password){
-        return (new UserDataHandler(DatabaseConnection).VerifyAccount(login,password));
+        UserDataHandler temp = new UserDataHandler(DatabaseConnection);
+        int id =temp.VerifyAccount(login,password);
+        return temp.getPersonalData(id);
     }
 
     //функция вноса данных пользователя в БД

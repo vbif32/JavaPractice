@@ -1,8 +1,10 @@
 package managers.DataBase;
 
-import shed.queryResult.User;
+import org.postgresql.util.PSQLException;
+import reply.User;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 //класс для работы с личной информацией пользователя
 class UserDataHandler {
@@ -17,34 +19,56 @@ class UserDataHandler {
 
     //проверяет если данный пользователь существует,если да возвращает его данные
 
-    User VerifyAccount(String login,String password){
-        User user = new User();
+    int VerifyAccount(String login,String password){
         try{
-            stm = connection.prepareStatement("SELECT password FROM user_data WHERE login = ?");
+            stm = connection.prepareStatement("SELECT password,system_id FROM user_data WHERE login = ?");
             stm.setString(1,login);
             res = stm.executeQuery();
-            try{
-                String Pass = " ";
-                res.next();
-                Pass = res.getString("password");
-                if(!Pass.equals(password)){
-                    return null;
+            while(res.next()){
+                String pass= res.getString("password");
+                if(pass.equals(password)){
+                    return res.getInt("system_id");
                 }
-                user.id=res.getInt("system_id");
-                user.isLecturer = res.getBoolean("is_lecturer");
-                user.group = res.getString("group_name");
-                user.surname = res.getString("surname");
-                user.name = res.getString("name");
-                user.secondName = res.getString("second_name");
-            }catch(NullPointerException e){
-                return null;
+                return 0;
             }
         }catch(SQLException e){
+            return 0;
+        }
+        return 0;
+    }
+
+    User getPersonalData(int systemId){
+        User user = new User();
+        try{
+            stm = connection.prepareStatement("SELECT * FROM user_data WHERE system_id = ?");
+            stm.setInt(1, systemId);
+            res = stm.executeQuery();
+            res.next();
+            user.id=res.getInt("system_id");
+            user.isLecturer = res.getBoolean("is_lecturer");
+            user.group = res.getString("group_name");
+            user.surname = res.getString("surname");
+            user.name = res.getString("name");
+            user.secondName = res.getString("second_name");
+            try{
+                Array ar = res.getArray("studied_subjects");
+                user.labInfo = new ArrayList<>();
+                Integer[] subjects =(Integer[]) ar.getArray();
+                VariantTableHandler handler = new VariantTableHandler(connection);
+                for(int subject:subjects){
+                    user.labInfo = handler.RetrieveVariantInfo(user.id, subject, user.labInfo);
+                }
+            }catch(NullPointerException e){
+                e.printStackTrace();
+                user.labInfo = null;
+                //данных нет, выходим возвращаем пользователя без info о вариантах
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
             return null;
         }
         return user;
     }
-
     //добавляет аккаунт в БД
 
     boolean AddUser(User user,String Login,String password){
