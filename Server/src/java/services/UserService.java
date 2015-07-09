@@ -1,13 +1,12 @@
 package services;
 
 import managers.DataBase.DatabaseManager;
-import managers.DataBaseManager;
-import shed.QueryResult;
-import shed.query.LoginApply;
-import shed.query.RegisterApply;
-import shed.queryResult.QueryError;
-import shed.queryResult.RegisterResult;
-import shed.queryResult.User;
+import query.LoginRequest;
+import query.RegisterRequest;
+import reply.QueryError;
+import reply.Registration;
+import reply.Reply;
+import reply.User;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +18,7 @@ public class UserService {
     /*
     регистрация пользователя
   */
-    public static QueryResult registerUser(RegisterApply registerApply){
+    public static Reply registerUser(RegisterRequest registerApply){
         String login=registerApply.login;
         String password=registerApply.password;
         String name=registerApply.name;
@@ -41,8 +40,8 @@ public class UserService {
             user.secondName=secondName;
             user.isLecturer=isLecturer;
             if(DatabaseManager.addUser(user, login, password)==true){
-                RegisterResult r=new RegisterResult();
-                r.isRegistered=true;
+                Registration r=new Registration();
+                r.isSuccess=true;
                 return r;
             }
             else {
@@ -60,7 +59,7 @@ public class UserService {
     /*
     авторизация пользователя
      */
-    public static QueryResult authenticateUser(LoginApply loginApply){
+    public static Reply authenticateUser(LoginRequest loginApply){
         String login=loginApply.login;
         String password=loginApply.password;
         String LOGIN_PASSWORD_PATTERN="^[а-яА-я]+$";
