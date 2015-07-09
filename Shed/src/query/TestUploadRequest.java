@@ -15,8 +15,13 @@ public class TestUploadRequest implements Query {
         output = out;
     }
 
-    public File input;   // входная последовательность
-    public File output;  // выходная последовательность
+    public Integer id;          // идентификатор доступа в системе
+    public String subject;      // предмет
+    public Integer term;        // семестр
+    public Integer labNumber;   // номер лабораторной работы
+    public Integer variant;     // вариант лабороторной работы
+    public File input;          // входная последовательность
+    public File output;         // выходная последовательность
 
     @Override
     public Queries getType() {
