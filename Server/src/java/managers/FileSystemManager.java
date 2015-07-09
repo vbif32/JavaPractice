@@ -30,7 +30,7 @@ public class FileSystemManager {
         String[] names = f.list();
         if ((names != null) && (names.length > 0))
             for (String currentName : names)
-                return !deleteFile(path + "\\" + currentName) ? false : f.delete();
+                return !deleteFile(path + File.separator + currentName) ? false : f.delete(); //исправлено, теперь не только под шиндус
         return f.delete();
     }
 
@@ -91,11 +91,11 @@ public class FileSystemManager {
         if ((list != null) && (list.length > 0)) for (int i = 0; i < list.length; i++) {
             String currentName = list[i];
             if (currentName.equals(requiredName)) {
-                String foundPath = initialPath + "\\" + currentName;
+                String foundPath = initialPath + File.separator + currentName; //исправлено
                 return new File(foundPath);
             } else {
                 if (f.isDirectory()) {
-                    File couldBeFound = searchFile(requiredName, initialPath + "\\" + currentName);
+                    File couldBeFound = searchFile(requiredName, initialPath + File.separator + currentName); //исправлено
                     if ((couldBeFound == null) && (i >= list.length))
                         return null;
                     else {
