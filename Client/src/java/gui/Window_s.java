@@ -22,11 +22,12 @@ import javafx.scene.paint.Paint;
 import query.LoginRequest;
 import query.RegisterRequest;
 import reply.User;
+import tester.Tester;
 import transfer.LabsPossible;
 import transfer.StudentResult;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.util.*;
 
@@ -67,9 +68,9 @@ public class Window_s {
             registration();
         else if (page==3)
         {
-            //if (!newUser.isLecturer)
-                //forStudents();
-                //else
+            if (!newUser.isLecturer)
+                forStudents();
+            else
                 forTeachers();
         }
         else if (page==4)
@@ -117,30 +118,30 @@ public class Window_s {
                               @Override
                               public void handle(javafx.event.ActionEvent actionEvent) {
                                   if ((textForLogin.getText().isEmpty())||(textForPassword.getText().isEmpty())||(!textForLogin.getText().matches("\\w{3,}"))||(!textForPassword.getText().matches("\\w{6,}"))) {
-                                      if (!textForLogin.getText().matches("\\w{3,}")) {
-                                          check = false;
-                                          errorLogin.setText("Invalid input. Login must contain more than 3 English letters or digits");
-                                          errorLogin.setStyle("-fx-font-style:italic;");
-                                      }
-                                      if (!textForPassword.getText().matches("\\w{6,}")) {
-                                          errorPass.setText("Invalid input. Password must contain more than 6 English letters or digits");
-                                          errorPass.setStyle("-fx-font-style:italic;");
-                                          check = false;
-                                      }
                                       if (textForLogin.getText().isEmpty()) {
                                           check = false;
-                                          errorLogin.setText("Enter your login");
+                                          errorLogin.setText("Введите логин.");
                                           errorLogin.setStyle("-fx-font-style:italic;");
                                       }
+                                      else if (!textForLogin.getText().matches("\\w{3,}")) {
+                                          check = false;
+                                          errorLogin.setText("Неверный ввод. Введите более 3 английских букв/цифр.");
+                                          errorLogin.setStyle("-fx-font-style:italic;");
+                                      }
+                                      else errorLogin.setText("");
                                       if (textForPassword.getText().isEmpty()) {
                                           check = false;
-                                          errorPass.setText("Enter your password");
+                                          errorPass.setText("Введите пароль.");
                                           errorPass.setStyle("-fx-font-style:italic;");
                                       }
+                                      else if (!textForPassword.getText().matches("\\w{6,}")) {
+                                          errorPass.setText("Неверный ввод. Введите более 6 английских букв/цифр.");
+                                          errorPass.setStyle("-fx-font-style:italic;");
+                                          check = false;
+                                      }
+                                      else errorPass.setText("");
                                   }
                                       else {
-                                          errorLogin.setText("");
-                                          errorPass.setText("");
                                           LoginRequest loginApply = new LoginRequest();
                                           loginApply.login = textForLogin.getText();
                                           loginApply.password = textForPassword.getText();
@@ -205,6 +206,7 @@ public class Window_s {
     public void registration () //Окно регистрации
     {
         visibleField.getChildren().clear();
+        final int[] done = {-1};
         //Имя
         HBoxBuilder hBoxBuilder = HBoxBuilder.create();
         HBox forName = hBoxBuilder.build();
@@ -276,62 +278,147 @@ public class Window_s {
         forPassword.setSpacing(24);
         forPassword.setAlignment(Pos.CENTER);
 
-        visibleField.getChildren().addAll(forSurname,forName, forPatronymic, forGroup, forLogin, forPassword);
-
         final Label label = new Label();
-
+        HBox errorSur = new HBox();
+        final HBox errorN = new HBox();
+        final HBox errorSec = new HBox();
+        HBox errorGr = new HBox();
+        HBox errorL = new HBox();
+        HBox errorP = new HBox();
+        final Label errorSurname = new Label();
+        final Label errorName = new Label();
+        final Label errorSecond = new Label();
+        final Label errorGroup = new Label();
+        final Label errorLogin = new Label();
+        final Label errorPass = new Label();
 
         // Кнопки
+        final HBox forS = new HBox();
+        final Button success = new Button("Регистрация прошла успешно");
+        success.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                page=1;
+                Window();
+            }
+        });
         HBox forButtons = hBoxBuilder.build();
         Button registration = new Button("Зарегистрироваться");
         registration.setOnAction(new EventHandler<ActionEvent>() {
                                      @Override
                                      public void handle(javafx.event.ActionEvent actionEvent) {
 
+                                         if (done[0]==-1) {
                                              if ((textForLogin.getText().isEmpty()) || (textForName.getText().isEmpty()) || (textForSurname.getText().isEmpty()) ||
-                                                     (textForGroup.getText().isEmpty()) || (textForPassword.getText().isEmpty()) || (textForPatronymic.getText().isEmpty())) {
-                                                 check = false;
-                                                 label.setText("Неверно введены данные");
-                                                 label.setStyle("-fx-font-style:italic;");
-
-                                             } else if ((!textForName.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) || (!textForSurname.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) ||
+                                                     (textForGroup.getText().isEmpty()) || (textForPassword.getText().isEmpty()) || (textForPatronymic.getText().isEmpty()) ||
+                                                     (!textForName.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) || (!textForSurname.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) ||
                                                      (!textForPatronymic.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) || (!textForGroup.getText().matches("([А-Я]|Ё){3}\\-\\d+\\-[1-9]{2}"))
                                                      || (!textForLogin.getText().matches("\\w{3,}")) || (!textForPassword.getText().matches("\\w{6,}"))) {
                                                  check = false;
-                                                 label.setText("Неверно введены данные");
-                                                 label.setStyle("-fx-font-style:italic;");
+                                                 if (textForName.getText().isEmpty()) {
+                                                     errorName.setText("Введите имя.");
+                                                     errorName.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else if (!textForName.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) {
+                                                     errorName.setText("Неверный ввод. Введите только русские буквы, первая буква - заглавная.");
+                                                     errorName.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else errorName.setText("");
+
+                                                 if (textForSurname.getText().isEmpty()) {
+                                                     errorSurname.setText("Введите фамилию.");
+                                                     errorSurname.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else if (!textForSurname.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) {
+                                                     errorSurname.setText("Неверный ввод. Введите только русские буквы, первая буква - заглавная.");
+                                                     errorSurname.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else errorSurname.setText("");
+
+                                                 if (textForPatronymic.getText().isEmpty()) {
+                                                     errorSecond.setText("Введите отчество.");
+                                                     errorSecond.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else if (!textForPatronymic.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) {
+                                                     errorSecond.setText("Неверный ввод. Введите только русские буквы, первая буква - заглавная.");
+                                                     errorSecond.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else errorSecond.setText("");
+
+                                                 if (textForGroup.getText().isEmpty()) {
+                                                     errorGroup.setText("Введите группу.");
+                                                     errorGroup.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else if (!textForGroup.getText().matches("([А-Я]|Ё){3}\\-\\d+\\-[1-9]{2}")) {
+                                                     errorGroup.setText("Неверный ввод.");
+                                                     errorGroup.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else errorGroup.setText("");
+
+                                                 if (textForPassword.getText().isEmpty()) {
+                                                     errorPass.setText("Ведите пароль.");
+                                                     errorPass.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else if (!textForPassword.getText().matches("\\w{6,}")) {
+                                                     errorPass.setText("Неверный ввод. Введите более 6 английских букв/цифр.");
+                                                     errorPass.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else errorPass.setText("");
+
+                                                 if (textForLogin.getText().isEmpty()) {
+                                                     errorLogin.setText("Введите имя.");
+                                                     errorLogin.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else if (!textForLogin.getText().matches("\\w{3,}")) {
+                                                     errorLogin.setText("Неверный ввод. Введите более 3 английских букв/цифр.");
+                                                     errorLogin.setStyle("-fx-font-style:italic;");
+                                                 }
+                                                 else errorLogin.setText("");
                                              } else {
-                                                 System.out.println("все ок");
                                                  RegisterRequest registerApply = new RegisterRequest();
-                                                 registerApply.isLecturer=false;
-                                                 registerApply.name=textForName.getText();
-                                                 registerApply.surname=textForSurname.getText();
-                                                 registerApply.secondName=textForPatronymic.getText();
-                                                 registerApply.group=textForGroup.getText();
-                                                 registerApply.login=textForLogin.getText();
-                                                 registerApply.password=textForPassword.getText();
+                                                 registerApply.isLecturer = false;
+                                                 registerApply.name = textForName.getText();
+                                                 registerApply.surname = textForSurname.getText();
+                                                 registerApply.secondName = textForPatronymic.getText();
+                                                 registerApply.group = textForGroup.getText();
+                                                 registerApply.login = textForLogin.getText();
+                                                 registerApply.password = textForPassword.getText();
                                                  check = connect.RegisterUser(registerApply);
                                                  if (check) {
-                                                     label.setText("Регистрация прошла успешно");
-                                                     label.setStyle("-fx-font-style:italic;");
-                                                     page=1;
-                                                     System.out.println("true");
-                                                     Window();
-                                                     /*try {
-                                                         TimeUnit.SECONDS.sleep(3);
-                                                     } catch (InterruptedException e) {
-                                                         e.printStackTrace();
-                                                     }*/
-                                                 }
-                                                 else
-                                                 {
+                                                     done[0] = 1;
+                                                     errorName.setText("");
+                                                     errorSecond.setText("");
+                                                     errorSurname.setText("");
+                                                     errorGroup.setText("");
+                                                     errorLogin.setText("");
+                                                     errorPass.setText("");
+                                                     forS.getChildren().add(success);
+                                                     forS.setAlignment(Pos.CENTER);
+                                                 } else {
                                                      label.setText(connect.ErrorRequest());
                                                      label.setStyle("-fx-font-style:italic;");
                                                  }
                                              }
+                                         }
                                      }
                                  }
         );
+        errorN.getChildren().add(errorName);
+        errorGr.getChildren().add(errorGroup);
+        errorL.getChildren().add(errorLogin);
+        errorP.getChildren().add(errorPass);
+        errorSur.getChildren().add(errorSurname);
+        errorSec.getChildren().add(errorSecond);
+
+        errorN.setAlignment(Pos.CENTER);
+        errorGr.setAlignment(Pos.CENTER);
+        errorL.setAlignment(Pos.CENTER);
+        errorP.setAlignment(Pos.CENTER);
+        errorSur.setAlignment(Pos.CENTER);
+        errorSec.setAlignment(Pos.CENTER);
+
+        visibleField.getChildren().addAll(forSurname, errorSur, forName, errorN, forPatronymic, errorSec, forGroup, errorGr, forLogin, errorL, forPassword, errorP, new Label("\n"));
+        visibleField.getChildren().add(forS);
         Button cancel = new Button("Отмена");
         cancel.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -449,6 +536,7 @@ public class Window_s {
                 forSubject.getItems().clear();
                 forLab.getItems().clear();
                 forVariant.getItems().clear();
+                forTest.term=Integer.valueOf(t1);
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.term.toString().equals(t1)) {
                         forSubject.getItems().add(lp.subject);
@@ -462,6 +550,7 @@ public class Window_s {
                     //Добавлено добрыми феями
                     forLab.getItems().clear();
                     forVariant.getItems().clear();
+                    forTest.subject=t1;
                     int number = 0;
                     for(LabsPossible lp : newUser.labInfo)
                         if(lp.subject.equals(t1) && lp.term.toString().equals(forTerm.getValue())) {
@@ -478,6 +567,7 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 //Добавлено добрыми феями
                 forVariant.getItems().clear();
+                forTest.number=Integer.valueOf(t1);
                 int variant = 0;
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.subject.equals(forSubject.getValue()) && lp.term.toString().equals(forTerm.getValue())) {
@@ -491,7 +581,7 @@ public class Window_s {
         forVariant.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-
+                forTest.variant=Integer.valueOf(t1);
             }
         });
 
@@ -557,46 +647,35 @@ public class Window_s {
             public void handle(MouseEvent mouseEvent) {
                 JFileChooser laba = new JFileChooser();
                 if (forTest.subject!=null) { //что-то выбрано
-                    int rezult = laba.showDialog(null, "Открыть файл");
-                    if (rezult == JFileChooser.APPROVE_OPTION) {
-                        if (forTest.subject.equals("Программирование"))
-                            laba.addChoosableFileFilter(new FileFilter() {
-                                @Override
-                                public boolean accept(File f) {
-                                    if (f.isFile() || f.getName().contains(".jar"))
-                                        return true;
-                                    else
-                                        return false;
-                                }
-                                @Override
-                                public String getDescription() {
-                                    return ".jar";
-                                }
-                            });
+                    if (forTest.subject.equals("Программирование"))
+                    {
+                        FileNameExtensionFilter filter = new FileNameExtensionFilter("jar","jar file");
+                        laba.setFileFilter(filter);
+                        laba.setDialogTitle("Choose a file");
+                        int returnVal = laba.showOpenDialog(null);
+                        if(returnVal == JFileChooser.APPROVE_OPTION) {
+                            file[0]=laba.getSelectedFile();
+                            done.setText("Файл загружен");
+                        }
+                    }
                         else if (forTest.subject.equals("АиСД"))
-                            laba.addChoosableFileFilter(new FileFilter() {
-                                @Override
-                                public boolean accept(File f) {
-                                    if (f.isFile() || f.getName().contains(".cpp"))
-                                        return true;
-                                    else
-                                        return false;
-                                }
-                                @Override
-                                public String getDescription() {
-                                    return ".cpp";
-                                }
-                            });
-                        file[0] = laba.getSelectedFile();
-                        System.out.println(file[0].getAbsolutePath());
-                        done.setText("Файл загружен");
-                    } else done.setText("");
+                    {
+                        FileNameExtensionFilter filter = new FileNameExtensionFilter("exe","exe file");
+                        laba.setFileFilter(filter);
+                        laba.setDialogTitle("Choose a file");
+                        int returnVal = laba.showOpenDialog(null);
+                        if(returnVal == JFileChooser.APPROVE_OPTION) {
+                            file[0]=laba.getSelectedFile();
+                            done.setText("Файл загружен");
+                        }
+                    }
+                    else done.setText("");
                 } else done.setText("Выберите предмет");
                 files.getChildren().add(done);
             }
         });
         files.getChildren().add(openL);
-        leftVBox.getChildren().addAll(choose, new Label("\n"),files, new Label("\n"), new Label("Для компиляции cpp файлов требуется предустановленный g++ компилятор"));
+        leftVBox.getChildren().addAll(choose, new Label("\n"),files, new Label("\n"), new Label("Для создания exe файлов требуется предустановленный g++ компилятор"), new Label("\n"), new Label("Для создания jar файлов требуется предустановленный Ant"));
 
         Button exit = new Button("Выйти");
         exit.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -650,11 +729,7 @@ public class Window_s {
                         mistakesInCode.setText("");
                     } else
                         mistakesInCode.setText("Введите код/добавьте файл");
-                    //ПРОВЕРКА РЕЗУЛЬТАТА
-                    final boolean res = false;
-                    if (res)
-                        testResult.setText("Тест прошел успешно");
-                    else testResult.setText("Тест не пройден");
+                        testResult.setText(Tester.labTestExecute(forTest));
                 }
                 if (!mistakesInCode.getText().equals(""))
                     newVbox.getChildren().add(mistakesInCode);
@@ -690,7 +765,7 @@ public class Window_s {
         });
 
         leftVBox.getChildren().addAll(new Label("\n"), results);
-        rightVBox.getChildren().addAll(newVbox,  new Label("\n"));
+        rightVBox.getChildren().addAll(newVbox,  new Label("\n"), new Label("\n"), new Label("\n"));
 
         //ВЫЙТИ
         HBox hBox = new HBox();
@@ -745,10 +820,6 @@ public class Window_s {
 //КОНЕЦ ТАБЛИЦЫ
 
 
-
-
-
-
         HBox choose = new HBox();
 
         HBox sem = new HBox(10);
@@ -784,6 +855,7 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 forSub.getItems().clear();
                 forGroup.getItems().clear();
+                chooseSem[0] = Integer.valueOf(t1);
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.term.toString().equals(t1)) {
                         forSub.getItems().add(lp.subject);
@@ -795,6 +867,7 @@ public class Window_s {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 forGroup.getItems().clear();
+                chooseSub[0] = t1;
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.subject.equals(t1) && lp.term.toString().equals(forSem.getValue())) {
                         forGroup.getItems().addAll(lp.groups);
@@ -806,7 +879,8 @@ public class Window_s {
         forGroup.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-
+                chooseGroup[0] = t1;
+                firstTable.setVisible(true);
             }
         });
 
@@ -897,6 +971,7 @@ public class Window_s {
         }
     }
 
+
     public void downloadTests()
     {
         visibleField.getChildren().clear();
@@ -906,48 +981,120 @@ public class Window_s {
         HBox term = new HBox(58);
         term.setTranslateX(-16);
         HBox subject = new HBox(55);
-        subject.setTranslateX(49);
+        subject.setTranslateX(33);
         HBox number = new HBox(12);
-        number.setTranslateX(-17);
+        number.setTranslateX(-16);
         HBox variant = new HBox(40);
         variant.setTranslateX(-16);
 
-        TextField isTerm = new TextField();
-        isTerm.setMinWidth(15);
-        isTerm.setMaxWidth(15);
-        TextField isSubject = new TextField();
-        TextField isNumber = new TextField();
-        isNumber.setMinWidth(15);
-        isNumber.setMaxWidth(15);
-        TextField isVariant = new TextField();
-        isVariant.setMinWidth(15);
-        isVariant.setMaxWidth(15);
+        final ComboBox isTerm = new ComboBox();
+        isTerm.setMinWidth(50);
+        isTerm.setMaxWidth(50);
+        final ComboBox isSubject = new ComboBox();
+        isSubject.setMinWidth(150);
+        isSubject.setMaxWidth(150);
+        final ComboBox isNumber = new ComboBox();
+        isNumber.setMinWidth(50);
+        isNumber.setMaxWidth(50);
+        final ComboBox isVariant = new ComboBox();
+        isVariant.setMinWidth(50);
+        isVariant.setMaxWidth(50);
+
+        TreeSet<Integer> subjects = new TreeSet<>();
+        if(newUser.labInfo != null) {
+            for (LabsPossible lp : newUser.labInfo)
+                subjects.add(lp.term);
+            for(Integer i : subjects)
+                isTerm.getItems().add(i.toString());
+        }
+        isTerm.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                isSubject.getItems().clear();
+                isNumber.getItems().clear();
+                isVariant.getItems().clear();
+                forTest.term=Integer.valueOf(t1);
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.term.toString().equals(t1)) {
+                        isSubject.getItems().add(lp.subject);
+                    }
+            }
+        });
+
+        isSubject.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                isNumber.getItems().clear();
+                isVariant.getItems().clear();
+                forTest.subject=t1;
+                int number = 0;
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.subject.equals(t1) && lp.term.toString().equals(isTerm.getValue())) {
+                        number = lp.variants.size();
+                        break;
+                    }
+                for(int i = 1; i <= number; i++) isNumber.getItems().add(Integer.toString(i));
+            }
+        });
+
+        isNumber.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                isVariant.getItems().clear();
+                forTest.number=Integer.valueOf(t1);
+                int variant = 0;
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.subject.equals(isSubject.getValue()) && lp.term.toString().equals(isTerm.getValue())) {
+                        variant = lp.variants.get(Integer.parseInt(t1)-1);
+                        break;
+                    }
+                for(int i = 1; i <= variant; i++) isVariant.getItems().add(Integer.toString(i));
+            }
+        });
+
+        isVariant.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                forTest.variant=Integer.valueOf(t1);
+            }
+        });
+
+
 
         //ФАЙЛ
+        final File[] f = new File[1];
         Button file = new Button("Загрузить файл");
         file.setTranslateX(-18);
         file.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                JFileChooser laba = new JFileChooser();
-                int rezult = laba.showDialog(null, "Открыть файл");
-                if (rezult == JFileChooser.APPROVE_OPTION) {
-                    laba.addChoosableFileFilter(new FileFilter() {
-                        @Override
-                        public boolean accept(File f) {
-                            if (f.isFile() || f.getName().contains(".txt"))
-                                return true;
-                            else
-                                return false;
-                        }
-                        @Override
-                        public String getDescription() {
-                            return ".txt";
-                        }
-                    });
+                JFileChooser test = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("txt","txt file");
+                test.setFileFilter(filter);
+                test.setDialogTitle("Choose a new test");
+                int returnVal = test.showOpenDialog(null);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    f[0]=test.getSelectedFile();
                 }
             }
         });
+
+        final Label label = new Label();
+        VBox send = new VBox();
+        Button sendFile = new Button("Отправить файл");
+        sendFile.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (f[0]==null)
+                    label.setText("Выберите тест");
+                else label.setText("");
+            }
+        });
+
+        send.setAlignment(Pos.CENTER);
+        send.setTranslateX(-18);
+        send.getChildren().addAll(sendFile, new Label("\n"),label);
+
 
         HBox hBox = new HBox(45);
         Button back = new Button("Назад");
@@ -958,7 +1105,7 @@ public class Window_s {
                 Window();
             }
         });
-        hBox.getChildren().addAll(back, new Label("      "));
+        hBox.getChildren().addAll(back, new Label("            "));
 
         term.getChildren().addAll(new Label("Семестр"), isTerm);
         term.setAlignment(Pos.CENTER);
@@ -969,7 +1116,7 @@ public class Window_s {
         variant.getChildren().addAll(new Label("Вариант №"), isVariant);
         variant.setAlignment(Pos.CENTER);
         file.setAlignment(Pos.CENTER);
-        vBox.getChildren().addAll(term, subject, number, variant, new Label("\n"), file);
+        vBox.getChildren().addAll(term, new Label("\n"), subject, new Label("\n"), number,new Label("\n"), variant, new Label("\n"), new Label("\n"), file, new Label("\n"), send);
         hBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().addAll(new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"), hBox);
 
