@@ -3,6 +3,7 @@ package tester;
 import gui.ForTest;
 
 import java.io.*;
+import java.util.Objects;
 
 public class Tester {
 
@@ -12,23 +13,32 @@ public class Tester {
     private File inputTestFile;
     private File outputTestFIle;
     private boolean isCorrected;
+    private String stringResult = "";
     String labId;
 
     private Tester(String code, ForTest labInf){
         this.labInf = labInf;
         this.labId = "_" + labInf.term + "_" +  labInf.number + "_" + labInf.variant;
-        if (labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
+        if (labInf.subject.equals("Программирование")) {
             this.labFile = Compiler.compileJar(code, this.labId);
-        } else if (labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
+        } else if (labInf.subject.equals("АиСД")) {
             this.labFile  = Compiler.compileCpp(code, this.labId);
         }
-        this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
+        if (this.labFile!=null) {
+            this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
+        } else {
+            this.stringResult = "Ошибка при компиляции файла.";
+        }
     }
 
     private Tester(File labFile, ForTest labInf){
         this.labInf = labInf;
         this.labFile = labInf.laba;
-        this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
+        if (new File(this.labFile.getAbsolutePath()).exists()) {
+            this.getTests(labInf.userId, labInf.subject, labInf.term, labInf.number);
+        } else {
+            this.stringResult = "Файл не найден.";
+        }
     }
 
     /**
@@ -38,8 +48,8 @@ public class Tester {
 
     }
 
-    private void sendResult(){
-
+    private String sendResult(){
+        return null;
     }
 
     /**
@@ -48,9 +58,9 @@ public class Tester {
     private void compareOutput(){
         String labOutput = "";
         if (this.labFile != null) {
-            if (this.labInf.subject.equals("Программирование")) { //исправить идентификаторы предметов
+            if (this.labInf.subject.equals("Программирование")) {
                 labOutput = Launcher.getJavaOutput(this.labFile.getAbsolutePath(), this.inputTestFile);
-            } else if (this.labInf.subject.equals("АиСД")) { //исправить идентификаторы предметов
+            } else if (this.labInf.subject.equals("АиСД")) {
                 labOutput = Launcher.getCppOutput(this.labFile.getAbsolutePath(), this.inputTestFile);
             }
         } else {
@@ -58,7 +68,7 @@ public class Tester {
             System.out.println("File with lab not found.");
             return;
         }
-        System.out.println("Reading test file (out): ");
+        System.out.println("Reading test file (out).");
         String testOutput = readFile(this.outputTestFIle);
         System.out.println("-");
         System.out.println("Lab output:");
@@ -114,33 +124,43 @@ public class Tester {
                     if (file.isDirectory()) {
                         deleteDirectory(file);
                     } else {
-                        file.delete();
+                        System.out.println("deleting: " + file.getAbsolutePath() + " -> " +  file.delete());
                     }
                 }
             }
-            theDir.delete();
+            System.out.println("deleting: " + theDir.getAbsolutePath() + " -> " + theDir.delete());
         }
     }
 
-    public static boolean labTestExecute(ForTest labInf){
+    public static String labTestExecute(ForTest labInf){
         Tester tester;
         if (labInf.code != null && !labInf.code.equals("")){
             tester = new Tester(labInf.code, labInf);
-            tester.compareOutput();
-        } else if (labInf.laba != null) {
+            if (tester.labFile != null){
+                tester.compareOutput();
+            }
+        } else if (labInf.laba != null && new File(labInf.laba.getAbsolutePath()).exists()) {
             tester = new Tester(labInf.laba, labInf);
             tester.compareOutput();
         } else {
-            return false;
+            return "Файл или код не найден.";
         }
-        tester.sendResult();
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-//            e.printStackTrace();
+        if (tester.stringResult.equals("Файл не найден.") || tester.stringResult.equals("Ошибка при компиляции файла.")){
+            deleteDirectory(new File("temp"));
+            return tester.stringResult;
+        }
+        String reply = tester.sendResult();
+        if (!(reply == null || Objects.equals(reply, ""))){
+            tester.stringResult = reply;
+        } else {
+            if (tester.isCorrected){
+                tester.stringResult = "Тест пройден успешно.";
+            } else {
+                tester.stringResult = "Тест не пройден.";
+            }
         }
         deleteDirectory(new File("temp"));
-        return tester.isCorrected;
+        return tester.stringResult;
     }
 
 }

@@ -47,6 +47,7 @@ public class Compiler {
         File tempLabFile = new File("temp/labFile" + id + ".cpp"); //!!!указать путь
         String compileError = null;
         BufferedReader eis;
+        Process compileProcess = null;
         String newFileAbsolutePath = (tempLabFile.getAbsolutePath()).replace(".cpp", ".out");
         try {
             FileWriter fw = new FileWriter(tempLabFile);
@@ -54,7 +55,7 @@ public class Compiler {
             fw.close();
             List<String> params = java.util.Arrays.asList("g++", tempLabFile.getAbsolutePath(), "-o", newFileAbsolutePath);
             ProcessBuilder builder = new ProcessBuilder(params);
-            Process compileProcess = builder.start();
+            compileProcess = builder.start();
             eis = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream()));
             compileError = readBufferedStream(eis);
             compileProcess.waitFor();
@@ -64,21 +65,18 @@ public class Compiler {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        tempLabFile.deleteOnExit();
-        if (compileError != null && compileError.equals("\n")) {
-            System.out.println("-");
-            System.out.println("    Сompile errors:");
-            System.out.println(compileError);
-            System.out.println("-");
-        }
+//        tempLabFile.deleteOnExit();
         if (!new File(newFileAbsolutePath).exists()){
             System.out.println("File is not compiled!");
             System.out.println(compileError);
+            System.out.println("------------");
+            return null;
         } else {
             System.out.println("File is compiled!");
+            System.out.println("------------");
+            return new File(newFileAbsolutePath);
         }
-        System.out.println("------------");
-        return new File(newFileAbsolutePath);
+
     }
 
     /*
@@ -218,7 +216,6 @@ public class Compiler {
             compileProcess.waitFor();
             eis.close();
             is.close();
-            compileProcess.destroy();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -234,12 +231,14 @@ public class Compiler {
         if (!new File(newFileAbsolutePath).exists()){
             System.out.println("File is not compiled!");
             System.out.println(compileError);
+            System.out.println("------------");
+            return null;
         } else {
             System.out.println(compileInf);
             System.out.println("File is compiled!");
+            System.out.println("------------");
+            return new File(newFileAbsolutePath);
         }
-        System.out.println("------------");
-        return new File(newFileAbsolutePath);
     }
 
     private static String readBufferedStream(BufferedReader rdr) throws IOException {

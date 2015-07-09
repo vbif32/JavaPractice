@@ -15,6 +15,9 @@ public class Launcher {
      * @return результат работы программы
      */
     private static String runJava(String labPath, File inputTestFile){
+        if (!labPath.contains(".jar")){
+            return null;
+        }
         System.out.println("Running \".jar\" file: " + labPath);
         System.out.println("Reading test file (in): ");
         String inputTest = Tester.readFile(inputTestFile);
@@ -31,16 +34,22 @@ public class Launcher {
                 outputString += line;
                 line = reader.readLine();
             }
+            runProcess.waitFor();
             reader.close();
-            runProcess.destroy();
         } catch (IOException e) {
             if (runProcess != null) {
-                runProcess.destroy();
+                try {
+                    runProcess.waitFor();
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
             }
             System.out.println("Error occurred while running file.");
             System.out.println("------------");
 //            e.printStackTrace();
             return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         System.out.println("File ran successfully");
         System.out.println("------------");
@@ -54,6 +63,9 @@ public class Launcher {
      * @return результат работы программы
      */
     private static String runCpp(String labPath, File inputTestFile){
+        if (!labPath.contains(".exe") && !labPath.contains(".out")){
+            return null;
+        }
         System.out.println("Running \".out\" or \".exe\" file: " + labPath);
         System.out.println("Reading test file (in): ");
         String inputTest = Tester.readFile(inputTestFile);
@@ -70,16 +82,22 @@ public class Launcher {
                 outputString += line;
                 line = reader.readLine();
             }
+            runProcess.waitFor();
             reader.close();
-            runProcess.destroy();
         } catch (IOException e) {
             if (runProcess != null) {
-                runProcess.destroy();
+                try {
+                    runProcess.waitFor();
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
             }
             System.out.println("Error occurred while running file.");
             System.out.println("------------");
 //            e.printStackTrace();
             return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         System.out.println("File ran successfully");
         System.out.println("------------");
