@@ -9,10 +9,6 @@ import reply.Test;
 import java.io.*;
 import java.util.Objects;
 
-/**
- * Класс отвечающий за тестирование лабораторныйх работ
- * Ответственный: Глеб Додонов
- */
 public class Tester {
 
     private ForTest labInf;
@@ -24,22 +20,22 @@ public class Tester {
     private String labId;
     private ConnectToServer connection = new ConnectToServer();
 
-    private Tester(String code, ForTest labInf) {
+    private Tester(String code, ForTest labInf){
         this.labInf = labInf;
-        this.labId = "_" + labInf.term + "_" + labInf.number + "_" + labInf.variant;
+        this.labId = "_" + labInf.term + "_" +  labInf.number + "_" + labInf.variant;
         if (labInf.subject.equals("Программирование")) {
             this.labFile = Compiler.compileJar(code, this.labId);
         } else if (labInf.subject.equals("АиСД")) {
-            this.labFile = Compiler.compileCpp(code, this.labId);
+            this.labFile  = Compiler.compileCpp(code, this.labId);
         }
-        if (this.labFile != null) {
+        if (this.labFile!=null) {
             this.setTests(labInf.userId, labInf.subject, labInf.term, labInf.number, labInf.variant);
         } else {
             this.stringResult = "Ошибка при компиляции файла.";
         }
     }
 
-    private Tester(File labFile, ForTest labInf) {
+    private Tester(File labFile, ForTest labInf){
         this.labInf = labInf;
         this.labFile = labFile;
         if (new File(this.labFile.getAbsolutePath()).exists()) {
@@ -52,7 +48,7 @@ public class Tester {
     /**
      * Запрос тестов
      */
-    private void setTests(Integer userId, String subject, Integer term, Integer labNumber, Integer variant) {
+    private void setTests(Integer userId, String subject, Integer term, Integer labNumber, Integer variant){
         TestRequest testRequest = new TestRequest();
         testRequest.id = userId;
         testRequest.labNumber = labNumber;
@@ -60,7 +56,7 @@ public class Tester {
         testRequest.term = term;
         testRequest.variant = variant;
         Test test = this.connection.TestInOut(testRequest);
-        if (test != null) {
+        if (test != null ){
             this.inputTestFile = test.input;
             this.outputTestFIle = test.output;
         } else {
@@ -68,11 +64,14 @@ public class Tester {
         }
     }
 
-    private String sendResult(Integer userId) {
+    private String sendResult(){
         TestResultRequest testResultRequest = new TestResultRequest();
-        testResultRequest.id = userId;
+        testResultRequest.id = this.labInf.userId;
         testResultRequest.isCorrect = this.isCorrect;
-        if (this.connection.UploadTestResult(testResultRequest)) {
+        testResultRequest.labNumber = this.labInf.number;
+        testResultRequest.term = this.labInf.term;
+        testResultRequest.subject = this.labInf.subject;
+        if(this.connection.UploadTestResult(testResultRequest)){
             return null;
         } else {
             return "Ошибка при отправлении результата на сервер.\n" + this.connection.ErrorRequest();
@@ -82,7 +81,7 @@ public class Tester {
     /**
      * Сравнение выходных данных программы с данными из теста
      */
-    private void compareOutput() {
+    private void compareOutput(){
         String labOutput = "";
         if (this.labFile != null) {
             if (this.labInf.subject.equals("Программирование")) {
@@ -104,7 +103,7 @@ public class Tester {
         System.out.println("TestOutput: ");
         System.out.println(testOutput);
         System.out.println("-");
-        if (testOutput == null || labOutput == null) {
+        if (testOutput == null || labOutput == null){
             System.out.println("Something went wrong");
             System.out.println("------------");
             this.isCorrect = false;
@@ -115,8 +114,8 @@ public class Tester {
 //        this.isCorrect = labOutput.contains(testOutput);
     }
 
-    protected static String readFile(File file) {
-        if (file == null) {
+    protected static String readFile(File file){
+        if (file == null){
             System.out.println("File not found");
             return null;
         }
@@ -143,15 +142,15 @@ public class Tester {
         return result;
     }
 
-    private static void deleteDirectory(File theDir) {
-        if (theDir.exists()) {
+    private static void deleteDirectory(File theDir){
+        if( theDir.exists()) {
             File[] files = theDir.listFiles();
             if (files != null) {
                 for (File file : files) {
                     if (file.isDirectory()) {
                         deleteDirectory(file);
                     } else {
-                        System.out.println("deleting: " + file.getAbsolutePath() + " -> " + file.delete());
+                        System.out.println("deleting: " + file.getAbsolutePath() + " -> " +  file.delete());
                     }
                 }
             }
@@ -159,18 +158,18 @@ public class Tester {
         }
     }
 
-    private boolean errorAccured() {
+    private boolean errorAccured(){
         if (this.stringResult.equals("Файл не найден.") || this.stringResult.equals("Ошибка при компиляции файла.")
-                || this.stringResult.contains("Ошибка при получении тестовых файлов.")) {
+                || this.stringResult.contains("Ошибка при получении тестовых файлов.")){
             deleteDirectory(new File("temp"));
             return true;
         }
         return false;
     }
 
-    public static String labTestExecute(ForTest labInf) {
+    public static String labTestExecute(ForTest labInf){
         Tester tester;
-        if (labInf.code != null && !labInf.code.equals("")) {
+        if (labInf.code != null && !labInf.code.equals("")){
             tester = new Tester(labInf.code, labInf);
             if (!tester.errorAccured()) {
                 tester.compareOutput();
@@ -187,11 +186,11 @@ public class Tester {
         } else {
             return "Файл или код не найден.";
         }
-        String reply = tester.sendResult(tester.labInf.userId);
-        if (!(reply == null || Objects.equals(reply, ""))) {
+        String reply = tester.sendResult();
+        if (!(reply == null || Objects.equals(reply, ""))){
             tester.stringResult = reply;
         } else {
-            if (tester.isCorrect) {
+            if (tester.isCorrect){
                 tester.stringResult = "Тест пройден успешно.";
             } else {
                 tester.stringResult = "Тест не пройден.";
