@@ -3,19 +3,16 @@ package connect;
 import protocol.ServerSide;
 import query.*;
 import reply.Reply;
-import reply.TestResult;
 import services.StatsService;
 import services.TestService;
 import services.UserService;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Calendar;
 
 /**
  * Класс для работы с одним клиентом в одном потоке
+ * Ответственный: Антон Баширов
  */
 public class ServerChannel implements Runnable {
 
@@ -33,22 +30,22 @@ public class ServerChannel implements Runnable {
 
             switch (query.getType()) {
                 case REGISTRATION:
-                    result = UserService.registerUser((RegisterRequest)query);
+                    result = UserService.registerUser((RegisterRequest) query);
                     break;
                 case LOGIN:
-                    result = UserService.authenticateUser((LoginRequest)query);
+                    result = UserService.authenticateUser((LoginRequest) query);
                     break;
                 case TESTDOWNLOAD:
-                    result = TestService.getTest((TestRequest)query);
+                    result = TestService.getTest((TestRequest) query);
                     break;
                 case TESTRESULT:
-                    result = TestService.submitTest((TestResultRequest)query);
+                    result = TestService.submitTest((TestResultRequest) query);
                     break;
                 case STATS:
-                    result = StatsService.getStats((StatsRequest)query);
+                    result = StatsService.getStats((StatsRequest) query);
                     break;
                 case TESTUPLOAD:
-                    result = TestService.uploadTest((TestUploadRequest)query);
+                    result = TestService.uploadTest((TestUploadRequest) query);
                     break;
 
             }
@@ -65,16 +62,14 @@ public class ServerChannel implements Runnable {
             try {
                 //Отправляет результаты о запросе
                 Query query = ServerSide.receive(clientSocket.getOutputStream(), clientSocket.getInputStream());
-                if(query.getType() != Queries.ERROR)
-                {
+                if (query.getType() != Queries.ERROR) {
                     Reply queryResult = getQueryResult(query);
-                    if(queryResult == null)
+                    if (queryResult == null)
                         MainServer.log("No reply on query");
-                    else if (!ServerSide.transmit(queryResult,clientSocket.getOutputStream(),clientSocket.getInputStream()))
+                    else if (!ServerSide.transmit(queryResult, clientSocket.getOutputStream(), clientSocket.getInputStream()))
                         MainServer.log("Transmit to client failed");
-                }
-                else
-                    MainServer.log((ErrorReceived)query);
+                } else
+                    MainServer.log((ErrorReceived) query);
             } catch (IOException e) {
                 e.printStackTrace();
             }

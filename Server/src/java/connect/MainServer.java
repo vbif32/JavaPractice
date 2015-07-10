@@ -13,6 +13,7 @@ import java.util.Calendar;
 
 /**
  * Работа сервера
+ * Ответственный: Антон Баширов
  */
 public class MainServer {
 
