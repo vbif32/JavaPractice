@@ -3,6 +3,9 @@ package gui;
 import java.awt.*;
 import java.io.*;
 
+/**
+ * Класс описывающий получение справки пользователем
+ */
 public class Help {
 
     private static String res_name = "test.txt";
