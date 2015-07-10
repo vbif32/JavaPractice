@@ -8,10 +8,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Класс описывающий компиляцию кода для тестов
+ * Ответственный: Глеб Додонов
+ */
 public class Compiler {
 
-    /*
-    Создание временной папки для хранения файлов
+    /**
+     * Создание временной папки для хранения файлов
      */
     private static void createFolder(String dir){
         File theDir = new File(dir);
@@ -77,8 +81,8 @@ public class Compiler {
 
     }
 
-    /*
-     Создание build-файла для ant
+    /**
+     * Создание build-файла для ant
      */
     private static File createBuildFile(String mainClass, String id){
         File antBuildFile = new File("temp/build.xml");
@@ -132,8 +136,8 @@ public class Compiler {
         return antBuildFile;
     }
 
-    /*
-    Поиск главного класса в коде
+    /**
+     * Поиск главного класса в коде
      */
     private static String findMainClass(String code){
         String mainClass;
@@ -150,8 +154,8 @@ public class Compiler {
         return mainClass;
     }
 
-    /*
-    Нахождение пути к ant среди переменных среды
+    /**
+     * Нахождение пути к ant среди переменных среды
      */
     private static String getAntDist(ProcessBuilder builder){
         String antDist = "";

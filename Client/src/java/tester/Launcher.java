@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+/**
+ * Класс запускающий код теста
+ * Ответственный: Глеб Додонов
+ */
 public class Launcher {
 
     /**
