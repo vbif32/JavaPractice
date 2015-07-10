@@ -5,8 +5,10 @@ package reply;
  */
 public class Registration implements Reply {
 
-    public Registration() {}
-    public Registration(Boolean flag){
+    public Registration() {
+    }
+
+    public Registration(Boolean flag) {
         isSuccess = flag;
     }
 

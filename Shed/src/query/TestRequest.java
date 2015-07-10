@@ -7,7 +7,8 @@ package query;
  */
 public class TestRequest implements Query {
 
-    public TestRequest() {}
+    public TestRequest() {
+    }
 
     public Integer id;          // идентификатор доступа в системе
     public String subject;      // предмет
@@ -15,7 +16,7 @@ public class TestRequest implements Query {
     public Integer labNumber;   // номер лабораторной работы
     public Integer variant;     // вариант лабороторной работы
 
-    
+
     @Override
     public Queries getType() {
         return Queries.TESTDOWNLOAD;

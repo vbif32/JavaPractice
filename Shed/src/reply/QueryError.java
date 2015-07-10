@@ -5,7 +5,9 @@ package reply;
  */
 public class QueryError implements Reply {
 
-    public QueryError() {}
+    public QueryError() {
+    }
+
     public QueryError(String msg) {
         message = msg;
     }

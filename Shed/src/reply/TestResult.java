@@ -5,7 +5,9 @@ package reply;
  */
 public class TestResult implements Reply {
 
-    public TestResult() {}
+    public TestResult() {
+    }
+
     public TestResult(Boolean flag) {
         isSuccess = flag;
     }

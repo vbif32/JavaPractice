@@ -9,7 +9,9 @@ import java.io.File;
  */
 public class TestUploadRequest implements Query {
 
-    public TestUploadRequest(){}
+    public TestUploadRequest() {
+    }
+
     public TestUploadRequest(File in, File out) {
         input = in;
         output = out;

@@ -5,7 +5,9 @@ package query;
  */
 public class ErrorReceived implements Query {
 
-    public ErrorReceived() {}
+    public ErrorReceived() {
+    }
+
     public ErrorReceived(String msg) {
         message = msg;
     }

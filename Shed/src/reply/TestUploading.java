@@ -5,8 +5,10 @@ package reply;
  */
 public class TestUploading implements Reply {
 
-    public TestUploading() {}
-    public TestUploading(Boolean flag){
+    public TestUploading() {
+    }
+
+    public TestUploading(Boolean flag) {
         isSuccess = flag;
     }
 

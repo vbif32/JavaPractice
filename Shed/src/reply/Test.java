@@ -7,7 +7,9 @@ import java.io.File;
  */
 public class Test implements Reply {
 
-    public Test() {}
+    public Test() {
+    }
+
     public Test(File in, File out) {
         input = in;
         output = out;

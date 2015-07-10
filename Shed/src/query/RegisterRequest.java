@@ -5,7 +5,8 @@ package query;
  */
 public class RegisterRequest implements Query {
 
-    public RegisterRequest() {}
+    public RegisterRequest() {
+    }
 
     public String login;        // логин
     public String password;     // пароль

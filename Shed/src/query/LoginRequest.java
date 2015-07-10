@@ -5,7 +5,9 @@ package query;
  */
 public class LoginRequest implements Query {
 
-    public LoginRequest() {}
+    public LoginRequest() {
+    }
+
     public LoginRequest(String lgn, String pass) {
         login = lgn;
         password = pass;

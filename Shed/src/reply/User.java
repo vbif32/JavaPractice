@@ -11,14 +11,15 @@ import java.util.ArrayList;
  */
 public class User implements Reply {
 
-    public User() {}
+    public User() {
+    }
 
-    public Integer id;          // идентификатор доступа в системе
-    public String surname;      // Фамилия
-    public String name;         // Имя
-    public String secondName;   // Отчество
-    public String group;        // Группа
-    public Boolean isLecturer;  // флаг является ли преподавателем!
+    public Integer id;              // идентификатор доступа в системе
+    public String surname;          // Фамилия
+    public String name;             // Имя
+    public String secondName;       // Отчество
+    public String group;            // Группа
+    public Boolean isLecturer;      // флаг является ли преподавателем!
     public ArrayList<LabsPossible> labInfo;     //Информация о лабораторных работах, сдаваемых студентом
 
     @Override

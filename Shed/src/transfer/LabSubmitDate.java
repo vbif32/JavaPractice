@@ -5,7 +5,8 @@ package transfer;
  */
 public class LabSubmitDate {
 
-    public LabSubmitDate() {}
+    public LabSubmitDate() {
+    }
 
     //Конструктор по строке вида yyyy-mm-dd, т.е. того, который возвращается от (sql.date).toString() и т.д.
     public LabSubmitDate(String s) {

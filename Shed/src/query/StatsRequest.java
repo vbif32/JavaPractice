@@ -5,7 +5,8 @@ package query;
  */
 public class StatsRequest implements Query {
 
-    public StatsRequest() {}
+    public StatsRequest() {
+    }
 
     public Integer id;      //  идентификатор доступа в системе
     public String subject;  //  предмет

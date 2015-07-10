@@ -9,7 +9,9 @@ import java.util.ArrayList;
  */
 public class Stats implements Reply {
 
-    public Stats() {}
+    public Stats() {
+    }
+
     public Stats(ArrayList<StudentResult> al) {
         list = al;
     }
