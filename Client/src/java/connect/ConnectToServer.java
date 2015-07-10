@@ -38,6 +38,7 @@ public class ConnectToServer {
         try
         {
             s = new Socket(address, serverPort);
+            s.close();
             return true;
         }
         catch (IOException e)
@@ -69,7 +70,7 @@ public class ConnectToServer {
             InputStream request = s.getInputStream();
             OutputStream response = s.getOutputStream();
             tmpqueryResult = ClientSide.transmit( loginRequest ,response ,request );
-
+            s.close();
             if(tmpqueryResult.getClass().equals(User.class))
             {
                 SaveFromServer = (User)tmpqueryResult;
@@ -104,7 +105,7 @@ public class ConnectToServer {
             InputStream request = s.getInputStream();
             OutputStream response = s.getOutputStream();
             tmpqueryResult = ClientSide.transmit( registerRequest ,response ,request );
-
+            s.close();
             if(tmpqueryResult.getClass().equals(Registration.class))
             {
                 return ((Registration)tmpqueryResult).isSuccess ;
@@ -149,7 +150,7 @@ public class ConnectToServer {
             InputStream request = s.getInputStream();
             OutputStream response = s.getOutputStream();
             Reply answer = ClientSide.transmit(testRequest, response, request);
-
+            s.close();
             if(answer.getClass().equals(Test.class))
             {
                 return (Test)answer;
@@ -183,7 +184,7 @@ public class ConnectToServer {
             InputStream request = s.getInputStream();
             OutputStream response = s.getOutputStream();
             Reply answer = ClientSide.transmit(testUploadRequest, response, request );
-
+            s.close();
             if(answer.getClass().equals(TestUploading.class))
             {
                 return ((TestUploading)answer).isSuccess;
@@ -217,7 +218,7 @@ public class ConnectToServer {
             InputStream request = s.getInputStream();
             OutputStream response = s.getOutputStream();
             Reply answer = ClientSide.transmit(testResultRequest, response, request );
-
+            s.close();
             if(answer.getClass().equals(TestResult.class))
             {
                 return ((TestResult)answer).isSuccess;
@@ -309,55 +310,4 @@ public class ConnectToServer {
         }
     }
 
-    /*public String TestResult()
-    {
-        try
-        {
-            s = new Socket(address, serverPort);
-            InputStream request = s.getInputStream();
-            OutputStream response = s.getOutputStream();
-            Reply answer = ClientSide.transmit(testResultRequest, response, request );
-
-            if(answer.getClass().equals(TestResult.class))
-            {
-                return ((TestResult)answer).mark;
-            }else
-            {
-                if(answer.getClass().equals(QueryError.class))
-                {
-                    Error = ((QueryError)answer).message;
-                    return -1;
-                }
-                else
-                {
-                    Error = "Незапланированный ответ сервера";
-                    return -1;
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            Error = "IOException";
-            return -1;
-        }
-    }*/
-
-    //Здесь Был Вася
-    //Даже Здесь Был Ва…
-    //Здесь долго били Васю хакеры из Харькова
-
-
-    /*
-    1.Зарегать юзера +
-    2.Залогинить его +
-    3.Запросить и получить тесты +
-    4.Отослать файлы с тестами +
-    5.Отослать файлы с результатами тестов +
-    6.Получить результаты лабы
-    7.Получить для каждого предмета список семестров
-    8.Получить для каждого семестра список групп
-    9.Получить для каждой группы список студентов с датами сдачи
-    10.Возвращать ошибки
-    */
 }
