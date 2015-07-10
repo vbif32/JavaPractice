@@ -3,7 +3,9 @@ package gui;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-
+/**
+ * Основной класс клиента, запускающий графический интерфейс
+ */
 public class Main extends Application {
 
     @Override

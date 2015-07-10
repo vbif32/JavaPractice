@@ -47,7 +47,8 @@ public class ConnectToServer {
         address = ip;
     }
 
-    public boolean LoginIn(LoginRequest loginRequest) //Готово
+    //Готово
+    public boolean LoginIn(LoginRequest loginRequest)
     {
         try {
             s = new Socket(address, serverPort);
@@ -74,7 +75,8 @@ public class ConnectToServer {
         }
     }
 
-    public Boolean RegisterUser(RegisterRequest registerRequest) //Готово
+    //Готово
+    public Boolean RegisterUser(RegisterRequest registerRequest)
     {
         try {
             s = new Socket(address, serverPort);
