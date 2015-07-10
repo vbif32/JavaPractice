@@ -1,6 +1,7 @@
 package connect;
 
 
+import managers.DataBase.DatabaseManager;
 import query.ErrorReceived;
 
 import java.io.File;
@@ -20,6 +21,7 @@ public class MainServer {
     private int port; //Порт сервера
     private ServerSocket serverSocket;
     private boolean isServerStopped;
+    public static DatabaseManager dbManager;   //Менеджер бд (с)Кэп
 
     public MainServer(int port) {
         this.port = port;
@@ -64,6 +66,7 @@ public class MainServer {
 
     public static void main(String[] args) throws IOException{
         MainServer server = new MainServer(444);
+        MainServer.dbManager = new DatabaseManager();
         server.createLogFile("ServerLog.txt");
         server.startServer();
 

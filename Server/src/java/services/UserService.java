@@ -26,13 +26,13 @@ public class UserService {
         String surname=registerApply.surname;
         String group=registerApply.group;
         boolean isLecturer=registerApply.isLecturer;
-        String LOGIN_PASSWORD_PATTERN="^[а-яА-я]+$";
+        String LOGIN_PASSWORD_PATTERN="^[а-яА-яa-zA-Z0-9]+$";
         Pattern pattern=Pattern.compile(LOGIN_PASSWORD_PATTERN);
         Matcher matcher=pattern.matcher(login);
         boolean log_val=matcher.matches();
         matcher=pattern.matcher(password);
         boolean pas_val=matcher.matches();
-        if(pas_val && log_val==false){
+        if(pas_val && log_val){
             User user=new User();
             user.group=group;
             user.name=name;
@@ -62,13 +62,13 @@ public class UserService {
     public static Reply authenticateUser(LoginRequest loginApply){
         String login=loginApply.login;
         String password=loginApply.password;
-        String LOGIN_PASSWORD_PATTERN="^[а-яА-я]+$";
+        String LOGIN_PASSWORD_PATTERN="^[а-яА-яa-zA-Z0-9]+$";
         Pattern pattern=Pattern.compile(LOGIN_PASSWORD_PATTERN);
         Matcher matcher=pattern.matcher(login);
         boolean log_val=matcher.matches();
         matcher=pattern.matcher(password);
         boolean pas_val=matcher.matches();
-        if(pas_val && log_val==false){
+        if(pas_val && log_val){
             return DatabaseManager.verifyAccount(login,password);
         }
         else{

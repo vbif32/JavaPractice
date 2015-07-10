@@ -1,5 +1,6 @@
 package services;
 
+import connect.MainServer;
 import managers.DataBase.DatabaseManager;
 import query.Query;
 import query.StatsRequest;
@@ -17,7 +18,6 @@ public class StatsService {
      * Возврат ArrayList студентов
      */
     public static Reply getStats(StatsRequest statsRequest) {
-        DatabaseManager manager = new DatabaseManager();
-        return new Stats(manager.GetStudentInfo(statsRequest.group, statsRequest.subject));
+        return new Stats(MainServer.dbManager.GetStudentInfo(statsRequest.group, statsRequest.subject, statsRequest.term));
     }
 }
