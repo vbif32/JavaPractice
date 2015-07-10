@@ -8,12 +8,19 @@ root {
     -fx-background-color: radial-gradient(center 50% -40%, radius 250%, #c2c2c2 30%, #f5f5f5 50%);
 }
 
+.tooltip{
+    -fx-background-color: radial-gradient(center 50% -30%, radius 200%, #57b0ff 30%, #0080f0 50%);
+    -fx-tooltip-weight: 150px;
+    -fx-border-radius: 50px;
+    -fx-text-fill: white;
+    -fx-graphic: url ("grad.jpg");
+}
+
 .label {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
     -fx-text-fill: black;
 }
-
 
 .text-field {
     -fx-font-family: "Arial-Black";

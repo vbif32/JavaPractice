@@ -16,6 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.Reflection;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
@@ -68,10 +70,10 @@ public class Window_s {
             registration();
         else if (page==3)
         {
-            if (!newUser.isLecturer)
+         //   if (!newUser.isLecturer)
                 forStudents();
-            else
-                forTeachers();
+            //else
+              //  forTeachers();
         }
         else if (page==4)
             downloadTests();
@@ -117,6 +119,8 @@ public class Window_s {
         enter.setOnAction(new EventHandler<ActionEvent>(){
                               @Override
                               public void handle(javafx.event.ActionEvent actionEvent) {
+                                  errorLogin.setText("");
+                                  errorPass.setText("");
                                   if ((textForLogin.getText().isEmpty())||(textForPassword.getText().isEmpty())||(!textForLogin.getText().matches("\\w{3,}"))||(!textForPassword.getText().matches("\\w{6,}"))) {
                                       if (textForLogin.getText().isEmpty()) {
                                           check = false;
@@ -182,6 +186,7 @@ public class Window_s {
 
         HBox vxod = new HBox();
         Label text = new Label("  Вход в систему ");
+
         text.setStyle("-fx-font-size: 44 px; -fx-font-style: italic;");
         vxod.getChildren().addAll(text);
         vxod.setAlignment(Pos.CENTER);
@@ -196,9 +201,9 @@ public class Window_s {
         errorL.getChildren().add(errorLogin);
         errorP.getChildren().add(errorPass);
         errorL.setTranslateX(1);
-        errorP.setTranslateX(12);
+        errorP.setTranslateX(5);
         comments.setAlignment(Pos.CENTER);
-        fH.getChildren().addAll(vxod, new Label("\n"), new Label("\n"), forLogin, errorL, forPassword, errorP, new Label("\n"),comments, forButtons);
+        fH.getChildren().addAll(vxod, new Label("\n"), new Label("\n"), forLogin, errorL, forPassword, errorP, new Label("\n"), comments, new Label("\n"), forButtons);
         visibleField.getChildren().addAll(fH);
         visibleField.setAlignment(Pos.CENTER);
         }
@@ -213,6 +218,7 @@ public class Window_s {
         final Label name = new Label("Имя:");
         Tooltip tipName = new Tooltip();
         tipName.setText("Только русские буквы");
+
         final TextField textForName = new TextField();
         textForName.setPromptText("Иван");
         textForName.setEditable(true);
@@ -308,6 +314,12 @@ public class Window_s {
                                      @Override
                                      public void handle(javafx.event.ActionEvent actionEvent) {
 
+                                         errorName.setText("");
+                                         errorSurname.setText("");
+                                         errorSecond.setText("");
+                                         errorGroup.setText("");
+                                         errorLogin.setText("");
+                                         errorPass.setText("");
                                          if (done[0]==-1) {
                                              if ((textForLogin.getText().isEmpty()) || (textForName.getText().isEmpty()) || (textForSurname.getText().isEmpty()) ||
                                                      (textForGroup.getText().isEmpty()) || (textForPassword.getText().isEmpty()) || (textForPatronymic.getText().isEmpty()) ||
@@ -316,7 +328,7 @@ public class Window_s {
                                                      || (!textForLogin.getText().matches("\\w{3,}")) || (!textForPassword.getText().matches("\\w{6,}"))) {
                                                  check = false;
                                                  if (textForName.getText().isEmpty()) {
-                                                     errorName.setText("Введите имя.");
+                                                     errorName.setText("  Введите имя.");
                                                      errorName.setStyle("-fx-font-style:italic;");
                                                  }
                                                  else if (!textForName.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) {
@@ -326,7 +338,7 @@ public class Window_s {
                                                  else errorName.setText("");
 
                                                  if (textForSurname.getText().isEmpty()) {
-                                                     errorSurname.setText("Введите фамилию.");
+                                                     errorSurname.setText("             Введите фамилию.");
                                                      errorSurname.setStyle("-fx-font-style:italic;");
                                                  }
                                                  else if (!textForSurname.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) {
@@ -336,7 +348,7 @@ public class Window_s {
                                                  else errorSurname.setText("");
 
                                                  if (textForPatronymic.getText().isEmpty()) {
-                                                     errorSecond.setText("Введите отчество.");
+                                                     errorSecond.setText("              Введите отчество.");
                                                      errorSecond.setStyle("-fx-font-style:italic;");
                                                  }
                                                  else if (!textForPatronymic.getText().matches("([А-Я]|Ё)([а-я]|ё)+")) {
@@ -346,7 +358,7 @@ public class Window_s {
                                                  else errorSecond.setText("");
 
                                                  if (textForGroup.getText().isEmpty()) {
-                                                     errorGroup.setText("Введите группу.");
+                                                     errorGroup.setText("        Введите группу.");
                                                      errorGroup.setStyle("-fx-font-style:italic;");
                                                  }
                                                  else if (!textForGroup.getText().matches("([А-Я]|Ё){3}\\-\\d+\\-[1-9]{2}")) {
@@ -356,7 +368,7 @@ public class Window_s {
                                                  else errorGroup.setText("");
 
                                                  if (textForPassword.getText().isEmpty()) {
-                                                     errorPass.setText("Ведите пароль.");
+                                                     errorPass.setText("       Ведите пароль.");
                                                      errorPass.setStyle("-fx-font-style:italic;");
                                                  }
                                                  else if (!textForPassword.getText().matches("\\w{6,}")) {
@@ -366,7 +378,7 @@ public class Window_s {
                                                  else errorPass.setText("");
 
                                                  if (textForLogin.getText().isEmpty()) {
-                                                     errorLogin.setText("Введите имя.");
+                                                     errorLogin.setText("      Введите логин.");
                                                      errorLogin.setStyle("-fx-font-style:italic;");
                                                  }
                                                  else if (!textForLogin.getText().matches("\\w{3,}")) {
@@ -431,7 +443,7 @@ public class Window_s {
         forButtons.setAlignment(Pos.CENTER);
         forButtons.setSpacing(10);
 
-        visibleField.getChildren().add(label);
+        visibleField.getChildren().addAll(label, new Label("\n"));
         visibleField.getChildren().add(forButtons);
         visibleField.setAlignment(Pos.CENTER);
     }
@@ -774,7 +786,6 @@ public class Window_s {
         hBox.getChildren().addAll(exit);
         rightVBox.getChildren().add(hBox);
 
-        //pane.setGridLinesVisible(true);
         pane.setHgap(30);
         pane.addColumn(0, leftVBox);
         pane.addColumn(1, rightVBox);
