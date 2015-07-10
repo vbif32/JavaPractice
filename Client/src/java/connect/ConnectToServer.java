@@ -243,6 +243,72 @@ public class ConnectToServer {
         }
     }
 
+    //Дела добрых фей
+    public String userStatsRequest(StatsRequest statsRequest) {
+        try {
+            s = new Socket(address, serverPort);
+            Reply reply = ClientSide.transmit(statsRequest, s.getOutputStream(), s.getInputStream());
+            s.close();
+            if(reply.getClass().equals(Stats.class)) {
+                Stats stats = (Stats)reply;
+                StudentResult studentResult = null;
+                if(stats.list != null && stats.list.size() != 1) {
+                    Error = "Незапланированный ответ сервера";
+                    return null;
+                }
+                else studentResult = stats.list.get(0);     //Не дай бог положат null-элементы...
+                StringBuilder sb = new StringBuilder();
+                if(studentResult != null && studentResult.dates != null) {
+                    for (int i = 0; i < studentResult.dates.size(); i++) {
+                        if(sb.length() != 0) sb.append(System.lineSeparator());
+                        LabSubmitDate date = studentResult.dates.get(i);
+                        sb.append("Лабораторная работа №").append(i+1).append(": ");
+                        sb.append(date.day).append('.').append(date.month).append('.').append(date.year);
+                    }
+                }
+                else sb.append("Нет данных.");
+
+                return sb.toString();
+            }
+            else if(reply.getClass().equals(QueryError.class)) {
+                Error = ((QueryError)reply).message;
+                return null;
+            }
+            else {
+                Error = "Незапланированный ответ сервера";
+                return null;
+            }
+        }
+        catch(IOException ioe) {
+            Error = ioe.getMessage();
+            return null;
+        }
+    }
+
+    public Stats lecturerStatsRequest(StatsRequest statsRequest) {
+        try {
+            s = new Socket(address, serverPort);
+            Reply reply = ClientSide.transmit(statsRequest, s.getOutputStream(), s.getInputStream());
+            s.close();
+            if(reply.getClass().equals(Stats.class))
+                return ((Stats)reply);
+            else if(reply.getClass().equals(QueryError.class))
+            {
+                Error = ((QueryError)reply).message;
+                return null;
+            }
+            else
+            {
+                Error = "Незапланированный ответ сервера";
+                return null;
+            }
+        }
+        catch(IOException ioe) {
+            Error = ioe.getMessage();
+            return null;
+        }
+    }
+
     /*public String TestResult()
     {
         try
