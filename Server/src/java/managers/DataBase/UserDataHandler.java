@@ -17,7 +17,7 @@ class UserDataHandler {
         connection = connect;
     }
 
-    //проверяет если данный пользователь существует,если да возвращает его данные
+    //проверяет если данный пользователь существует
 
     int VerifyAccount(String login,String password){
         try{
@@ -36,7 +36,7 @@ class UserDataHandler {
         }
         return 0;
     }
-
+    //возвращает данные пользователя
     User getPersonalData(int systemId){
         User user = new User();
         try{
@@ -46,7 +46,12 @@ class UserDataHandler {
             res.next();
             user.id=res.getInt("system_id");
             user.isLecturer = res.getBoolean("is_lecturer");
-            user.group = res.getString("group_name");
+            if(user.isLecturer){
+                user.group =null;
+            }
+            else{
+            user.group = new GroupTableHandler(connection).getGroupName(res.getInt("group_id"));
+            }
             user.surname = res.getString("surname");
             user.name = res.getString("name");
             user.secondName = res.getString("second_name");
@@ -56,7 +61,7 @@ class UserDataHandler {
                 Integer[] subjects =(Integer[]) ar.getArray();
                 VariantTableHandler handler = new VariantTableHandler(connection);
                 for(int subject:subjects){
-                    user.labInfo = handler.RetrieveVariantInfo(user.id, subject, user.labInfo);
+                    user.labInfo = handler.RetrieveVariantInfo(user.id, subject, user.labInfo,user.isLecturer);
                 }
             }catch(NullPointerException e){
                 e.printStackTrace();
@@ -69,10 +74,15 @@ class UserDataHandler {
         }
         return user;
     }
+
+
     //добавляет аккаунт в БД
 
     boolean AddUser(User user,String Login,String password){
         try {
+            if(!user.isLecturer&&!new GroupTableHandler(connection).checkCorrectness(user.group)){
+                return false;
+            }
             stm = connection.prepareStatement("INSERT INTO user_data(login,password,surname,name,second_name,is_lecturer,group_name) VALUES(?, ?, ?, ?, ?, ?, ?)");
             stm.setString(1,Login);
             stm.setString(2, password);
@@ -80,7 +90,7 @@ class UserDataHandler {
             stm.setString(4,user.name);
             stm.setString(5,user.secondName);
             stm.setBoolean(6, user.isLecturer);
-            stm.setString(7,user.group);
+            stm.setInt(7,new GroupTableHandler(connection).getGroupId(user.group));
             stm.executeUpdate();
         }catch(SQLException e){
             return false;
