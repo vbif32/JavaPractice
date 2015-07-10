@@ -1,15 +1,14 @@
 package managers.DataBase;
 
 import org.postgresql.util.PSQLException;
-import reply.User;
 import transfer.LabsPossible;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * Created by Kiril on 09.07.2015.
- */
 class VariantTableHandler {
 
     private ResultSet res;
@@ -23,60 +22,62 @@ class VariantTableHandler {
     }
 
 
-    ArrayList<LabsPossible> RetrieveVariantInfo(int userId,int SubjectId,ArrayList<LabsPossible> labs,boolean isTeacher){
+    ArrayList<LabsPossible> RetrieveVariantInfo(int userId, int SubjectId, ArrayList<LabsPossible> labs, boolean isTeacher) {
         ArrayList<LabsPossible> All = labs;
-        String subjectName="";
-        try{
+        String subjectName = "";
+        try {
             stm = connection.prepareStatement(NumberOfLabsCommand);
-            stm.setInt(1,SubjectId);
+            stm.setInt(1, SubjectId);
             res = stm.executeQuery();
             ArrayList<Integer> numberOfLabsBySemester = new ArrayList<>();
             ArrayList<Integer> semesterNumber = new ArrayList<>();
-            if(res.next()){subjectName = res.getString("subject_name");
-            do{
-                numberOfLabsBySemester.add(res.getInt("number_of_labs"));
-                semesterNumber.add(res.getInt("term"));
-                }while(res.next());}
-            else {return labs;}
+            if (res.next()) {
+                subjectName = res.getString("subject_name");
+                do {
+                    numberOfLabsBySemester.add(res.getInt("number_of_labs"));
+                    semesterNumber.add(res.getInt("term"));
+                } while (res.next());
+            } else {
+                return labs;
+            }
             stm = connection.prepareStatement(VarDataCommand);
-            stm.setInt(1,userId);
-            stm.setInt(2,SubjectId);
-            int j=-1;
-            for(int semester:semesterNumber){
+            stm.setInt(1, userId);
+            stm.setInt(2, SubjectId);
+            int j = -1;
+            for (int semester : semesterNumber) {
                 j++;
                 LabsPossible SubjectInfo = new LabsPossible();
-                if(isTeacher){
-                    SubjectInfo.groups = new SubjectDataHandler(connection).GetGroupsStudying(SubjectId,semester);
+                if (isTeacher) {
+                    SubjectInfo.groups = new SubjectDataHandler(connection).GetGroupsStudying(SubjectId, semester);
                 }
                 SubjectInfo.variants = new ArrayList<>();
-                stm.setInt(3,semester);
+                stm.setInt(3, semester);
                 res = stm.executeQuery();
-                try{
-                    while(res.next()){
-                            SubjectInfo.subject = subjectName;
-                            SubjectInfo.term = semester;
-                            for(int i = 4;i<numberOfLabsBySemester.get(j)+3;i++){
-                                try {
-                                    if(res.getInt(i)==0){
-                                        SubjectInfo.variants.add(0);//вариант не назначен
-                                    }
-                                    else{
-                                        SubjectInfo.variants.add(res.getInt(i));
-                                    }
-                                }catch(PSQLException e){
-                                    break;//неправильная информация в таблицы, вышли за пределы
+                try {
+                    while (res.next()) {
+                        SubjectInfo.subject = subjectName;
+                        SubjectInfo.term = semester;
+                        for (int i = 4; i < numberOfLabsBySemester.get(j) + 3; i++) {
+                            try {
+                                if (res.getInt(i) == 0) {
+                                    SubjectInfo.variants.add(0);//вариант не назначен
+                                } else {
+                                    SubjectInfo.variants.add(res.getInt(i));
                                 }
+                            } catch (PSQLException e) {
+                                break;//неправильная информация в таблицы, вышли за пределы
                             }
-                            All.add(SubjectInfo);
+                        }
+                        All.add(SubjectInfo);
                     }
-                    }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
-                        return labs;//данных нет,либо не корректно введены
-                    }
+                    return labs;//данных нет,либо не корректно введены
+                }
 
 
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return labs;//ошибка соединения
         }

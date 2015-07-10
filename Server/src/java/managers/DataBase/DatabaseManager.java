@@ -4,7 +4,9 @@ import reply.User;
 import transfer.StudentResult;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 //<editor-fold desc="DataBase Description">
 /*сделанно под базу данных с данной структурой:
@@ -50,65 +52,91 @@ import java.util.*;
  */
 //</editor-fold>
 
-/*класс для работы с базой данных
-имеет функии - проверка аккаунта,регистрация пользователя,вывод информации о студенте по группе и предмету,вывод информации про всех студентов
+/**
+ * класс для работы с базой данных
+ * Ответственный: Кирилл Асанов
+ * имеет функии:
+ * 1) проверка аккаунта
+ * 2) регистрация пользователя
+ * 3) вывод информации о студенте по группе и предмету
+ * 4) вывод информации про всех студентов
  */
-
 public class DatabaseManager {
     //информация для подключения к БД
     private static final String DatabaseType = "postgresql";
     private static final String DatabaseName = "ProgrammingDB";
     private static final String DatabaseHost = "localhost:5432";
-    private static final String URL = ("jdbc:"+DatabaseType+"://"+DatabaseHost+"/"+DatabaseName);
+    private static final String URL = ("jdbc:" + DatabaseType + "://" + DatabaseHost + "/" + DatabaseName);
     private static final String SuperUser = "postgres";
     private static final String Password = "root";
-    private static Connection DatabaseConnection=null;
-    private  PreparedStatement stm;
+    private static Connection DatabaseConnection = null;
+    private PreparedStatement stm;
     private ResultSet res;
 
-    public DatabaseManager(){
+    public DatabaseManager() {
         ConnectToDB();
     }
 
-    private void ConnectToDB(){
-        try{
+    private void ConnectToDB() {
+        try {
             DatabaseConnection = DriverManager.getConnection(URL, SuperUser, Password);
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("cant`t connect");
         }
     }
-    //функция проверки аккаунта
-    public static User verifyAccount(String login, String password){
+
+    /**
+     * Функция проверки аккаунта
+     * @param login
+     * @param password
+     * @return
+     */
+    public static User verifyAccount(String login, String password) {
         UserDataHandler temp = new UserDataHandler(DatabaseConnection);
-        int id =temp.VerifyAccount(login,password);
+        int id = temp.VerifyAccount(login, password);
         return temp.getPersonalData(id);
     }
 
-    //функция вноса данных пользователя в БД
-    public static boolean addUser(User user, String login, String password){
-        return(new UserDataHandler(DatabaseConnection).AddUser(user,login,password));
+    /**
+     * Функция вноса данных пользователя в БД
+     * @param user
+     * @param login
+     * @param password
+     * @return
+     */
+    public static boolean addUser(User user, String login, String password) {
+        return (new UserDataHandler(DatabaseConnection).AddUser(user, login, password));
     }
 
-    //функция вывода информации студентов по критериям
-    public ArrayList<StudentResult> GetStudentInfo(String GroupName,String Subject,int term){
-        return(new ResultsHandler(DatabaseConnection).getResults(GroupName,Subject,term));
+    /**
+     * Функция вывода информации студентов по критериям
+     * @param GroupName - Название группы
+     * @param Subject   - Предмет
+     * @param term      - Семестр
+     * @return
+     */
+    public ArrayList<StudentResult> GetStudentInfo(String GroupName, String Subject, int term) {
+        return (new ResultsHandler(DatabaseConnection).getResults(GroupName, Subject, term));
     }
 
-    //функция для вывода всех данных в виде map<предмет,список студентов<все данные студента>>
-    public Map<String,ArrayList<StudentResult>> getData(){
-        Map<String,ArrayList<StudentResult>> map = new TreeMap<String, ArrayList<StudentResult>>();
+    /**
+     * Функция для вывода всех данных
+     * @return данные в виде map<предмет,список студентов<все данные студента>>
+     */
+    public Map<String, ArrayList<StudentResult>> getData() {
+        Map<String, ArrayList<StudentResult>> map = new TreeMap<String, ArrayList<StudentResult>>();
         try {
             stm = DatabaseConnection.prepareStatement("SELECT subject_name,term FROM subject_table");
             res = stm.executeQuery();
-            ArrayList<String> arr=new ArrayList<String>();
-            while(res.next()){
-                arr.add(res.getString("subject_name")+"term "+res.getInt("term"));
+            ArrayList<String> arr = new ArrayList<String>();
+            while (res.next()) {
+                arr.add(res.getString("subject_name") + "term " + res.getInt("term"));
             }
-            for(String subject:arr){
+            for (String subject : arr) {
                 int term = res.getInt("term");
-                map.put(subject,this.GetStudentInfo("All",subject,term));
+                map.put(subject, this.GetStudentInfo("All", subject, term));
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             return null;//can`t connect
         }
         return map;
