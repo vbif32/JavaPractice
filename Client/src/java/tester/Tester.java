@@ -11,7 +11,6 @@ import java.util.Objects;
 
 public class Tester {
 
-    /*!!!*/
     private ForTest labInf;
     private File labFile;
     private File inputTestFile;
@@ -38,7 +37,7 @@ public class Tester {
 
     private Tester(File labFile, ForTest labInf){
         this.labInf = labInf;
-        this.labFile = labInf.laba;
+        this.labFile = labFile;
         if (new File(this.labFile.getAbsolutePath()).exists()) {
             this.setTests(labInf.userId, labInf.subject, labInf.term, labInf.number, labInf.variant);
         } else {

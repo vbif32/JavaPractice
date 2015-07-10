@@ -3,6 +3,7 @@ package tester;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +37,7 @@ public class Compiler {
      * @param code исходный код
      * @return
      */
-    public static File compileCpp(String code, String id){
+    protected static File compileCpp(String code, String id){
         System.out.println("------------");
         System.out.println("Compiling cpp file");
         if (code == null){
@@ -44,7 +45,7 @@ public class Compiler {
             return null;
         }
         createFolder("temp");
-        File tempLabFile = new File("temp/labFile" + id + ".cpp"); //!!!указать путь
+        File tempLabFile = new File("temp/labFile" + id + ".cpp");
         String compileError = null;
         BufferedReader eis;
         Process compileProcess = null;
@@ -58,8 +59,8 @@ public class Compiler {
             compileProcess = builder.start();
             eis = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream()));
             compileError = readBufferedStream(eis);
-            compileProcess.waitFor();
             eis.close();
+            compileProcess.waitFor();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -171,7 +172,7 @@ public class Compiler {
     /**
      * Сборка jar-файла
      */
-    public static File compileJar(String code, String id){
+    protected static File compileJar(String code, String id){
         System.out.println("------------");
         System.out.println("Compiling jar file");
         if (code == null){
@@ -199,7 +200,7 @@ public class Compiler {
         BufferedReader is;
         ProcessBuilder builder = new ProcessBuilder();
         String antDist = getAntDist(builder);
-        if (antDist == null){
+        if (Objects.equals(antDist, "")){
             System.out.println("Ant is not found.");
             return null;
         }
@@ -213,9 +214,9 @@ public class Compiler {
             compileError = readBufferedStream(eis);
             is = new BufferedReader(new InputStreamReader(compileProcess.getInputStream()));
             compileInf = readBufferedStream(is);
-            compileProcess.waitFor();
             eis.close();
             is.close();
+            compileProcess.waitFor();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

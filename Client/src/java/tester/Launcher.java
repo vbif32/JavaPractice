@@ -34,8 +34,8 @@ public class Launcher {
                 outputString += line;
                 line = reader.readLine();
             }
-            runProcess.waitFor();
             reader.close();
+            runProcess.waitFor();
         } catch (IOException e) {
             if (runProcess != null) {
                 try {
@@ -82,8 +82,8 @@ public class Launcher {
                 outputString += line;
                 line = reader.readLine();
             }
-            runProcess.waitFor();
             reader.close();
+            runProcess.waitFor();
         } catch (IOException e) {
             if (runProcess != null) {
                 try {
@@ -104,11 +104,11 @@ public class Launcher {
         return outputString;
     }
 
-    public static String getJavaOutput(String labName, File inputTestFile){
+    protected static String getJavaOutput(String labName, File inputTestFile){
         return runJava(labName, inputTestFile);
     }
 
-    public static String getCppOutput(String labName, File inputTestFile){
+    protected static String getCppOutput(String labName, File inputTestFile){
         return runCpp(labName, inputTestFile);
     }
 
