@@ -1,10 +1,15 @@
 package connect;
 
 
+import query.ErrorReceived;
+
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Calendar;
 
 /**
  * Работа сервера
@@ -33,6 +38,7 @@ public class MainServer {
 
 
         System.out.println("Connected");
+        log("Connected");
 
         //Открывает новый поток для клиента
         Thread chanelThread = new Thread(new ServerChannel(clientSocket));
@@ -57,12 +63,30 @@ public class MainServer {
 
     public static void main(String[] args) throws IOException{
         MainServer server = new MainServer(444);
-        server.createLogFile("C:\\Users\\Пользователь\\Documents\\ServerLog.txt");
+        server.createLogFile("ServerLog.txt");
         server.startServer();
-
-
 
     }
 
+    public static void log(ErrorReceived error) throws IOException {
 
+        final String logFilePath = "ServerLog.txt";
+        FileWriter fileWriter = new FileWriter(logFilePath,true);
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+        printWriter.println("[" + Calendar.getInstance().getTime().toString() + "] " + error.message);
+        printWriter.flush();
+        printWriter.close();
+
+    }
+
+    public static void log(String errorMsg) throws IOException {
+
+        final String logFilePath = "ServerLog.txt";
+        FileWriter fileWriter = new FileWriter(logFilePath,true);
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+        printWriter.println("[" + Calendar.getInstance().getTime().toString() + "] " + errorMsg);
+        printWriter.flush();
+        printWriter.close();
+
+    }
 }
