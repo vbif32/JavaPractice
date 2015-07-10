@@ -21,6 +21,10 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import query.LoginRequest;
 import query.RegisterRequest;
+import query.StatsRequest;
+import query.TestUploadRequest;
+import reply.Stats;
+import reply.TestUploading;
 import reply.User;
 import tester.Tester;
 import transfer.LabSubmitDate;
@@ -45,6 +49,7 @@ public class Window_s {
     int page=1; //номер окна. 1-вход, 2-регистрация,3-для студентов,4-для перподавателей
     User newUser = new User();
     ForTest forTest = new ForTest();
+    StatsRequest statsRequest = new StatsRequest();
     ConnectToServer connect = new ConnectToServer();
 
     public Window_s() {
@@ -70,9 +75,9 @@ public class Window_s {
             registration();
         else if (page==3)
         {
-           if (!newUser.isLecturer)
-               forStudents();
-           else
+           //if (!newUser.isLecturer)
+               //forStudents();
+           //else
                forTeachers();
         }
         else if (page==4)
@@ -193,7 +198,7 @@ public class Window_s {
         help.setAlignment(Pos.TOP_RIGHT);
         forHelp.getChildren().add(help);
         forHelp.setTranslateX(770);
-        forHelp.setTranslateY(-150);
+        forHelp.setTranslateY(-140);
        visibleField.getChildren().add(forHelp);
 
         HBox vxod = new HBox();
@@ -775,19 +780,66 @@ public class Window_s {
 
         final HBox forResults = new HBox();
         final Label r = new Label("");
+
+
+        final ComboBox chSub = new ComboBox();
+        final ComboBox chTerm = new ComboBox();
+        chSub.setMaxWidth(150);
+        chSub.setMinWidth(150);
+        chTerm.setMaxWidth(50);
+        chTerm.setMinWidth(50);
+
+        final StatsRequest statsRequest = new StatsRequest();
+
+        TreeSet<Integer> subj = new TreeSet<>();
+        if(newUser.labInfo != null) {
+            for (LabsPossible lp : newUser.labInfo)
+                subj.add(lp.term);
+            for(Integer i : subj)
+                chTerm.getItems().add(i.toString());
+        }
+        chTerm.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                chSub.getItems().clear();
+                statsRequest.term=Integer.valueOf(t1);
+                statsRequest.subject=null;
+                for(LabsPossible lp : newUser.labInfo)
+                    if(lp.term.toString().equals(t1)) {
+                        chSub.getItems().add(lp.subject);
+                    }
+            }
+        });
+
+        forSubject.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                statsRequest.subject = t1;
+                newVbox.getChildren().clear();
+                forResults.getChildren().clear();
+                r.setText("Результаты:");
+                forResults.getChildren().add(r);
+                forResults.setAlignment(Pos.CENTER);
+                statsRequest.id=newUser.id;
+                String studentResult = connect.userStatsRequest(statsRequest);
+                newVbox.getChildren().addAll(forResults, new Label("\n") , new Label(studentResult));
+            }
+        });
+
         //Результаты по лабам
         Button results = new Button("Узнать результаты");
         results.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 newVbox.getChildren().clear();
-                forResults.getChildren().clear();
-                r.setText("Результаты:");
-                forResults.getChildren().add(r);
-                forResults.setAlignment(Pos.CENTER);
-                newVbox.getChildren().addAll(forResults, new Label("\n"));
+                newVbox.getChildren().addAll(new Label("Выберите семестр:"), chTerm, new Label("\n"), new Label("Выберите предмет:"), chSub);
             }
         });
+
+
+
+
+
 
         leftVBox.getChildren().addAll(new Label("\n"), results);
         rightVBox.getChildren().addAll(newVbox,  new Label("\n"), new Label("\n"), new Label("\n"));
@@ -810,10 +862,6 @@ public class Window_s {
     public void forTeachers() {
 
         visibleField.getChildren().clear();
-
-        final int[] chooseSem = {-1};
-        final String[] chooseSub = new String[1];
-        final String[] chooseGroup = new String[1];
 
         VBox main = new VBox();
         //ТАБЛИЧКА
@@ -875,7 +923,7 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 forSub.getItems().clear();
                 forGroup.getItems().clear();
-                chooseSem[0] = Integer.valueOf(t1);
+                statsRequest.term = Integer.valueOf(t1);
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.term.toString().equals(t1)) {
                         forSub.getItems().add(lp.subject);
@@ -887,7 +935,7 @@ public class Window_s {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 forGroup.getItems().clear();
-                chooseSub[0] = t1;
+                statsRequest.subject = t1;
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.subject.equals(t1) && lp.term.toString().equals(forSem.getValue())) {
                         forGroup.getItems().addAll(lp.groups);
@@ -899,7 +947,7 @@ public class Window_s {
         forGroup.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                chooseGroup[0] = t1;
+                statsRequest.group = t1;
                 firstTable.setVisible(true);
             }
         });
@@ -938,32 +986,11 @@ public class Window_s {
 
     private ObservableList getTableData()
     {
-        List list = new ArrayList();
-        Student studentResult = new Student();
-
-        studentResult.setFio("Иванов Иван Иванович");
-        studentResult.dates = new ArrayList<>();
-        studentResult.dates.add(new LabSubmitDate("10-10-1000"));
-        studentResult.dates.add(new LabSubmitDate("30-30-3000"));
-        studentResult.dates.set(1,null);
-
-        try {
-            studentResult.setAllDates();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        list.add(studentResult);
-//Когда будут инструменты для получения данных с сервера всё что выше заменить на:
-/*
-List list = new ArrayList();
-ArrayList<Stats> studentsResults = ConnectToServer.getStudentsResult(); //Функция получения данных о студентах(от Андрея)
-for(int i=0;i<studentsResult.size();i++)
-{
-list.add(new Student(studentsResults.get(i)));
-*/
-        return FXCollections.observableList(list);
+        List list_1 = new ArrayList();
+       /* Stats studentsResults = connect.lecturerStatsRequest(statsRequest);
+        for(int i=0;i< studentsResults.list.size();i++)
+            list_1.add(new Student(studentsResults.list.get(i)));*/
+        return FXCollections.observableList(list_1);
     }
 
     public class Student {
@@ -1123,6 +1150,8 @@ list.add(new Student(studentsResults.get(i)));
         isVariant.setMinWidth(50);
         isVariant.setMaxWidth(50);
 
+        final TestUploadRequest test = new TestUploadRequest();
+
         TreeSet<Integer> subjects = new TreeSet<>();
         if(newUser.labInfo != null) {
             for (LabsPossible lp : newUser.labInfo)
@@ -1136,7 +1165,7 @@ list.add(new Student(studentsResults.get(i)));
                 isSubject.getItems().clear();
                 isNumber.getItems().clear();
                 isVariant.getItems().clear();
-                forTest.term=Integer.valueOf(t1);
+                test.term=Integer.valueOf(t1);
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.term.toString().equals(t1)) {
                         isSubject.getItems().add(lp.subject);
@@ -1149,7 +1178,7 @@ list.add(new Student(studentsResults.get(i)));
             public void changed(ObservableValue ov, String t, String t1) {
                 isNumber.getItems().clear();
                 isVariant.getItems().clear();
-                forTest.subject=t1;
+                test.subject=t1;
                 int number = 0;
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.subject.equals(t1) && lp.term.toString().equals(isTerm.getValue())) {
@@ -1164,7 +1193,7 @@ list.add(new Student(studentsResults.get(i)));
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 isVariant.getItems().clear();
-                forTest.number=Integer.valueOf(t1);
+                test.labNumber=Integer.valueOf(t1);
                 int variant = 0;
                 for(LabsPossible lp : newUser.labInfo)
                     if(lp.subject.equals(isSubject.getValue()) && lp.term.toString().equals(isTerm.getValue())) {
@@ -1178,45 +1207,108 @@ list.add(new Student(studentsResults.get(i)));
         isVariant.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                forTest.variant=Integer.valueOf(t1);
+                test.variant=Integer.valueOf(t1);
             }
         });
 
 
-
-        //ФАЙЛ
-        final File[] f = new File[1];
-        Button file = new Button("Загрузить файл");
-        file.setTranslateX(-18);
+        //ВХОД
+        Button file = new Button("Загрузить входную последовательность");
         file.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                JFileChooser test = new JFileChooser();
+                JFileChooser testIn = new JFileChooser();
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("txt","txt file");
-                test.setFileFilter(filter);
-                test.setDialogTitle("Choose a new test");
-                int returnVal = test.showOpenDialog(null);
+                testIn.setFileFilter(filter);
+                testIn.setDialogTitle("Choose a new test");
+                int returnVal = testIn.showOpenDialog(null);
                 if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    f[0]=test.getSelectedFile();
+                    test.input=testIn.getSelectedFile();
                 }
             }
         });
 
-        final Label label = new Label();
+        //ВЫХОД
+        Button file_1 = new Button("Загрузить выходную последовательность");
+
+        file_1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                JFileChooser testOut = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("txt","txt file");
+                testOut.setFileFilter(filter);
+                testOut.setDialogTitle("Choose a new test");
+                int returnVal = testOut.showOpenDialog(null);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    test.output=testOut.getSelectedFile();
+                }
+            }
+        });
+
+        final Label mistakesInCode = new Label();
+        final Label mistakesInCom = new Label();
+        final Label mistakesInTerm = new Label();
+        final Label mistakesInLab = new Label();
+        final Label mistakesInVar = new Label();
+        final Label mistakesInInput = new Label();
+        final Label mistakesInOutput = new Label();
+        final VBox newVbox = new VBox();
         VBox send = new VBox();
         Button sendFile = new Button("Отправить файл");
         sendFile.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if (f[0]==null)
-                    label.setText("Выберите тест");
-                else label.setText("");
+                if (test.subject == null) //если не выбран предмет
+                {
+                    mistakesInCom.setText("Выберите предмет");
+                }
+                else mistakesInCom.setText("");
+                if (test.term == null) // не выбран семестр
+                    mistakesInTerm.setText("Выберите семестр");
+                else mistakesInTerm.setText("");
+                if (test.labNumber == null) // не выбран номер лабы
+                    mistakesInLab.setText("Выберите номер лабораторной");
+                else mistakesInLab.setText("");
+                if (test.variant == null) // не выбран вариант
+                    mistakesInVar.setText("Выберите вариант");
+                else mistakesInVar.setText("");
+                if (test.input==null) //не выбраны данные на вход
+                    mistakesInInput.setText("Выберите входную последовательность");
+                else
+                    mistakesInInput.setText("");
+                if (test.output==null) //не выбраны данные на выход
+                    mistakesInOutput.setText("Выберите выходную последовательность");
+                else
+                    mistakesInOutput.setText("");
+
+                if (!mistakesInCode.getText().equals(""))
+                    newVbox.getChildren().add(mistakesInCode);
+                if (!mistakesInTerm.getText().equals(""))
+                    newVbox.getChildren().add(mistakesInTerm);
+                if (!mistakesInCom.getText().equals(""))
+                    newVbox.getChildren().add(mistakesInCom);
+                if (!mistakesInLab.getText().equals(""))
+                    newVbox.getChildren().add(mistakesInLab);
+                if (!mistakesInVar.getText().equals(""))
+                    newVbox.getChildren().add(mistakesInVar);
+                if (!mistakesInInput.getText().equals(""))
+                    newVbox.getChildren().add(mistakesInInput);
+                if (!mistakesInOutput.getText().equals(""))
+                    newVbox.getChildren().add(mistakesInOutput);
+                if (mistakesInCode.getText().equals("")&&(mistakesInTerm.getText().equals(""))&&mistakesInCom.getText().equals("")&&mistakesInLab.getText().equals("")&&mistakesInVar.getText().equals("")&&mistakesInInput.getText().equals("")&&mistakesInOutput.getText().equals(""))
+                {
+                    ConnectToServer c = new ConnectToServer();
+                    c.TestUpload(test);
+                }
+
             }
         });
 
+        newVbox.setMaxHeight(150);
+        newVbox.setMinHeight(150);
+        newVbox.setAlignment(Pos.CENTER);
         send.setAlignment(Pos.CENTER);
-        send.setTranslateX(-18);
-        send.getChildren().addAll(sendFile, new Label("\n"),label);
+        send.getChildren().addAll(sendFile, new Label("\n"), newVbox);
 
 
         HBox hBox = new HBox(45);
@@ -1238,10 +1330,12 @@ list.add(new Student(studentsResults.get(i)));
         number.setAlignment(Pos.CENTER);
         variant.getChildren().addAll(new Label("Вариант №"), isVariant);
         variant.setAlignment(Pos.CENTER);
+
+        file_1.setAlignment(Pos.CENTER);
         file.setAlignment(Pos.CENTER);
-        vBox.getChildren().addAll(term, new Label("\n"), subject, new Label("\n"), number,new Label("\n"), variant, new Label("\n"), new Label("\n"), file, new Label("\n"), send);
+        vBox.getChildren().addAll(term, new Label("\n"), subject, new Label("\n"), number, new Label("\n"), variant, new Label("\n"), new Label("\n"), file, new Label("\n"), file_1, new Label("\n"), send);
         hBox.setAlignment(Pos.BOTTOM_RIGHT);
-        vBox.getChildren().addAll(new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"), new Label("\n"), hBox);
+        vBox.getChildren().addAll(new Label("\n"), new Label("\n"), new Label("\n"), hBox);
 
         visibleField.getChildren().add(vBox);
     }
