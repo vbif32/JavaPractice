@@ -46,7 +46,7 @@ public class Window_s {
     protected Scene main;
     protected VBox visibleField;
     boolean check=false;
-    int page=1; //номер окна. 1-вход, 2-регистрация,3-для студентов,4-для перподавателей
+    int page=3; //номер окна. 1-вход, 2-регистрация,3-для студентов,4-для перподавателей
     User newUser = new User();
     ForTest forTest = new ForTest();
     StatsRequest statsRequest = new StatsRequest();
@@ -877,7 +877,7 @@ public class Window_s {
         fio.setText("ФИО");
 
         fio.setCellValueFactory(new PropertyValueFactory<Student,String>("fio"));
-
+        if(firstTable.getItems().size() != 0)
         for(int i=0;i<((Student)firstTable.getItems().get(0)).dates.size();i++)
         {
             TableColumn<Student,String> lab = new TableColumn("Лаб.№ " + (i+1));
@@ -987,9 +987,17 @@ public class Window_s {
     private ObservableList getTableData()
     {
         List list_1 = new ArrayList();
-       /* Stats studentsResults = connect.lecturerStatsRequest(statsRequest);
-        for(int i=0;i< studentsResults.list.size();i++)
-            list_1.add(new Student(studentsResults.list.get(i)));*/
+        Stats studentsResults = connect.lecturerStatsRequest(statsRequest);
+        if ((studentsResults != null) && (studentsResults.list != null)) {
+            for (int i = 0; i < studentsResults.list.size(); i++)
+                try {
+                    list_1.add(new Student(studentsResults.list.get(i)));
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+        }
         return FXCollections.observableList(list_1);
     }
 
@@ -1213,7 +1221,7 @@ public class Window_s {
 
 
         //ВХОД
-        Button file = new Button("Загрузить входную последовательность");
+        Button file = new Button("Загрузить входные данные");
         file.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -1229,13 +1237,13 @@ public class Window_s {
         });
 
         //ВЫХОД
-        Button file_1 = new Button("Загрузить выходную последовательность");
+        Button file_1 = new Button("Загрузить выходные данные");
 
         file_1.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 JFileChooser testOut = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("txt","txt file");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(".txt","txt file");
                 testOut.setFileFilter(filter);
                 testOut.setDialogTitle("Choose a new test");
                 int returnVal = testOut.showOpenDialog(null);
@@ -1258,6 +1266,7 @@ public class Window_s {
         sendFile.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                newVbox.getChildren().clear();
                 if (test.subject == null) //если не выбран предмет
                 {
                     mistakesInCom.setText("Выберите предмет");
@@ -1273,11 +1282,11 @@ public class Window_s {
                     mistakesInVar.setText("Выберите вариант");
                 else mistakesInVar.setText("");
                 if (test.input==null) //не выбраны данные на вход
-                    mistakesInInput.setText("Выберите входную последовательность");
+                    mistakesInInput.setText("Выберите входные данные");
                 else
                     mistakesInInput.setText("");
                 if (test.output==null) //не выбраны данные на выход
-                    mistakesInOutput.setText("Выберите выходную последовательность");
+                    mistakesInOutput.setText("Выберите выходные данные");
                 else
                     mistakesInOutput.setText("");
 
@@ -1333,9 +1342,11 @@ public class Window_s {
 
         file_1.setAlignment(Pos.CENTER);
         file.setAlignment(Pos.CENTER);
+
         vBox.getChildren().addAll(term, new Label("\n"), subject, new Label("\n"), number, new Label("\n"), variant, new Label("\n"), new Label("\n"), file, new Label("\n"), file_1, new Label("\n"), send);
         hBox.setAlignment(Pos.BOTTOM_RIGHT);
-        vBox.getChildren().addAll(new Label("\n"), new Label("\n"), new Label("\n"), hBox);
+        vBox.getChildren().addAll(new Label("\n"), hBox);
+        vBox.setTranslateY(100);
 
         visibleField.getChildren().add(vBox);
     }
