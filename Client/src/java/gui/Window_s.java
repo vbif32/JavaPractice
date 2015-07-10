@@ -46,7 +46,7 @@ public class Window_s {
     protected Scene main;
     protected VBox visibleField;
     boolean check=false;
-    int page=3; //номер окна. 1-вход, 2-регистрация,3-для студентов,4-для перподавателей
+    int page=1; //номер окна. 1-вход, 2-регистрация,3-для студентов,4-для перподавателей
     User newUser = new User();
     ForTest forTest = new ForTest();
     StatsRequest statsRequest = new StatsRequest();
