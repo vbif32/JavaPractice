@@ -209,7 +209,7 @@ public class ConnectToServer {
         }
     }
 
-    public boolean UploadTestResult(TestResultRequest testResultRequest)
+    public int UploadTestResult(TestResultRequest testResultRequest)
     {
         try
         {
@@ -218,20 +218,20 @@ public class ConnectToServer {
             OutputStream response = s.getOutputStream();
             Reply answer = ClientSide.transmit(testResultRequest, response, request );
 
-            if(answer.getClass().equals(TestUploading.class))
+            if(answer.getClass().equals(TestResult.class))
             {
-                return ((TestUploading)answer).isSuccess;
+                return ((TestResult)answer).mark;
             }else
             {
                 if(answer.getClass().equals(QueryError.class))
                 {
                     Error = ((QueryError)answer).message;
-                    return false;
+                    return -1;
                 }
                 else
                 {
                     Error = "Незапланированный ответ сервера";
-                    return false;
+                    return -1;
                 }
             }
         }
@@ -239,14 +239,18 @@ public class ConnectToServer {
         {
             e.printStackTrace();
             Error = "IOException";
-            return false;
+            return -1;
         }
     }
 
-    //Здесь был Вася !
-    //И здесь был Вася !
-    //И здесь был Ва......
-    //...Здесь долго били Вася хакеры из Харькова.
+    public String TestResult()
+    {
+        return null;
+    }
+
+    //Здесь Был Вася
+    //Даже Здесь Был Ва…
+    //Здесь долго били Васю хакеры из Харькова
 
 
     /*
