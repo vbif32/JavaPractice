@@ -90,22 +90,23 @@ public class DatabaseManager {
     }
 
     //функция вывода информации студентов по критериям
-    public ArrayList<StudentResult> GetStudentInfo(String GroupName,String Subject){
-        return(new ResultsHandler(DatabaseConnection).getResults(GroupName,Subject));
+    public ArrayList<StudentResult> GetStudentInfo(String GroupName,String Subject,int term){
+        return(new ResultsHandler(DatabaseConnection).getResults(GroupName,Subject,term));
     }
 
     //функция для вывода всех данных в виде map<предмет,список студентов<все данные студента>>
     public Map<String,ArrayList<StudentResult>> getData(){
         Map<String,ArrayList<StudentResult>> map = new TreeMap<String, ArrayList<StudentResult>>();
         try {
-            stm = DatabaseConnection.prepareStatement("SELECT subject_name FROM subject_table");
+            stm = DatabaseConnection.prepareStatement("SELECT subject_name,term FROM subject_table");
             res = stm.executeQuery();
             ArrayList<String> arr=new ArrayList<String>();
             while(res.next()){
-                arr.add(res.getString("subject_name"));
+                arr.add(res.getString("subject_name")+"term "+res.getInt("term"));
             }
             for(String subject:arr){
-                map.put(subject,this.GetStudentInfo("All",subject));
+                int term = res.getInt("term");
+                map.put(subject,this.GetStudentInfo("All",subject,term));
             }
         }catch(SQLException e){
             return null;//can`t connect

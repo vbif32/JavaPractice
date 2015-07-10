@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.4.4
 -- Dumped by pg_dump version 9.4.4
--- Started on 2015-07-10 10:20:38
+-- Started on 2015-07-10 22:25:09
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -37,7 +37,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 177 (class 1259 OID 24895)
+-- TOC entry 176 (class 1259 OID 24895)
 -- Name: group_data; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -50,7 +50,7 @@ CREATE TABLE group_data (
 ALTER TABLE group_data OWNER TO postgres;
 
 --
--- TOC entry 176 (class 1259 OID 24873)
+-- TOC entry 175 (class 1259 OID 24873)
 -- Name: lab_variants; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -70,13 +70,14 @@ CREATE TABLE lab_variants (
 ALTER TABLE lab_variants OWNER TO postgres;
 
 --
--- TOC entry 174 (class 1259 OID 24794)
+-- TOC entry 177 (class 1259 OID 24908)
 -- Name: student_results; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
 CREATE TABLE student_results (
     system_id integer NOT NULL,
     subject_id integer NOT NULL,
+    term integer NOT NULL,
     lab_1 date,
     lab_2 date,
     lab_3 date,
@@ -89,7 +90,7 @@ CREATE TABLE student_results (
 ALTER TABLE student_results OWNER TO postgres;
 
 --
--- TOC entry 175 (class 1259 OID 24799)
+-- TOC entry 174 (class 1259 OID 24799)
 -- Name: subject_table; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -157,7 +158,7 @@ ALTER TABLE ONLY user_data ALTER COLUMN system_id SET DEFAULT nextval('user_data
 
 
 --
--- TOC entry 1915 (class 2606 OID 24907)
+-- TOC entry 1913 (class 2606 OID 24907)
 -- Name: group_data_group_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -166,7 +167,7 @@ ALTER TABLE ONLY group_data
 
 
 --
--- TOC entry 1917 (class 2606 OID 24899)
+-- TOC entry 1915 (class 2606 OID 24899)
 -- Name: groups_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -175,7 +176,7 @@ ALTER TABLE ONLY group_data
 
 
 --
--- TOC entry 1913 (class 2606 OID 24879)
+-- TOC entry 1911 (class 2606 OID 24879)
 -- Name: lab_variants_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -184,16 +185,16 @@ ALTER TABLE ONLY lab_variants
 
 
 --
--- TOC entry 1909 (class 2606 OID 24798)
--- Name: student_results_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- TOC entry 1917 (class 2606 OID 24912)
+-- Name: student_results_pkey1; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY student_results
-    ADD CONSTRAINT student_results_pkey PRIMARY KEY (system_id, subject_id);
+    ADD CONSTRAINT student_results_pkey1 PRIMARY KEY (system_id, subject_id, term);
 
 
 --
--- TOC entry 1911 (class 2606 OID 24881)
+-- TOC entry 1909 (class 2606 OID 24881)
 -- Name: subject_table_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -240,7 +241,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2015-07-10 10:20:38
+-- Completed on 2015-07-10 22:25:10
 
 --
 -- PostgreSQL database dump complete

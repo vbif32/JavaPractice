@@ -4,6 +4,8 @@ package managers.DataBase;
 
 import java.sql.*;
 import java.util.*;
+
+import org.postgresql.util.PSQLException;
 import transfer.LabSubmitDate;
 import transfer.StudentResult;
 
@@ -25,56 +27,75 @@ class ResultsHandler {
       Если лабораторная не сдана возвращает null
      */
 
-    ArrayList<StudentResult> getResults(String GroupName,String Subject){
+    ArrayList<StudentResult> getResults(String GroupName,String Subject,int term){
         StudentResult result;
         ArrayList<StudentResult> studentData;
+        int subjectId=0;
+        int DefinedLabs=0;
         try{
              //вывод идентификатор предмета
-            stm = connection.prepareStatement("SELECT subject_id,number_of_labs FROM subject_table WHERE subject_name = ?");
+            stm = connection.prepareStatement("SELECT subject_id,number_of_labs FROM subject_table WHERE subject_name = ? AND term = ?");
             stm.setString(1,Subject);
+            stm.setInt(2,term);
             res = stm.executeQuery();
-            res.next();
-            int subjectId = res.getInt("subject_id");
-            int DefinedLabs = res.getInt("number_of_labs");
-            //вся информации о студенте
-            String command =("SELECT user_data.system_id,surname,name,second_name,is_lecturer,group_name FROM user_data");
-            if(!GroupName.equals("All")){
-                command =command+" WHERE group_name = ?";
-                stm =connection.prepareStatement(command);
-                stm.setString(1,GroupName);
+            while(res.next()){
+                subjectId = res.getInt("subject_id");
+                DefinedLabs = res.getInt("number_of_labs");
             }
-            else{stm =connection.prepareStatement(command);}
+
+            //вся информации о студенте
+            String command =("SELECT user_data.system_id,surname,name,second_name,is_lecturer,group_id FROM user_data");
+            if(!GroupName.equals("All")){
+                int groupId = new GroupTableHandler(connection).getGroupId(GroupName);
+                command =command+" WHERE group_id = ?";
+                stm =connection.prepareStatement(command);
+                stm.setInt(1, groupId);
+            }
+            else{
+                stm =connection.prepareStatement(command);
+            }
             res=stm.executeQuery();
-            stm =connection.prepareStatement("SELECT * FROM student_results WHERE system_id = ? AND subject_id = ?");
+            stm =connection.prepareStatement("SELECT * FROM student_results WHERE system_id = ? AND subject_id = ? AND term = ?");
             stm.setInt(2,subjectId);
+            stm.setInt(3,term);
             studentData= new ArrayList<StudentResult>();
             try{
                 while (res.next()){
-                    result=new StudentResult(DefinedLabs);
-                    stm.setInt(1,res.getInt("system_id"));
-                    res2 = stm.executeQuery();
-                    res2.next();
-                    try{res2.getInt("subject_id");
-                        for(int i=3;i<=DefinedLabs+2;i++){
-                            try{
-                                result.dates.add(new LabSubmitDate(res2.getDate(i).toString()));
-                            }catch(Exception e){
-                                result.dates.add(null);//заполняет пустыми элементами если не может достать корректные данные
+                    if(!res.getBoolean("is_lecturer")){
+                        result=new StudentResult(DefinedLabs);
+                        stm.setInt(1,res.getInt("system_id"));
+                        res2 = stm.executeQuery();
+                        while (res2.next()) {
+                            try {
+                                res2.getInt("subject_id");
+                                result.dates = new ArrayList<LabSubmitDate>();
+                                for (int i = 4; i <= DefinedLabs + 3; i++) {
+                                    try {
+                                        result.dates.add((new LabSubmitDate(res2.getDate(i).toString())));
+                                    } catch (NullPointerException e) {
+                                        result.dates.add(null);
+                                        //заполняет пустыми элементами если не может достать корректные данные
+                                    }
+                                }
+                            }catch(PSQLException e){
+                                //если нет соедининия студент - предмет res2 будет пустой, выдаст ошибку
                             }
+                            System.out.println("");
+                            result.group = new GroupTableHandler(connection).getGroupName(res.getInt("group_id"));
+                            result.name = res.getString("name");
+                            result.surname = res.getString("surname");
+                            result.secondName = res.getString("second_name");
+                            studentData.add(result);
+                            System.out.println("user added");
                         }
-                        result.group = new GroupTableHandler(connection).getGroupName(res.getInt("group_name"));
-                        result.name = res.getString("name");
-                        result.surname = res.getString("surname");
-                        result.secondName = res.getString("second_name");
-                        studentData.add(result);
-                    }catch (Exception e){
-                        //если нет соедининия студент - предмет res2 будет пустой, выдаст ошибку
                     }
                 }
             }catch(NullPointerException e){
+                e.printStackTrace();
                 //если нет данных в БД для существующих требований
             }
         }catch(SQLException e){
+            e.printStackTrace();
             //если сорвалось соединение
             return null;
             }
