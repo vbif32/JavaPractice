@@ -31,6 +31,7 @@ import transfer.StudentResult;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -172,8 +173,20 @@ public class Window_s {
                 Window();
             }
         });
+
         //СПРАВКА
         Button help = new Button("Справка");
+        help.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                try {
+                    TestOpenHelp.openHelp();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         VBox fH = new VBox();
         HBox forHelp = new HBox();
         forHelp.setMaxSize(850,20);
