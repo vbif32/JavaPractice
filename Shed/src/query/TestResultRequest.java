@@ -11,6 +11,9 @@ public class TestResultRequest implements Query {
 
     public Integer id;          // идентификатор доступа в системе
     public Boolean isCorrect;   // флаг на соответствие тесту
+    public String subject;      // названия предмета
+    public Integer term;        // семестр
+    public Integer labNumber;   // номер лабораторной работы
 
     @Override
     public Queries getType() {
