@@ -1,5 +1,6 @@
 package services;
 
+import connect.MainServer;
 import managers.DataBase.DatabaseManager;
 import managers.FileSystemManager;
 
@@ -19,7 +20,7 @@ public class UnloadService {
     public static File getStatistic()
     {
         Map<String,ArrayList<StudentResult>> data;
-        DatabaseManager dbm = new DatabaseManager();
+        DatabaseManager dbm = MainServer.dbManager;
         data = dbm.getData();
         HSSFWorkbook book = new HSSFWorkbook();
         for(Map.Entry e : data.entrySet())
