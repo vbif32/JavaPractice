@@ -25,6 +25,7 @@ import query.LoginRequest;
 import query.RegisterRequest;
 import reply.User;
 import tester.Tester;
+import transfer.LabSubmitDate;
 import transfer.LabsPossible;
 import transfer.StudentResult;
 
@@ -71,10 +72,10 @@ public class Window_s {
             registration();
         else if (page==3)
         {
-         //   if (!newUser.isLecturer)
-                forStudents();
-            //else
-              //  forTeachers();
+           if (!newUser.isLecturer)
+               forStudents();
+           else
+               forTeachers();
         }
         else if (page==4)
             downloadTests();
@@ -823,23 +824,19 @@ public class Window_s {
         firstTable.setMinSize(800, 400);
         firstTable.setEditable(false);
         firstTable.setVisible(false);
-        firstTable.setItems(getTableTada());
+        firstTable.setItems(getTableData());
 
         TableColumn fio = new TableColumn();
         firstTable.getColumns().setAll(fio);
         fio.setText("ФИО");
-        fio.setMinWidth(150);
-        fio.setMaxWidth(150);
 
         fio.setCellValueFactory(new PropertyValueFactory<Student,String>("fio"));
 
-        int numberOfLabs = 2;
-        for (int i = 0; i < numberOfLabs; i++) {
-            TableColumn laba = new TableColumn();
-            laba.setCellValueFactory(new PropertyValueFactory("date"));
-            int b=i+1;
-            laba.setText("Лаб.№ "+ b);
-            firstTable.getColumns().add(laba);
+        for(int i=0;i<((Student)firstTable.getItems().get(0)).dates.size();i++)
+        {
+            TableColumn<Student,String> lab = new TableColumn("Лаб.№ " + (i+1));
+            lab.setCellValueFactory(new PropertyValueFactory("lab" + (i+1) + "Date"));
+            firstTable.getColumns().add(lab);
         }
 
 //КОНЕЦ ТАБЛИЦЫ
@@ -941,33 +938,64 @@ public class Window_s {
         visibleField.getChildren().add(main);
     }
 
-    private ObservableList getTableTada()
+    private ObservableList getTableData()
     {
         List list = new ArrayList();
         Student studentResult = new Student();
 
         studentResult.setFio("Иванов Иван Иванович");
-        studentResult.setDate("10-10-1000");
+        studentResult.dates = new ArrayList<>();
+        studentResult.dates.add(new LabSubmitDate("10-10-1000"));
+        studentResult.dates.add(new LabSubmitDate("30-30-3000"));
+        studentResult.dates.set(1,null);
 
+        try {
+            studentResult.setAllDates();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         list.add(studentResult);
+//Когда будут инструменты для получения данных с сервера всё что выше заменить на:
+/*
+List list = new ArrayList();
+ArrayList<Stats> studentsResults = ConnectToServer.getStudentsResult(); //Функция получения данных о студентах(от Андрея)
+for(int i=0;i<studentsResult.size();i++)
+{
+list.add(new Student(studentsResults.get(i)));
+*/
         return FXCollections.observableList(list);
-
     }
 
     public class Student {
 
+        private SimpleStringProperty fio;
+        public SimpleStringProperty lab1Date;
+        public SimpleStringProperty lab2Date;
+        public SimpleStringProperty lab3Date;
+        public SimpleStringProperty lab4Date;
+        public SimpleStringProperty lab5Date;
+        public SimpleStringProperty lab6Date;
+//Пока только заданное количество лаб.
+
+        public ArrayList<LabSubmitDate> dates;
+
         Student() {
             fio = new SimpleStringProperty();
-            date = new SimpleStringProperty();
+            dates = new ArrayList<>();
+            lab1Date = new SimpleStringProperty("NULL Date");
+            lab2Date = new SimpleStringProperty("NULL Date");
+            lab3Date = new SimpleStringProperty("NULL Date");
+            lab4Date = new SimpleStringProperty("NULL Date");
+            lab5Date = new SimpleStringProperty("NULL Date");
+            lab6Date = new SimpleStringProperty("NULL Date");
         }
 
-        private SimpleStringProperty fio;
-        private SimpleStringProperty date;
-
-        Student(StudentResult result,int labIndex)
-        {
+        Student(StudentResult result) throws NoSuchFieldException, IllegalAccessException {
             this.fio = new SimpleStringProperty(result.surname + result.name + result.secondName);
-            this.date = new SimpleStringProperty(result.dates.get(labIndex).day+"-"+result.dates.get(labIndex).month+"-"+result.dates.get(labIndex).year);
+            this.dates = result.dates;
+            setAllDates();
         }
 
         public String getFio() {
@@ -983,19 +1011,91 @@ public class Window_s {
             this.fio.set(fio);
         }
 
-        public String getDate() {
-            return date.get();
+        public void setAllDates() throws NoSuchFieldException, IllegalAccessException {
+            for(int i=0;i<this.dates.size();i++)
+            {
+                if(this.dates.get(i) != null)
+                    this.getClass().getField("lab" + (i + 1) + "Date").set(this, new SimpleStringProperty(this.dates.get(i).year + "-" +
+                            this.dates.get(i).month + "-" +
+                            this.dates.get(i).day));
+                else
+                    this.getClass().getField("lab" + (i + 1) + "Date").set(this, new SimpleStringProperty("NullDate"));
+            }
+
         }
 
-        public SimpleStringProperty dateProperty() {
-            return date;
+        public SimpleStringProperty getLab1Date() {
+            return lab1Date;
         }
 
-        public void setDate(String date) {
-            this.date.set(date);
+        public SimpleStringProperty lab1DateProperty(){
+            return lab1Date;
+        }
+
+        public void setLab1Date(SimpleStringProperty lab1Date) {
+            this.lab1Date = lab1Date;
+        }
+
+        public SimpleStringProperty getLab2Date() {
+            return lab2Date;
+        }
+
+        public SimpleStringProperty lab2DateProperty(){
+            return lab2Date;
+        }
+
+        public void setLab2Date(SimpleStringProperty lab2Date) {
+            this.lab2Date = lab2Date;
+        }
+
+        public SimpleStringProperty getLab3Date() {
+            return lab3Date;
+        }
+
+        public SimpleStringProperty lab3DateProperty(){
+            return lab3Date;
+        }
+
+        public void setLab3Date(SimpleStringProperty lab3Date) {
+            this.lab3Date = lab3Date;
+        }
+
+        public SimpleStringProperty getLab4Date() {
+            return lab4Date;
+        }
+
+        public SimpleStringProperty lab4DateProperty(){
+            return lab4Date;
+        }
+
+        public void setLab4Date(SimpleStringProperty lab4Date) {
+            this.lab4Date = lab4Date;
+        }
+
+        public SimpleStringProperty getLab5Date() {
+            return lab5Date;
+        }
+
+        public SimpleStringProperty lab5DateProperty(){
+            return lab5Date;
+        }
+
+        public void setLab5Date(SimpleStringProperty lab5Date) {
+            this.lab5Date = lab5Date;
+        }
+
+        public SimpleStringProperty getLab6Date() {
+            return lab6Date;
+        }
+
+        public SimpleStringProperty lab6DateProperty(){
+            return lab6Date;
+        }
+
+        public void setLab6Date(SimpleStringProperty lab6Date) {
+            this.lab6Date = lab6Date;
         }
     }
-
 
     public void downloadTests()
     {
