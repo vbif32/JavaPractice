@@ -11,6 +11,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/**
+ * Класс отвечающий за соединение с сервером
+ * Ответственный: Андрей Щукин
+ */
 public class ConnectToServer {
 
     Socket s;
