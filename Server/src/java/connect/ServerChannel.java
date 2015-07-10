@@ -1,13 +1,12 @@
 package connect;
 
 import protocol.ServerSide;
+import query.*;
+import reply.Reply;
+import reply.TestResult;
 import services.StatsService;
 import services.TestService;
 import services.UserService;
-import shed.Queries;
-import shed.Query;
-import shed.QueryResult;
-import shed.query.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,26 +26,29 @@ public class ServerChannel implements Runnable {
     }
 
     //Выполняет запрос и возвращает результат
-    private QueryResult getQueryResult(Query query) throws IOException {
+    private Reply getQueryResult(Query query) throws IOException {
 
-        QueryResult result = null;
+        Reply result = null;
         if (clientSocket.isConnected()) {
 
             switch (query.getType()) {
                 case REGISTRATION:
-                    result = UserService.registerUser((RegisterApply)query);
+                    result = UserService.registerUser((RegisterRequest)query);
                     break;
                 case LOGIN:
-                    result = UserService.authenticateUser((LoginApply)query);
+                    result = UserService.authenticateUser((LoginRequest)query);
                     break;
-                case TEST:
+                case TESTDOWNLOAD:
                     result = TestService.getTest((TestRequest)query);
                     break;
-                case RESULT:
-                    result = TestService.submitTest((TestSubmit)query);
+                case TESTRESULT:
+                    result = TestService.submitTest((TestResultRequest)query);
                     break;
                 case STATS:
                     result = StatsService.getStats((StatsRequest)query);
+                    break;
+                case TESTUPLOAD:
+                    result = TestService.uploadTest((TestUploadRequest)query);
                     break;
 
             }
@@ -65,11 +67,14 @@ public class ServerChannel implements Runnable {
                 Query query = ServerSide.receive(clientSocket.getOutputStream(), clientSocket.getInputStream());
                 if(query.getType() != Queries.ERROR)
                 {
-                    QueryResult queryResult = getQueryResult(query);
-                    ServerSide.transmit(queryResult,clientSocket.getOutputStream(),clientSocket.getInputStream());
+                    Reply queryResult = getQueryResult(query);
+                    if(queryResult == null)
+                        MainServer.log("No reply on query");
+                    else if (!ServerSide.transmit(queryResult,clientSocket.getOutputStream(),clientSocket.getInputStream()))
+                        MainServer.log("Transmit to client failed");
                 }
                 else
-                    log((ErrorReceived)query);
+                    MainServer.log((ErrorReceived)query);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -78,20 +83,12 @@ public class ServerChannel implements Runnable {
             try {
                 clientSocket.close();
                 System.out.println("Client disconnected");
+                MainServer.log("Client disconnected");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void log(ErrorReceived error) throws IOException {
 
-        final String logFilePath = "C:\\Users\\Пользователь\\Documents\\ServerLog.txt";
-        FileWriter fileWriter = new FileWriter(logFilePath,true);
-        PrintWriter printWriter = new PrintWriter(fileWriter);
-        printWriter.println("[" + Calendar.getInstance().getTime().toString() + "] " + error.message);
-        printWriter.flush();
-        printWriter.close();
-
-    }
 }

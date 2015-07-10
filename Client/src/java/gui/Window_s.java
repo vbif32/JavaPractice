@@ -16,8 +16,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.Effect;
-import javafx.scene.effect.Reflection;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
@@ -181,7 +179,7 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 try {
-                    TestOpenHelp.openHelp();
+                    Help.openHelp();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -11,7 +11,6 @@ public class TestResultRequest implements Query {
 
     public Integer id;          // идентификатор доступа в системе
     public Boolean isCorrect;   // флаг на соответствие тесту
-    public File labCode;        // код лабороторной работы
 
     @Override
     public Queries getType() {
