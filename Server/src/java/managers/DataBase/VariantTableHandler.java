@@ -23,7 +23,7 @@ class VariantTableHandler {
     }
 
 
-    ArrayList<LabsPossible> RetrieveVariantInfo(int userId,int SubjectId,ArrayList<LabsPossible> labs){
+    ArrayList<LabsPossible> RetrieveVariantInfo(int userId,int SubjectId,ArrayList<LabsPossible> labs,boolean isTeacher){
         ArrayList<LabsPossible> All = labs;
         String subjectName="";
         try{
@@ -45,6 +45,9 @@ class VariantTableHandler {
             for(int semester:semesterNumber){
                 j++;
                 LabsPossible SubjectInfo = new LabsPossible();
+                if(isTeacher){
+                    SubjectInfo.groups = new SubjectDataHandler(connection).GetGroupsStudying(SubjectId,semester);
+                }
                 SubjectInfo.variants = new ArrayList<>();
                 stm.setInt(3,semester);
                 res = stm.executeQuery();

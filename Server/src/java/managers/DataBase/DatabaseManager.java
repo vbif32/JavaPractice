@@ -24,6 +24,7 @@ import java.util.*;
     subject_id - INT primary key unique not null
     subject_name - VARCHAR(128) not null
     number_of_labs - INT not null
+    groups_studying - INT[]
 
 таблица lab_variants для хранения вариантов для студентов
     столбцы;
@@ -37,6 +38,15 @@ import java.util.*;
     subject_id - INT primary key not null
     //базовая структура содержит 6 лаб, возможно добаления и удаления столбцов лабораторных
     lab_1 - DATE, lab_2 - DATE ...........
+таблица group_data хранит информацию о группах
+    столбцы:
+    group_id - INT Primary key
+    group_name - VARCHAR(128)
+таблица var_lab_table хранит информацию о возможных вариантах в лабораторных
+    столбцы:
+    subject_id - INT Primary key not NULL
+    term - INT primary key NOT NULL
+    lab_1 аналогично.......
  */
 //</editor-fold>
 

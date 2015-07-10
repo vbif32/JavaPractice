@@ -10,7 +10,6 @@ import transfer.StudentResult;
 //класс для вывода всей информации о студенте
 
 class ResultsHandler {
-
     private PreparedStatement stm;
     private Connection connection;
     private ResultSet res;
@@ -63,7 +62,7 @@ class ResultsHandler {
                                 result.dates.add(null);//заполняет пустыми элементами если не может достать корректные данные
                             }
                         }
-                        result.group = res.getString("group_name");
+                        result.group = new GroupTableHandler(connection).getGroupName(res.getInt("group_name"));
                         result.name = res.getString("name");
                         result.surname = res.getString("surname");
                         result.secondName = res.getString("second_name");
