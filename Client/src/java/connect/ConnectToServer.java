@@ -209,7 +209,41 @@ public class ConnectToServer {
         }
     }
 
-    public int UploadTestResult(TestResultRequest testResultRequest)
+    public boolean UploadTestResult(TestResultRequest testResultRequest)
+    {
+        try
+        {
+            s = new Socket(address, serverPort);
+            InputStream request = s.getInputStream();
+            OutputStream response = s.getOutputStream();
+            Reply answer = ClientSide.transmit(testResultRequest, response, request );
+
+            if(answer.getClass().equals(TestResult.class))
+            {
+                return ((TestResult)answer).????ismark?????????;
+            }else
+            {
+                if(answer.getClass().equals(QueryError.class))
+                {
+                    Error = ((QueryError)answer).message;
+                    return false;
+                }
+                else
+                {
+                    Error = "Незапланированный ответ сервера";
+                    return false;
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Error = "IOException";
+            return false;
+        }
+    }
+
+    /*public String TestResult()
     {
         try
         {
@@ -241,12 +275,7 @@ public class ConnectToServer {
             Error = "IOException";
             return -1;
         }
-    }
-
-    public String TestResult()
-    {
-        return null;
-    }
+    }*/
 
     //Здесь Был Вася
     //Даже Здесь Был Ва…
