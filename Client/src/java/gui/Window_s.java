@@ -75,9 +75,9 @@ public class Window_s {
             registration();
         else if (page==3)
         {
-           //if (!newUser.isLecturer)
-               //forStudents();
-           //else
+           if (!newUser.isLecturer)
+               forStudents();
+           else
                forTeachers();
         }
         else if (page==4)
@@ -678,7 +678,8 @@ public class Window_s {
                 if (forTest.subject!=null) { //что-то выбрано
                     if (forTest.subject.equals("Программирование"))
                     {
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter("jar","jar file");
+                        FileNameExtensionFilter filter = new FileNameExtensionFilter("jar file", "jar");
+                        laba.removeChoosableFileFilter(laba.getAcceptAllFileFilter());
                         laba.setFileFilter(filter);
                         laba.setDialogTitle("Choose a file");
                         int returnVal = laba.showOpenDialog(null);
@@ -689,7 +690,8 @@ public class Window_s {
                     }
                         else if (forTest.subject.equals("АиСД"))
                     {
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter("exe","exe file");
+                        FileNameExtensionFilter filter = new FileNameExtensionFilter("exe file", "exe");
+                        laba.removeChoosableFileFilter(laba.getAcceptAllFileFilter());
                         laba.setFileFilter(filter);
                         laba.setDialogTitle("Choose a file");
                         int returnVal = laba.showOpenDialog(null);
@@ -1226,7 +1228,8 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 JFileChooser testIn = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("txt","txt file");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("txt file", "txt");
+                testIn.removeChoosableFileFilter(testIn.getAcceptAllFileFilter());
                 testIn.setFileFilter(filter);
                 testIn.setDialogTitle("Choose a new test");
                 int returnVal = testIn.showOpenDialog(null);
@@ -1243,7 +1246,8 @@ public class Window_s {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 JFileChooser testOut = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(".txt","txt file");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("txt file", "txt");
+                testOut.removeChoosableFileFilter(testOut.getAcceptAllFileFilter());
                 testOut.setFileFilter(filter);
                 testOut.setDialogTitle("Choose a new test");
                 int returnVal = testOut.showOpenDialog(null);
