@@ -741,7 +741,6 @@ public class Window_s {
                         mistakesInCode.setText("");
                     } else
                         mistakesInCode.setText("Введите код/добавьте файл");
-                        testResult.setText(Tester.labTestExecute(forTest));
                 }
                 if (!mistakesInCode.getText().equals(""))
                     newVbox.getChildren().add(mistakesInCode);
@@ -753,6 +752,8 @@ public class Window_s {
                     newVbox.getChildren().add(mistakesInLab);
                 if (!mistakesInVar.getText().equals(""))
                     newVbox.getChildren().add(mistakesInVar);
+                if (mistakesInCode.getText().equals("")&&(mistakesInTerm.getText().equals(""))&&mistakesInCom.getText().equals("")&&mistakesInLab.getText().equals("")&&mistakesInVar.getText().equals(""))
+                testResult.setText(Tester.labTestExecute(forTest));
             }
         });
 
