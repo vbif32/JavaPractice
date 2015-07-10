@@ -40,10 +40,6 @@ public class Compiler {
     protected static File compileCpp(String code, String id){
         System.out.println("------------");
         System.out.println("Compiling cpp file");
-        if (code == null){
-            System.out.println("    There is no code.");
-            return null;
-        }
         createFolder("temp");
         File tempLabFile = new File("temp/labFile" + id + ".cpp");
         String compileError = null;
@@ -53,6 +49,7 @@ public class Compiler {
         try {
             FileWriter fw = new FileWriter(tempLabFile);
             fw.write(code);
+            fw.flush();
             fw.close();
             List<String> params = java.util.Arrays.asList("g++", tempLabFile.getAbsolutePath(), "-o", newFileAbsolutePath);
             ProcessBuilder builder = new ProcessBuilder(params);
@@ -127,6 +124,7 @@ public class Compiler {
         try {
             fw = new FileWriter(antBuildFile);
             fw.write(build);
+            fw.flush();
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -175,10 +173,6 @@ public class Compiler {
     protected static File compileJar(String code, String id){
         System.out.println("------------");
         System.out.println("Compiling jar file");
-        if (code == null){
-            System.out.println("    There is no code.");
-            return null;
-        }
         createFolder("temp");
         createFolder("temp/buildsrc");
         code = code.replaceAll("public class", "class").replaceAll("public interface", "interface")
@@ -188,6 +182,7 @@ public class Compiler {
         try {
             fw = new FileWriter(tempLabFile);
             fw.write(code);
+            fw.flush();
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
