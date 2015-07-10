@@ -793,6 +793,8 @@ public class Window_s {
                 forResults.getChildren().add(r);
                 forResults.setAlignment(Pos.CENTER);
                 statsRequest.id = newUser.id;
+                statsRequest.group = newUser.group;
+                statsRequest.term = (Integer.valueOf((String)forTerm.getSelectionModel().getSelectedItem()));
                 String studentResult = connect.userStatsRequest(statsRequest);
                 newVbox.getChildren().addAll(forResults, new Label("\n"), new Label(studentResult));
             }
