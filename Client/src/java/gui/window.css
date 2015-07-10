@@ -13,7 +13,6 @@ root {
     -fx-tooltip-weight: 150px;
     -fx-border-radius: 50px;
     -fx-text-fill: white;
-    -fx-graphic: url ("grad.jpg");
 }
 
 .label {
