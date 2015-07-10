@@ -64,10 +64,13 @@ public class Tester {
         }
     }
 
-    private String sendResult(Integer userId){
+    private String sendResult(){
         TestResultRequest testResultRequest = new TestResultRequest();
-        testResultRequest.id = userId;
+        testResultRequest.id = this.labInf.userId;
         testResultRequest.isCorrect = this.isCorrect;
+        testResultRequest.labNumber = this.labInf.number;
+        testResultRequest.term = this.labInf.term;
+        testResultRequest.subject = this.labInf.subject;
         if(this.connection.UploadTestResult(testResultRequest)){
             return null;
         } else {
@@ -183,7 +186,7 @@ public class Tester {
         } else {
             return "Файл или код не найден.";
         }
-        String reply = tester.sendResult(tester.labInf.userId);
+        String reply = tester.sendResult();
         if (!(reply == null || Objects.equals(reply, ""))){
             tester.stringResult = reply;
         } else {
