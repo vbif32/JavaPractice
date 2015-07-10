@@ -220,7 +220,7 @@ public class ConnectToServer {
 
             if(answer.getClass().equals(TestResult.class))
             {
-                return ((TestResult)answer).????ismark?????????;
+                return ((TestResult)answer).isSuccess;
             }else
             {
                 if(answer.getClass().equals(QueryError.class))

@@ -6,11 +6,11 @@ package reply;
 public class TestResult implements Reply {
 
     public TestResult() {}
-    public TestResult(int m) {
-        mark = m;
+    public TestResult(Boolean flag) {
+        isSuccess = flag;
     }
 
-    public Integer mark;
+    public Boolean isSuccess; // флаг успешности отправки результатов
 
     @Override
     public Replies getType() {
