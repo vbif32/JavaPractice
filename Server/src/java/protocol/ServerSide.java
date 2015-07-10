@@ -1,10 +1,12 @@
 package protocol;
 
 import query.*;
-import reply.*;
+import reply.QueryError;
+import reply.Replies;
+import reply.Reply;
+
 import javax.json.*;
 import javax.json.stream.JsonParser;
-
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -19,7 +21,8 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * Created by Lognir on 04.07.2015.
+ * Класс для описания протокола связи клиента и сервера со стороны сервера
+ * Ответственный: Александр Шведов
  */
 public class ServerSide {
     public static final File PATH = new File("src/java/protocol"); //Тут нужен путь до папки, куда кидать присланные файлы.
@@ -35,39 +38,42 @@ public class ServerSide {
         Stack<List> arrayStack = new Stack<>();
         boolean arrayValue = false;
         int fieldsNum = 0;
-        if(jp.hasNext()) jp.next();
+        if (jp.hasNext()) jp.next();
 
         while (jp.hasNext()) {
             JsonParser.Event event = jp.next();
             switch (event) {
                 case KEY_NAME:
                     currentField = currentObject.getClass().getField(jp.getString());
-                    if(currentObject.equals(obj)) fieldsNum++; break;
+                    if (currentObject.equals(obj)) fieldsNum++;
+                    break;
                 case VALUE_STRING:
-                    if(arrayValue) {
+                    if (arrayValue) {
                         currentArray.add(currentType.getConstructor(String.class).newInstance(jp.getString()));
-                    }
-                    else if(!currentField.getType().equals(File.class))
+                    } else if (!currentField.getType().equals(File.class))
                         currentField.set(currentObject, currentField.getType().getConstructor(String.class).newInstance(jp.getString()));
                     else {
                         currentField.set(currentObject, File.class.getConstructor(File.class, String.class).newInstance(PATH, jp.getString()));
                         files.add((File) currentField.get(currentObject));
-                    } break;
+                    }
+                    break;
                 case VALUE_NULL:
-                    if(arrayValue) currentArray.add(null);
-                    else currentField.set(currentObject, null); break;
+                    if (arrayValue) currentArray.add(null);
+                    else currentField.set(currentObject, null);
+                    break;
                 case START_ARRAY:
-                    if(currentArray != null) {
+                    if (currentArray != null) {
                         arrayStack.push(currentArray);
                         typeStack.push(currentType);
                     }
-                    currentArray = (List)currentField.getType().getConstructor().newInstance();
+                    currentArray = (List) currentField.getType().getConstructor().newInstance();
                     currentField.set(currentObject, currentArray);
-                    currentType = (Class)((ParameterizedType)currentField.getGenericType()).getActualTypeArguments()[0];
-                    arrayValue = true; break;
+                    currentType = (Class) ((ParameterizedType) currentField.getGenericType()).getActualTypeArguments()[0];
+                    arrayValue = true;
+                    break;
                 case START_OBJECT:
                     objectStack.push(currentObject);
-                    if(currentArray != null) {
+                    if (currentArray != null) {
                         arrayValue = false;
                         currentObject = currentType.getConstructor().newInstance();
                         currentArray.add(currentObject);
@@ -75,14 +81,17 @@ public class ServerSide {
                         Object tmp = currentField.getType().getConstructor().newInstance();
                         currentField.set(currentObject, tmp);
                         currentObject = tmp;
-                    } break;
+                    }
+                    break;
                 case END_ARRAY:
-                    if(typeStack.size() > 0) currentType = typeStack.pop();
-                    if(arrayStack.size() > 0) currentArray = arrayStack.pop();
-                    arrayValue = false; break;
+                    if (typeStack.size() > 0) currentType = typeStack.pop();
+                    if (arrayStack.size() > 0) currentArray = arrayStack.pop();
+                    arrayValue = false;
+                    break;
                 case END_OBJECT:
-                    if(objectStack.size() > 0) currentObject = objectStack.pop();
-                    if(currentArray != null) arrayValue = true; break;
+                    if (objectStack.size() > 0) currentObject = objectStack.pop();
+                    if (currentArray != null) arrayValue = true;
+                    break;
             }
         }
         jp.close();
@@ -91,34 +100,33 @@ public class ServerSide {
 
     public static JsonObjectBuilder getJasonObj(Object obj, ArrayList<File> files) throws IllegalAccessException {
         JsonObjectBuilder job = Json.createObjectBuilder();
-        if(obj == null) return job;
+        if (obj == null) return job;
         Field[] fields = obj.getClass().getFields();
-        for(Field f : fields) {
-            if(f.get(obj) == null)
+        for (Field f : fields) {
+            if (f.get(obj) == null)
                 job.add(f.getName(), JsonValue.NULL);
-            else if(f.getType().equals(File.class)) {
-                File file = (File)f.get(obj);
+            else if (f.getType().equals(File.class)) {
+                File file = (File) f.get(obj);
                 job.add(f.getName(), file.getName());
                 files.add(file);
-            }
-            else if(List.class.isAssignableFrom(f.getType())) {
+            } else if (List.class.isAssignableFrom(f.getType())) {
                 job.add(f.getName(), getJasonArr(obj, f, files));
-            }
-            else {
+            } else {
                 job.add(f.getName(), (f.get(obj)).toString());
             }
         }
         return job;
     }
+
     public static JsonArrayBuilder getJasonArr(Object obj, Field field, ArrayList<File> files) throws IllegalAccessException {
         JsonArrayBuilder jab = Json.createArrayBuilder();
         boolean objFlag = true;
-        List list = (List)field.get(obj);
-        Class type = (Class)((ParameterizedType)field.getGenericType()).getActualTypeArguments()[0];
-        if(type.equals(String.class) || type.equals(Integer.class) || type.equals(Boolean.class)) objFlag = false;
-        for(Object o : list) {
-            if(o == null) jab.add(JsonValue.NULL);
-            else if(objFlag) jab.add(getJasonObj(o, files));
+        List list = (List) field.get(obj);
+        Class type = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+        if (type.equals(String.class) || type.equals(Integer.class) || type.equals(Boolean.class)) objFlag = false;
+        for (Object o : list) {
+            if (o == null) jab.add(JsonValue.NULL);
+            else if (objFlag) jab.add(getJasonObj(o, files));
             else jab.add(o.toString());
         }
         return jab;
@@ -131,21 +139,21 @@ public class ServerSide {
             JsonObject jmsg = getJasonObj(queryResult, files).build();
             byte[] byteArr = jmsg.toString().getBytes();
             byte[] len = ByteBuffer.allocate(4).putInt(byteArr.length).array();
-            byte[] resMsg = new byte[byteArr.length+6];
+            byte[] resMsg = new byte[byteArr.length + 6];
             System.arraycopy(len, 0, resMsg, 2, 4);
             System.arraycopy(byteArr, 0, resMsg, 6, byteArr.length);
             resMsg[0] = 1;
-            resMsg[1] = (byte)type.ordinal();
+            resMsg[1] = (byte) type.ordinal();
 
             int answer = 0;
             do {
-                if(answer == -1) throw new IOException("Connection lost.");
+                if (answer == -1) throw new IOException("Connection lost.");
                 if (answer == 63) throw new WrongDataException("Client denied files.");
                 out.write(resMsg);
                 out.flush();
-            } while((answer = in.read()) != 33);
+            } while ((answer = in.read()) != 33);
 
-            if(files.size() > 0) {
+            if (files.size() > 0) {
                 DigestInputStream fs;
                 int fLen, numRead;
                 MessageDigest md = MessageDigest.getInstance("MD5");
@@ -153,20 +161,18 @@ public class ServerSide {
                 resHead[0] = 1;
                 resHead[1] = 31;
                 answer = 0;
-                for(File fl : files) {
-                    if(fl.length() > Integer.MAX_VALUE) throw new FileReadingException("File is too large.");
-                    fLen = (int)fl.length();
-                    resMsg = new byte[fLen+22];
+                for (File fl : files) {
+                    if (fl.length() > Integer.MAX_VALUE) throw new FileReadingException("File is too large.");
+                    fLen = (int) fl.length();
+                    resMsg = new byte[fLen + 22];
                     try {
                         fs = new DigestInputStream(new FileInputStream(fl), md);
                         numRead = fs.read(resMsg, 22, fLen);
                         fs.close();
                         if (numRead != fLen) throw new FileReadingException("File reading was not complete.");
-                    }
-                    catch(FileNotFoundException e) {
+                    } catch (FileNotFoundException e) {
                         throw new FileReadingException("File was not found.");
-                    }
-                    catch(IOException iof) {
+                    } catch (IOException iof) {
                         throw new FileReadingException("File could not be read.");
                     }
                     len = ByteBuffer.allocate(4).putInt(fLen).array();
@@ -176,40 +182,34 @@ public class ServerSide {
                     md.reset();
 
                     do {
-                        if(answer == -1) throw new IOException("Connection lost.");
+                        if (answer == -1) throw new IOException("Connection lost.");
                         if (answer == 63) throw new WrongDataException("Client denied files.");
                         out.write(resMsg);
                         out.flush();
-                    } while((answer = in.read()) != 33);
+                    } while ((answer = in.read()) != 33);
                 }
             }
 
             out.write(33);
-        }
-        catch(IOException ioe) {
+        } catch (IOException ioe) {
             return false;
-        }
-        catch(FileReadingException fre) {
+        } catch (FileReadingException fre) {
             try {
                 out.write(63);
                 out.flush();
                 transmit(new QueryError("Server couldn't send the file."), out, in);
                 return false;
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
                 return false;
             }
-        }
-        catch(WrongDataException wde) {
+        } catch (WrongDataException wde) {
             return false;
-        }
-        catch(IllegalAccessException|NoSuchAlgorithmException iae) {
+        } catch (IllegalAccessException | NoSuchAlgorithmException iae) {
             return false;
         }
 
         return true;
     }
-
 
     public static Query receive(OutputStream out, InputStream in) {
         Query q = null;
@@ -223,9 +223,9 @@ public class ServerSide {
         byte[] answerData;
 
         try {
-            while(!correct) {
+            while (!correct) {
                 tryCount++;
-                if(tryCount > 3) {
+                if (tryCount > 3) {
                     throw new WrongDataException("Bad data from client.");
                 }
                 errCount = 0;
@@ -240,17 +240,17 @@ public class ServerSide {
                 answerType = in.read();
                 answer = in.read(answerLen, 0, 4);
                 ansLen = ByteBuffer.wrap(answerLen).getInt();
-                if(answer != 4 || ansLen < 0) {
+                if (answer != 4 || ansLen < 0) {
                     out.write(23);
                     out.flush();
                     continue;
                 }
                 answerData = new byte[ansLen];
                 answer = 0;
-                while(answer != ansLen) {
+                while (answer != ansLen) {
                     bytesRead = in.read(answerData, answer, ansLen - answer);
                     answer += bytesRead;
-                    if(bytesRead <= 0) break;
+                    if (bytesRead <= 0) break;
                 }
                 if (answer != ansLen) {
                     out.write(23);
@@ -262,36 +262,44 @@ public class ServerSide {
 
                 switch (answerType) {
                     case 0:
-                        q = new RegisterRequest(); break;
+                        q = new RegisterRequest();
+                        break;
                     case 1:
-                        q = new LoginRequest(); break;
+                        q = new LoginRequest();
+                        break;
                     case 2:
-                        q = new TestUploadRequest(); break;
+                        q = new TestUploadRequest();
+                        break;
                     case 3:
-                        q = new TestRequest(); break;
+                        q = new TestRequest();
+                        break;
                     case 4:
-                        q = new TestResultRequest(); break;
+                        q = new TestResultRequest();
+                        break;
                     case 5:
-                        q = new StatsRequest(); break;
+                        q = new StatsRequest();
+                        break;
                     case 6:
-                        q = new ErrorReceived(); break;
+                        q = new ErrorReceived();
+                        break;
                     default:
-                        out.write(23); out.flush(); continue;
+                        out.write(23);
+                        out.flush();
+                        continue;
                 }
 
                 int fieldsNum;
                 try {
                     fieldsNum = parseJsonString(q, rawData, files);
-                } catch(ReflectiveOperationException roe) {
+                } catch (ReflectiveOperationException roe) {
                     out.write(23);
                     out.flush();
                     continue;
                 }
-                if(fieldsNum != q.getClass().getFields().length) {
+                if (fieldsNum != q.getClass().getFields().length) {
                     out.write(23);
                     out.flush();
-                }
-                else
+                } else
                     correct = true;
             }
             out.write(33);
@@ -299,17 +307,17 @@ public class ServerSide {
             int i = 0;
             MessageDigest md = MessageDigest.getInstance("MD5");
             DigestOutputStream fos;
-            while((answer = in.read()) != 33) {
+            while ((answer = in.read()) != 33) {
                 correct = false;
                 if (answer == -1) throw new IOException("Connection lost.");
-                if(answer == 63) throw new IOException("Transmission interrupted.");
+                if (answer == 63) throw new IOException("Transmission interrupted.");
                 tryCount = 0;
-                while(!correct) {
+                while (!correct) {
                     tryCount++;
-                    if(tryCount > 3 || i >= files.size()) {
+                    if (tryCount > 3 || i >= files.size()) {
                         throw new WrongDataException("Bad data from client.");
                     }
-                    if(answer != 1) {
+                    if (answer != 1) {
                         errCount = 0;
                         while ((answer = in.read()) != 1) {
                             if (answer == -1) throw new IOException("Connection lost.");
@@ -329,10 +337,10 @@ public class ServerSide {
                     }
                     answerData = new byte[ansLen];
                     answer = 0;
-                    while(answer != ansLen) {
+                    while (answer != ansLen) {
                         bytesRead = in.read(answerData, answer, ansLen - answer);
                         answer += bytesRead;
-                        if(bytesRead <= 0) break;
+                        if (bytesRead <= 0) break;
                     }
                     if (answer != ansLen) {
                         out.write(23);
@@ -344,14 +352,12 @@ public class ServerSide {
                         fos.write(answerData);
                         fos.flush();
                         fos.close();
-                    }
-                    catch(FileNotFoundException e) {
+                    } catch (FileNotFoundException e) {
                         throw new FileReadingException("Couldn't make a file.");
-                    }
-                    catch(IOException iof) {
+                    } catch (IOException iof) {
                         throw new FileReadingException("Couldn't write into the file.");
                     }
-                    if(!Arrays.equals(md5data, md.digest())) {
+                    if (!Arrays.equals(md5data, md.digest())) {
                         out.write(23);
                         out.flush();
                         md.reset();
@@ -363,31 +369,26 @@ public class ServerSide {
                 }
                 i++;
             }
-            if(i != files.size()) {
+            if (i != files.size()) {
                 correct = false;
                 throw new WrongDataException("Bad data from client.");
             }
-        }
-        catch(IOException ioe) {
+        } catch (IOException ioe) {
             return new ErrorReceived(ioe.getMessage());
-        }
-        catch(WrongDataException|FileReadingException wde) {
+        } catch (WrongDataException | FileReadingException wde) {
             try {
                 out.write(63);
                 out.flush();
                 transmit(new QueryError(), out, in);
                 return new ErrorReceived(wde.getMessage());
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
                 return new ErrorReceived(e.getMessage());
             }
-        }
-        catch(NoSuchAlgorithmException nae) {
+        } catch (NoSuchAlgorithmException nae) {
             return new ErrorReceived(nae.getMessage());
-        }
-        finally {
-            if(!correct)
-                for(File f : files)
+        } finally {
+            if (!correct)
+                for (File f : files)
                     f.delete();
         }
 
