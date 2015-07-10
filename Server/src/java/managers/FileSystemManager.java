@@ -1,30 +1,36 @@
 package managers;
 
-import java.awt.*;
 import java.io.*;
 
 /**
- * Created by Елизавета on 02.07.2015.
+ * класс для работы с файловой системой
+ * Ответственный: Елизавета Левина
  */
-
 public class FileSystemManager {
 
-    /*удаления объекта класса File
-    * если он есть
-    * то если это файл - удалить
-    * если директория - удалить*/
+    /**
+     * Функция удаления объекта класса File
+     * если он есть, то если это файл - удалить
+     * если директория - удалить
+     *
+     * @param file
+     * @return
+     */
     public static boolean deleteFile(File file) {
         if (file != null)
             return file.delete() ? true : deleteDir(file);
         else return false;
     }
 
-    /*удаление директории, если на руках имеется ее путь.
-    * получили список того, что в ней есть
-    * если он не пустой,
-    * то для каждого имени:
-    * постараться его удалить
-    * и удалить папку, содержимое которой мы удаляли*/
+    /**
+     * Функция удаления директории, если на руках имеется ее путь.
+     * получили список того, что в ней есть
+     * если он не пустой, то для каждого имени:
+     * постараться его удалить и удалить папку, содержимое которой мы удаляли
+     *
+     * @param path
+     * @return
+     */
     public static boolean deleteDir(String path) {
         File f = new File(path);
         String[] names = f.list();
@@ -34,18 +40,28 @@ public class FileSystemManager {
         return f.delete();
     }
 
-    /*удаление директории*/
+    /**
+     * Функция удаления директории
+     *
+     * @param file
+     * @return
+     */
     public static boolean deleteDir(File file) {
         String path = file.getAbsolutePath();
         return deleteDir(path);
     }
 
-    /* у нас есть строка с путем чего-то ("D:\\Programming\\Java\\readme.txt")
-    * создали объект класса file для этого пути
-    * если существует что-либо по этому пути
-    * то если это файл - удалить файл
-    * иначе это директория - удалить директорию.
-    * иначе этого не существует или что-то пошло не так. */
+    /**
+     * у нас есть строка с путем чего-то ("D:\\Programming\\Java\\readme.txt")
+     * создали объект класса file для этого пути
+     * если существует что-либо по этому пути, то
+     * если это файл - удалить файл
+     * иначе это директория - удалить директорию.
+     * иначе этого не существует или что-то пошло не так.
+     *
+     * @param path
+     * @return
+     */
     public static boolean deleteFile(String path) {
         File f1 = new File(path);
         if (f1.exists()) {
@@ -55,8 +71,12 @@ public class FileSystemManager {
         } else return false;
     }
 
-    /*создать новый пустой файл
-    * путь к которому path*/
+    /**
+     * Функция создания нового пустого файла
+     *
+     * @param path - путь к файлу
+     * @return
+     */
     public static boolean createEmptyFile(String path) {
         try (FileOutputStream newFileOrDir = new FileOutputStream(path)) {
         } catch (IOException ex) {
@@ -65,25 +85,32 @@ public class FileSystemManager {
         return true;
     }
 
-    /*создать пустую директорию
-    * pathDir - путь к ней.
-    * т е если хочешь создать D:\\Users\\IIB-1-14
-    * надо писать createEmptyDir("D:\\Users\\IIB-1-14")
-    * если этот путь занят, то ретернится false*/
-    public static boolean createEmptyDir(String pathDir){
+    /**
+     * Функция создания пустой директории
+     * т.е. если хочешь создать D:\\Users\\IIB-1-14
+     * надо писать createEmptyDir("D:\\Users\\IIB-1-14")
+     *
+     * @param pathDir - путь к директории
+     * @return флаг успешности выполнения операции
+     */
+    public static boolean createEmptyDir(String pathDir) {
         File newFold = new File(pathDir);
-            return newFold.mkdirs();}
+        return newFold.mkdirs();
+    }
 
 
-    /*поиск файла
-    * первый параметр - искомое имя ("input.txt", "NewFolder")
-    * второй параметр - папка, в которой ведется поиск ("С:\\", "D:\\Programming\\Java")
-    *
-    * создаем список содержимого папки
-    * для каждого имени:
-    * если текущее имя совпадает с искомым,
-    * то возвращаем найденный файл,
-    * иначе идем дальше - если это папка, то спускаемся по ней. если ничего не нашли, то идем дальше, если нашли, то ретерним*/
+    /**
+     * Функция поиска файла
+     * создаем список содержимого папки для каждого имени:
+     * если текущее имя совпадает с искомым,
+     * то возвращаем найденный файл,
+     * иначе идем дальше - если это папка, то спускаемся по ней.
+     * если ничего не нашли, то идем дальше, если нашли, то ретерним.
+     *
+     * @param requiredName - искомое имя ("input.txt", "NewFolder")
+     * @param initialPath  - папка, в которой ведется поиск ("С:\\", "D:\\Programming\\Java")
+     * @return
+     */
     public static File searchFile(String requiredName, String initialPath) {
         File f = new File(initialPath);
         String[] list = f.list();
@@ -107,8 +134,14 @@ public class FileSystemManager {
         return f.getName().equals(requiredName) ? f : null;
     }
 
-    /*проверка на существование файла/папки в нужной директории
-    * isFileHere("input.txt", "D:\\Users\\IIB-1-14") проверяется, есть ли input.txt в папке группы*/
+    /**
+     * Функция проверки на существование файла/папки в нужной директории
+     * isFileHere("input.txt", "D:\\Users\\IIB-1-14") проверяется, есть ли input.txt в папке группы
+     *
+     * @param requiredName
+     * @param initialPath
+     * @return
+     */
     public static boolean isFileHere(String requiredName, String initialPath) {
         File f = new File(initialPath);
         String[] list = f.list();
@@ -118,8 +151,14 @@ public class FileSystemManager {
         return false;
     }
 
-    /*копирование файлов, если на руках объекты
-    * пока не пробовала копировать папки*/
+    /**
+     * Функция копирования файлов, если на руках объекты
+     * пока не пробовала копировать папки
+     *
+     * @param oldFile
+     * @param newFile
+     * @return
+     */
     public static boolean copyFiles(File oldFile, File newFile) {
         if (oldFile.isFile() != newFile.isFile())
             return false;
@@ -147,10 +186,16 @@ public class FileSystemManager {
         }
     }
 
-    /*копирование файла,
-    * если на руках путь того, откуда копируют и путь, куда это копируют.
-    * если это разные вещи, то ретернится false
-    * пока не пробовала копировать папки*/
+    /**
+     * Функция копирования файла,
+     * если на руках путь того, откуда копируют и путь, куда это копируют.
+     * если это разные вещи, то ретернится false
+     * пока не пробовала копировать папки
+     *
+     * @param oldFilePath
+     * @param newFilePath
+     * @return
+     */
     public static boolean copyFiles(String oldFilePath, String newFilePath) {
         File f1 = new File(oldFilePath);
         File f2 = new File(newFilePath);
