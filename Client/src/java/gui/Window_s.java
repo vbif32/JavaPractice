@@ -908,9 +908,7 @@ public class Window_s {
         firstTable.setEditable(false);
         firstTable.setVisible(false);
 
-        TableColumn fio = new TableColumn();
-        firstTable.getColumns().setAll(fio);
-        fio.setText("ФИО");
+
 
 
         forGroup.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
@@ -918,19 +916,25 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 if (t1!=null) {
                     statsRequest.group = t1;
+                    TableColumn fio = new TableColumn();
+                    fio.setText("ФИО");
+                    firstTable.getColumns().clear();
+                    firstTable.getColumns().add(fio);
                     firstTable.setVisible(true);
                     firstTable.setItems(getTableData());
+                    fio.setCellValueFactory(new PropertyValueFactory<Student, String>("fio"));
+                    if (firstTable.getItems().size() != 0)
+                        for (int i = 0; i < ((Student) firstTable.getItems().get(0)).dates.size(); i++) {
+
+                            TableColumn<Student, String> lab = new TableColumn("Лаб.№ " + (i + 1));
+                            lab.setCellValueFactory(new PropertyValueFactory("lab" + (i + 1) + "Date"));
+                            firstTable.getColumns().add(lab);
+                        }
+
                 }
             }
         });
 
-        fio.setCellValueFactory(new PropertyValueFactory<Student, String>("fio"));
-        if (firstTable.getItems().size() != 0)
-            for (int i = 0; i < ((Student) firstTable.getItems().get(0)).dates.size(); i++) {
-                TableColumn<Student, String> lab = new TableColumn("Лаб.№ " + (i + 1));
-                lab.setCellValueFactory(new PropertyValueFactory("lab" + (i + 1) + "Date"));
-                firstTable.getColumns().add(lab);
-            }
 
 
 
