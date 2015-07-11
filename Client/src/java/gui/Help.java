@@ -8,7 +8,7 @@ import java.io.*;
  */
 public class Help {
 
-    private static String res_name = "test.txt";
+    private static String res_name = "help.txt";
 
     public static File resToFile(String res_name, String name) throws IOException {
         InputStream input = Help.class.getResourceAsStream("/" + res_name);
