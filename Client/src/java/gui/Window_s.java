@@ -556,14 +556,16 @@ public class Window_s {
                 //Добавлено добрыми феями
                 forLab.getItems().clear();
                 forVariant.getItems().clear();
-                forTest.subject = t1;
-                int number = 0;
-                for (LabsPossible lp : newUser.labInfo)
-                    if (lp.subject.equals(t1) && lp.term.toString().equals(forTerm.getValue())) {
-                        number = lp.variants.size();
-                        break;
-                    }
-                for (int i = 1; i <= number; i++) forLab.getItems().add(Integer.toString(i));
+                if (t1!=null) {
+                    forTest.subject = t1;
+                    int number = 0;
+                    for (LabsPossible lp : newUser.labInfo)
+                        if (lp.subject.equals(t1) && lp.term.toString().equals(forTerm.getValue())) {
+                            number = lp.variants.size();
+                            break;
+                        }
+                    for (int i = 1; i <= number; i++) forLab.getItems().add(Integer.toString(i));
+                }
             }
         });
 
@@ -573,21 +575,24 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 //Добавлено добрыми феями
                 forVariant.getItems().clear();
-                forTest.number = Integer.valueOf(t1);
-                int variant = 0;
-                for (LabsPossible lp : newUser.labInfo)
-                    if (lp.subject.equals(forSubject.getValue()) && lp.term.toString().equals(forTerm.getValue())) {
-                        variant = lp.variants.get(Integer.parseInt(t1) - 1);
-                        break;
-                    }
-                for (int i = 1; i <= variant; i++) forVariant.getItems().add(Integer.toString(i));
+                if (t1!=null) {
+                    forTest.number = Integer.valueOf(t1);
+                    int variant = 0;
+                    for (LabsPossible lp : newUser.labInfo)
+                        if (lp.subject.equals(forSubject.getValue()) && lp.term.toString().equals(forTerm.getValue())) {
+                            variant = lp.variants.get(Integer.parseInt(t1) - 1);
+                            break;
+                        }
+                    for (int i = 1; i <= variant; i++) forVariant.getItems().add(Integer.toString(i));
+                }
             }
         });
 
         forVariant.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                forTest.variant = Integer.valueOf(t1);
+                if (t1!=null)
+                    forTest.variant = Integer.valueOf(t1);
             }
         });
 
