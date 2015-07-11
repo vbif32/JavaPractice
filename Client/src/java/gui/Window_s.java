@@ -794,6 +794,7 @@ public class Window_s {
                 forResults.setAlignment(Pos.CENTER);
                 sR.id = newUser.id;
                 sR.group = newUser.group;
+
                 String studentResult = connect.userStatsRequest(sR);
                 newVbox.getChildren().addAll(forResults, new Label("\n"), new Label(studentResult));
             }
@@ -834,24 +835,7 @@ public class Window_s {
 
         VBox main = new VBox();
         //ТАБЛИЧКА
-        final TableView firstTable = new TableView();
-        firstTable.setMaxSize(800, 400);
-        firstTable.setMinSize(800, 400);
-        firstTable.setEditable(false);
-        firstTable.setVisible(false);
-        firstTable.setItems(getTableData());
 
-        TableColumn fio = new TableColumn();
-        firstTable.getColumns().setAll(fio);
-        fio.setText("ФИО");
-
-        fio.setCellValueFactory(new PropertyValueFactory<Student, String>("fio"));
-        if (firstTable.getItems().size() != 0)
-            for (int i = 0; i < ((Student) firstTable.getItems().get(0)).dates.size(); i++) {
-                TableColumn<Student, String> lab = new TableColumn("Лаб.№ " + (i + 1));
-                lab.setCellValueFactory(new PropertyValueFactory("lab" + (i + 1) + "Date"));
-                firstTable.getColumns().add(lab);
-            }
 
 //КОНЕЦ ТАБЛИЦЫ
 
@@ -912,13 +896,35 @@ public class Window_s {
             }
         });
 
+        final TableView firstTable = new TableView();
+        firstTable.setMaxSize(800, 400);
+        firstTable.setMinSize(800, 400);
+        firstTable.setEditable(false);
+        firstTable.setVisible(false);
+
+        TableColumn fio = new TableColumn();
+        firstTable.getColumns().setAll(fio);
+        fio.setText("ФИО");
+
+
         forGroup.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 statsRequest.group = t1;
                 firstTable.setVisible(true);
+                firstTable.setItems(getTableData());
             }
         });
+
+        fio.setCellValueFactory(new PropertyValueFactory<Student, String>("fio"));
+        if (firstTable.getItems().size() != 0)
+            for (int i = 0; i < ((Student) firstTable.getItems().get(0)).dates.size(); i++) {
+                TableColumn<Student, String> lab = new TableColumn("Лаб.№ " + (i + 1));
+                lab.setCellValueFactory(new PropertyValueFactory("lab" + (i + 1) + "Date"));
+                firstTable.getColumns().add(lab);
+            }
+
+
 
         choose.getChildren().addAll(sem, sub, group);
 
@@ -951,6 +957,7 @@ public class Window_s {
         main.setAlignment(Pos.TOP_CENTER);
         visibleField.getChildren().add(main);
     }
+
 
     private ObservableList getTableData() {
         List list_1 = new ArrayList();
