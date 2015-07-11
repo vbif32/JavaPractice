@@ -76,7 +76,15 @@ public class UserService {
         matcher = pattern.matcher(password);
         boolean pas_val = matcher.matches();
         if (pas_val && log_val) {
-            return DatabaseManager.verifyAccount(login, password);
+            User user = DatabaseManager.verifyAccount(login, password);
+            if(user != null)
+                return  user;
+            else
+            {
+                QueryError error = new QueryError();
+                error.message = "Некорректный логин и/или пароль";
+                return error;
+            }
         } else {
             QueryError error = new QueryError();
             error.message = "Некорректный логин и/или пароль";
