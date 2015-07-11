@@ -540,9 +540,8 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 //Добавлено добрыми феями
                 forSubject.getItems().clear();
-                forLab.getItems().clear();
-                forVariant.getItems().clear();
                 forTest.term = Integer.valueOf(t1);
+                forTest.subject=null;
                 for (LabsPossible lp : newUser.labInfo)
                     if (lp.term.toString().equals(t1)) {
                         forSubject.getItems().add(lp.subject);
@@ -555,9 +554,9 @@ public class Window_s {
             public void changed(ObservableValue ov, String t, String t1) {
                 //Добавлено добрыми феями
                 forLab.getItems().clear();
-                forVariant.getItems().clear();
                 if (t1!=null) {
                     forTest.subject = t1;
+                    forTest.number=-1;
                     int number = 0;
                     for (LabsPossible lp : newUser.labInfo)
                         if (lp.subject.equals(t1) && lp.term.toString().equals(forTerm.getValue())) {
@@ -577,6 +576,7 @@ public class Window_s {
                 forVariant.getItems().clear();
                 if (t1!=null) {
                     forTest.number = Integer.valueOf(t1);
+                    forTest.variant=1;
                     int variant = 0;
                     for (LabsPossible lp : newUser.labInfo)
                         if (lp.subject.equals(forSubject.getValue()) && lp.term.toString().equals(forTerm.getValue())) {
@@ -791,17 +791,19 @@ public class Window_s {
         chSub.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                sR.subject = t1;
-                newVbox.getChildren().clear();
-                forResults.getChildren().clear();
-                r.setText("Результаты:");
-                forResults.getChildren().add(r);
-                forResults.setAlignment(Pos.CENTER);
-                sR.id = newUser.id;
-                sR.group = newUser.group;
+                if (t1!=null) {
+                    sR.subject = t1;
+                    newVbox.getChildren().clear();
+                    forResults.getChildren().clear();
+                    r.setText("Результаты:");
+                    forResults.getChildren().add(r);
+                    forResults.setAlignment(Pos.CENTER);
+                    sR.id = newUser.id;
+                    sR.group = newUser.group;
 
-                String studentResult = connect.userStatsRequest(sR);
-                newVbox.getChildren().addAll(forResults, new Label("\n"), new Label(studentResult));
+                    String studentResult = connect.userStatsRequest(sR);
+                    newVbox.getChildren().addAll(forResults, new Label("\n"), new Label(studentResult));
+                }
             }
         });
 
@@ -839,11 +841,6 @@ public class Window_s {
         visibleField.getChildren().clear();
 
         VBox main = new VBox();
-        //ТАБЛИЧКА
-
-
-//КОНЕЦ ТАБЛИЦЫ
-
 
         HBox choose = new HBox();
 
@@ -881,6 +878,7 @@ public class Window_s {
                 forSub.getItems().clear();
                 forGroup.getItems().clear();
                 statsRequest.term = Integer.valueOf(t1);
+                statsRequest.subject=null;
                 for (LabsPossible lp : newUser.labInfo)
                     if (lp.term.toString().equals(t1)) {
                         forSub.getItems().add(lp.subject);
@@ -892,12 +890,15 @@ public class Window_s {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 forGroup.getItems().clear();
-                statsRequest.subject = t1;
-                for (LabsPossible lp : newUser.labInfo)
-                    if (lp.subject.equals(t1) && lp.term.toString().equals(forSem.getValue())) {
-                        forGroup.getItems().addAll(lp.groups);
-                        break;
-                    }
+                if (t1!=null) {
+                    statsRequest.subject = t1;
+                    statsRequest.group=null;
+                    for (LabsPossible lp : newUser.labInfo)
+                        if (lp.subject.equals(t1) && lp.term.toString().equals(forSem.getValue())) {
+                            forGroup.getItems().addAll(lp.groups);
+                            break;
+                        }
+                }
             }
         });
 
@@ -915,9 +916,11 @@ public class Window_s {
         forGroup.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                statsRequest.group = t1;
-                firstTable.setVisible(true);
-                firstTable.setItems(getTableData());
+                if (t1!=null) {
+                    statsRequest.group = t1;
+                    firstTable.setVisible(true);
+                    firstTable.setItems(getTableData());
+                }
             }
         });
 
@@ -1147,8 +1150,6 @@ public class Window_s {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 isSubject.getItems().clear();
-                isNumber.getItems().clear();
-                isVariant.getItems().clear();
                 test.term = Integer.valueOf(t1);
                 for (LabsPossible lp : newUser.labInfo)
                     if (lp.term.toString().equals(t1)) {
@@ -1161,15 +1162,16 @@ public class Window_s {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 isNumber.getItems().clear();
-                isVariant.getItems().clear();
-                test.subject = t1;
-                int number = 0;
-                for (LabsPossible lp : newUser.labInfo)
-                    if (lp.subject.equals(t1) && lp.term.toString().equals(isTerm.getValue())) {
-                        number = lp.variants.size();
-                        break;
-                    }
-                for (int i = 1; i <= number; i++) isNumber.getItems().add(Integer.toString(i));
+                if (t1 != null) {
+                    test.subject = t1;
+                    int number = 0;
+                    for (LabsPossible lp : newUser.labInfo)
+                        if (lp.subject.equals(t1) && lp.term.toString().equals(isTerm.getValue())) {
+                            number = lp.variants.size();
+                            break;
+                        }
+                    for (int i = 1; i <= number; i++) isNumber.getItems().add(Integer.toString(i));
+                }
             }
         });
 
@@ -1177,20 +1179,23 @@ public class Window_s {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 isVariant.getItems().clear();
-                test.labNumber = Integer.valueOf(t1);
-                int variant = 0;
-                for (LabsPossible lp : newUser.labInfo)
-                    if (lp.subject.equals(isSubject.getValue()) && lp.term.toString().equals(isTerm.getValue())) {
-                        variant = lp.variants.get(Integer.parseInt(t1) - 1);
-                        break;
-                    }
-                for (int i = 1; i <= variant; i++) isVariant.getItems().add(Integer.toString(i));
+                if (t1 != null) {
+                    test.labNumber = Integer.valueOf(t1);
+                    int variant = 0;
+                    for (LabsPossible lp : newUser.labInfo)
+                        if (lp.subject.equals(isSubject.getValue()) && lp.term.toString().equals(isTerm.getValue())) {
+                            variant = lp.variants.get(Integer.parseInt(t1) - 1);
+                            break;
+                        }
+                    for (int i = 1; i <= variant; i++) isVariant.getItems().add(Integer.toString(i));
+                }
             }
         });
 
         isVariant.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
+                if (t1!=null)
                 test.variant = Integer.valueOf(t1);
             }
         });
@@ -1231,7 +1236,6 @@ public class Window_s {
             }
         });
 
-        final Label mistakesInCode = new Label();
         final Label mistakesInCom = new Label();
         final Label mistakesInTerm = new Label();
         final Label mistakesInLab = new Label();
@@ -1267,8 +1271,6 @@ public class Window_s {
                 else
                     mistakesInOutput.setText("");
 
-                if (!mistakesInCode.getText().equals(""))
-                    newVbox.getChildren().add(mistakesInCode);
                 if (!mistakesInTerm.getText().equals(""))
                     newVbox.getChildren().add(mistakesInTerm);
                 if (!mistakesInCom.getText().equals(""))
@@ -1281,7 +1283,7 @@ public class Window_s {
                     newVbox.getChildren().add(mistakesInInput);
                 if (!mistakesInOutput.getText().equals(""))
                     newVbox.getChildren().add(mistakesInOutput);
-                if (mistakesInCode.getText().equals("") && (mistakesInTerm.getText().equals("")) && mistakesInCom.getText().equals("") && mistakesInLab.getText().equals("") && mistakesInVar.getText().equals("") && mistakesInInput.getText().equals("") && mistakesInOutput.getText().equals("")) {
+                if ((mistakesInTerm.getText().equals("")) && mistakesInCom.getText().equals("") && mistakesInLab.getText().equals("") && mistakesInVar.getText().equals("") && mistakesInInput.getText().equals("") && mistakesInOutput.getText().equals("")) {
                     ConnectToServer c = new ConnectToServer();
                     c.TestUpload(test);
                 }
