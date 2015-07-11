@@ -111,9 +111,6 @@ class ResultsHandler {
         if (labNumber > 6)
             return false;
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.println(dateFormat.format(labDate));
-
         try {
             String NumberOfLabsCommand = "SELECT subject_id FROM subject_table WHERE subject_name = ?";
             String existCommand = "UPDATE student_results set subject_id = ?, term=?, lab_" + labNumber + "=? where system_id = ?";
