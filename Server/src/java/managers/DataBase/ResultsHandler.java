@@ -5,10 +5,9 @@ import org.postgresql.util.PSQLException;
 import transfer.LabSubmitDate;
 import transfer.StudentResult;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -26,12 +25,13 @@ class ResultsHandler {
 
     /**
      * Возвращает массив с информацией о студентах
+     *
      * @param GroupName - имя группы
      * @param Subject   - предмет
      * @param term      - семестр
      * @return массив с соответствующими данными
-     * имя, фамилия, отчество, группа, идентификатор аккаунта, даты сдачи лабораторных для каждой лабораторной по порядку
-     * Если лабораторная не сдана возвращает null
+     *         имя, фамилия, отчество, группа, идентификатор аккаунта, даты сдачи лабораторных для каждой лабораторной по порядку
+     *         Если лабораторная не сдана возвращает null
      */
     ArrayList<StudentResult> getResults(String GroupName, String Subject, int term) {
         StudentResult result;
@@ -107,4 +107,51 @@ class ResultsHandler {
         return studentData;
     }
 
+    public boolean setResults(Integer id, String subject, int term, int labNumber, Date labDate) {
+        if (labNumber > 6)
+            return false;
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println(dateFormat.format(labDate));
+
+        try {
+            String NumberOfLabsCommand = "SELECT subject_id FROM subject_table WHERE subject_name = ?";
+            String existCommand = "UPDATE student_results set subject_id = ?, term=?, lab_" + labNumber + "=? where system_id = ?";
+
+            stm = connection.prepareStatement(NumberOfLabsCommand);
+            stm.setString(1, subject);
+            res = stm.executeQuery();
+            res.next();
+            int subjectId = res.getInt("subject_id");
+
+
+            stm = connection.prepareStatement(existCommand);
+
+            stm.setInt(1, subjectId);
+            stm.setInt(2, term);
+            stm.setDate(3, labDate);
+            stm.setInt(4, id);
+
+
+            int updateResult = stm.executeUpdate();
+
+            if (updateResult == 0) {
+                stm = connection.prepareStatement("INSERT INTO student_results(system_id,subject_id,term,lab_1,lab_2,lab_3,lab_4,lab_5,lab_6) VALUES(?, ?, ?, ?, ?, ?, ?,?,?)");
+                stm.setInt(1, id);
+                stm.setInt(2, subjectId);
+                stm.setInt(3, term);
+                for (int i = 4; i <= 9; i++) {
+                    if (i != labNumber + 3)
+                        stm.setDate(i, null);
+                    else
+                        stm.setDate(i, labDate);
+                }
+
+                stm.executeUpdate();
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -1,6 +1,8 @@
 package managers.DataBase;
 
+import query.TestResultRequest;
 import reply.User;
+import services.TestService;
 import transfer.StudentResult;
 
 import java.sql.*;
@@ -75,6 +77,7 @@ public class DatabaseManager {
 
     public DatabaseManager() {
         ConnectToDB();
+
     }
 
     private void ConnectToDB() {
@@ -142,5 +145,8 @@ public class DatabaseManager {
         return map;
     }
 
-
+    public boolean addLabDates(Integer id,String subject,int term,int labNumber,Date labDate)
+    {
+        return  new ResultsHandler(DatabaseConnection).setResults(id,subject,term,labNumber,labDate);
+    }
 }

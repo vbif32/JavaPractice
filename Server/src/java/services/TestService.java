@@ -1,5 +1,6 @@
 package services;
 
+import connect.MainServer;
 import managers.FileSystemManager;
 import query.TestRequest;
 import query.TestResultRequest;
@@ -10,6 +11,10 @@ import reply.TestResult;
 import reply.TestUploading;
 
 import java.io.File;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Класс сервиса тестов
@@ -39,7 +44,19 @@ public class TestService {
      * @return
      */
     public static Reply submitTest(TestResultRequest testResultRequest) {
-        return new TestResult();//true
+
+        if(!testResultRequest.isCorrect)
+            return  new TestResult(false);
+        else
+        {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+
+            java.sql.Date sqlDate = java.sql.Date.valueOf(df.format(date));
+
+            MainServer.dbManager.addLabDates(testResultRequest.id,testResultRequest.subject,testResultRequest.term,testResultRequest.labNumber,sqlDate);
+        }
+        return new TestResult(true);//true
     }
 
     /**
