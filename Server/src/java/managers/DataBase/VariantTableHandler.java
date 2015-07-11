@@ -57,7 +57,7 @@ class VariantTableHandler {
                     while (res.next()) {
                         SubjectInfo.subject = subjectName;
                         SubjectInfo.term = semester;
-                        for (int i = 4; i < numberOfLabsBySemester.get(j) + 3; i++) {
+                        for (int i = 4; i < numberOfLabsBySemester.get(j) + 4; i++) {
                             try {
                                 if (res.getInt(i) == 0) {
                                     SubjectInfo.variants.add(0);//вариант не назначен

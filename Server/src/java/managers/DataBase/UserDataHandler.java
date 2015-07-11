@@ -1,6 +1,7 @@
 package managers.DataBase;
 
 import reply.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ class UserDataHandler {
 
     /**
      * проверяет существует ли данный пользователь
+     *
      * @param login
      * @param password
      * @return
@@ -43,6 +45,7 @@ class UserDataHandler {
 
     /**
      * возвращает данные пользователя
+     *
      * @param systemId
      * @return
      */
@@ -86,6 +89,7 @@ class UserDataHandler {
 
     /**
      * добавляет аккаунт в БД
+     *
      * @param user
      * @param login
      * @param password
@@ -96,7 +100,7 @@ class UserDataHandler {
             if (!user.isLecturer && !new GroupTableHandler(connection).checkCorrectness(user.group)) {
                 return false;
             }
-            stm = connection.prepareStatement("INSERT INTO user_data(login,password,surname,name,second_name,is_lecturer,group_name) VALUES(?, ?, ?, ?, ?, ?, ?)");
+            stm = connection.prepareStatement("INSERT INTO user_data(login,password,surname,name,second_name,is_lecturer,group_id) VALUES(?, ?, ?, ?, ?, ?, ?)");
             stm.setString(1, login);
             stm.setString(2, password);
             stm.setString(3, user.surname);
