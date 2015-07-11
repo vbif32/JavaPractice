@@ -8,16 +8,19 @@ import java.io.*;
  */
 public class Help {
 
-    private static String res_name = "help.txt";
+    private static String res_name = "help.chm";
 
     public static File resToFile(String res_name, String name) throws IOException {
-        InputStream input = Help.class.getResourceAsStream("/" + res_name);
-        byte[] buffer = new byte[input.available()];
-        input.read(buffer);
+        BufferedInputStream input = new BufferedInputStream(Help.class.getResourceAsStream("/" + res_name));
+        byte[] buffer = new byte[1024];
         File targetFile = new File(name);
-        OutputStream out = new FileOutputStream(targetFile);
-        out.write(buffer);
-        out.close();
+        BufferedOutputStream bs = new BufferedOutputStream(new FileOutputStream(targetFile));
+        int len;
+        while((len = input.read(buffer)) > 0) {
+            bs.write(buffer, 0, len);
+        }
+        input.close();
+        bs.close();
         return targetFile;
     }
 
