@@ -761,7 +761,7 @@ public class Window_s {
         chTerm.setMaxWidth(50);
         chTerm.setMinWidth(50);
 
-        final StatsRequest statsRequest = new StatsRequest();
+        final StatsRequest sR = new StatsRequest();
 
         TreeSet<Integer> subj = new TreeSet<>();
         if (newUser.labInfo != null) {
@@ -774,8 +774,8 @@ public class Window_s {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 chSub.getItems().clear();
-                statsRequest.term = Integer.valueOf(t1);
-                statsRequest.subject = null;
+                sR.term = Integer.valueOf(t1);
+                sR.subject = null;
                 for (LabsPossible lp : newUser.labInfo)
                     if (lp.term.toString().equals(t1)) {
                         chSub.getItems().add(lp.subject);
@@ -786,16 +786,15 @@ public class Window_s {
         forSubject.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-                statsRequest.subject = t1;
+                sR.subject = t1;
                 newVbox.getChildren().clear();
                 forResults.getChildren().clear();
                 r.setText("Результаты:");
                 forResults.getChildren().add(r);
                 forResults.setAlignment(Pos.CENTER);
-                statsRequest.id = newUser.id;
-                statsRequest.group = newUser.group;
-                statsRequest.term = (Integer.valueOf((String)forTerm.getSelectionModel().getSelectedItem()));
-                String studentResult = connect.userStatsRequest(statsRequest);
+                sR.id = newUser.id;
+                sR.group = newUser.group;
+                String studentResult = connect.userStatsRequest(sR);
                 newVbox.getChildren().addAll(forResults, new Label("\n"), new Label(studentResult));
             }
         });
