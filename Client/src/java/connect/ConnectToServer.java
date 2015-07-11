@@ -37,7 +37,7 @@ public class ConnectToServer {
     }
 
     public ConnectToServer() {
-        serverPort = 1080;
+        serverPort = 444;
         address = "127.0.0.1";
         Error = "";
     }
@@ -48,8 +48,7 @@ public class ConnectToServer {
     }
 
     //Готово
-    public boolean LoginIn(LoginRequest loginRequest)
-    {
+    public boolean LoginIn(LoginRequest loginRequest) {
         try {
             s = new Socket(address, serverPort);
             InputStream request = s.getInputStream();
@@ -76,8 +75,7 @@ public class ConnectToServer {
     }
 
     //Готово
-    public Boolean RegisterUser(RegisterRequest registerRequest)
-    {
+    public Boolean RegisterUser(RegisterRequest registerRequest) {
         try {
             s = new Socket(address, serverPort);
             InputStream request = s.getInputStream();

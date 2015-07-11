@@ -6,8 +6,6 @@ import transfer.LabSubmitDate;
 import transfer.StudentResult;
 
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -30,8 +28,8 @@ class ResultsHandler {
      * @param Subject   - предмет
      * @param term      - семестр
      * @return массив с соответствующими данными
-     *         имя, фамилия, отчество, группа, идентификатор аккаунта, даты сдачи лабораторных для каждой лабораторной по порядку
-     *         Если лабораторная не сдана возвращает null
+     * имя, фамилия, отчество, группа, идентификатор аккаунта, даты сдачи лабораторных для каждой лабораторной по порядку
+     * Если лабораторная не сдана возвращает null
      */
     ArrayList<StudentResult> getResults(String GroupName, String Subject, int term) {
         StudentResult result;
@@ -60,9 +58,9 @@ class ResultsHandler {
                 stm = connection.prepareStatement(command);
             }
             res = stm.executeQuery();
-            stm = connection.prepareStatement("SELECT * FROM student_results WHERE system_id = ? AND subject_id = ? AND term = ?");
+            stm = connection.prepareStatement("SELECT * FROM student_results WHERE system_id = ? AND subject_id = ?");
             stm.setInt(2, subjectId);
-            stm.setInt(3, term);
+            //stm.setInt(3, term);
             studentData = new ArrayList<StudentResult>();
             try {
                 while (res.next()) {
