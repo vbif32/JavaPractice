@@ -783,7 +783,7 @@ public class Window_s {
             }
         });
 
-        forSubject.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+        chSub.valueProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 sR.subject = t1;
