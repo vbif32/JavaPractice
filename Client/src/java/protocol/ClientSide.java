@@ -25,7 +25,7 @@ import java.util.Stack;
  */
 public class ClientSide {
 
-    public static final File PATH = new File("src/java/protocol"); //Тут нужен путь до папки, куда кидать присланные файлы.
+    public static final File PATH = new File(".\\Client\\src\\java\\protocol"); //Тут нужен путь до папки, куда кидать присланные файлы.
 
     public static int parseJsonString(Object obj, String string, ArrayList<File> files) throws ReflectiveOperationException {
         JsonParser jp = Json.createParser(new StringReader(string));
